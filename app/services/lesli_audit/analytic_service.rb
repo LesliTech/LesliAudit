@@ -35,6 +35,14 @@ module LesliAudit
 
         LIMIT=5
 
+        def resourcess 
+            return current_user.account.requests.group(:created_at).limit(30)
+            .select(
+                "count(id) resources",
+                "created_at date"
+            )
+        end 
+
         # @overwrite
         # @return {Hash} Paginated list of the records
         # @param {query} Has of the formated queries/filters that will be applied to filter data
@@ -55,13 +63,13 @@ module LesliAudit
             requests = apply_filters(requests, query)
             
             requests.limit(30).order("date DESC").select(
-                "count(id) resources", 
+                #"count(id) resources", 
                 "sum(request_count) requests",
                 "DATE_TRUNC('day', created_at) date"
             ).map do |request|
                 { 
                     :requests => request[:requests],
-                    :resources => request[:resources],
+                    #:resources => request[:resources],
                     :date => Date2.new(request[:date]).date.to_s
                 }
             end  
@@ -103,7 +111,8 @@ module LesliAudit
         end
 
         def controllers 
-            requests = Lesli::User::Request.where(user: current_user.account.users).group("request_controller") 
+            requests =  current_user.account.requests
+            .group("request_controller").limit(30)
 
             requests = apply_filters(requests, query)
 

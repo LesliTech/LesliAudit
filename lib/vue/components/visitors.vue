@@ -40,7 +40,7 @@ import { lesliChartLine } from "lesli-vue/components"
 
 
 // · import stores
-import { useAnalytics } from "LesliAudit/stores/analytics/visitors"
+import { useAnalytics } from "LesliAudit/stores/analytics"
 
 
 // · implement stores
@@ -52,30 +52,12 @@ var series = ref([]);
 var labels = ref([]);
 
 
-// · initializing
-onMounted(() => {
-    storeAnalytics.fetchVisits()
-    setTimeout(() => storeAnalytics.fetchUsers(), 500)
-    setTimeout(() => storeAnalytics.fetchDevices(), 1000)
-    setTimeout(() => storeAnalytics.fetchControllers(), 1500)
-})
-
-
-// · 
-function reload() {
-    storeAnalytics.fetch()
-}
-
-
 // · 
 watch(() => storeAnalytics.visitors.records, () => {
     labels.value = storeAnalytics.visitors.records.map(visit => visit.date)
     series.value = [{
         name: "Requests",
         data: storeAnalytics.visitors.records.map(visit => visit.requests)
-    }, {
-        name: "Resources",
-        data: storeAnalytics.visitors.records.map(visit => visit.resources)
     }]
 })
 

@@ -27,7 +27,7 @@ import chartLine from "Lesli/components/charts/line.vue"
 
 
 // · import lesli stores
-import { useAnalytics } from "CloudAudit/stores/analytics/visitors"
+import { useAnalytics } from "CloudAudit/stores/analytics"
 
 
 // · implement stores

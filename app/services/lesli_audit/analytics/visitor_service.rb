@@ -42,7 +42,11 @@ module LesliAudit
         # @example
         def visits 
 
-            return Lesli::User::Request.group("DATE_TRUNC('day', created_at)").limit(30).order("date DESC").select(
+            return Lesli::User::Request
+            .group("DATE_TRUNC('day', created_at)").limit(30)
+            .order("date DESC")
+            .limit(30)
+            .select(
                 "count(id) resources", 
                 "sum(request_count) requests",
                 "DATE_TRUNC('day', created_at) date"

@@ -30,43 +30,11 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-LesliAudit::Engine.routes.draw do
-    root to: "dashboards#show"
-    
 
-    # Dashboard:
-    #   Total users
-    #   Total roles
-    #   Visits
-    #   Trends
-    resource :dashboard, only: [:show]
-
-    # Users:
-    #   Registrations   users grouped by creation date
-    #   Working hours   first and last request of the day
-    #   Activities      changes on users information
-    #   Roles           total users by role
-    #   Logs            relevant actions of users
-    # resources :users, only: []
-
-    # Account:
-    #   Activities      changes on account information
-    #   Logs            relevant actions of the account
-    # resources :account, only: []
-
-    # Requests:         Raw request data
-    # resources :request, only: []
-
-    # Analytics:
-    # 
-    resources :analytics, only: [:index] do 
-        collection do 
-            get :trends
-            get :resourcess
-            get :visitors
-            get :controllers
-            get :devices
-            get :users
-        end
-    end
-end
+# IMPORTANT: 
+#   Seed files are only for development, if you need to create default resources 
+#   for production you must use the initializer method in the Engine account model
+if Rails.env.development? 
+    L2.msg("Loading seeds for LesliAudit", "Version: #{LesliAudit::VERSION}", "Build: #{LesliAudit::BUILD}")
+    load(LesliAudit::Engine.root.join("db", "seed", "#{ Rails.env.downcase }.rb"))
+end 

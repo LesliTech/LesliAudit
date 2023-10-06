@@ -1,5 +1,5 @@
-<script setup>
-/*
+=begin
+
 Lesli
 
 Copyright (c) 2023, Lesli Technologies, S. A.
@@ -28,40 +28,40 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-*/
+=end
 
 
-// · import vue tools
-import {  } from "vue"
 
+# Get the current date
+end_date = Date.today
 
-// · import stores
-import { useAnalytics } from "LesliAudit/stores/analytics/visitors"
+# Calculate the date 10 days ago
+start_date = 10.days.ago.to_date
 
+account = Lesli::Account.first
 
-// · implement stores
-const storeAnalytics = useAnalytics()
+user = Lesli::User.first
 
-</script>
-<template>
-    <div class="columns mt-3">
-        <div class="column">
-            <lesli-table
-                :columns="storeAnalytics.users.columns"
-                :records="storeAnalytics.users.records">
-            </lesli-table>
-        </div>
-        <div class="column">
-            <lesli-table
-                :columns="storeAnalytics.devices.columns"
-                :records="storeAnalytics.devices.records">
-            </lesli-table>
-        </div>
-        <div class="column">
-            <lesli-table
-                :columns="storeAnalytics.controllers.columns"
-                :records="storeAnalytics.controllers.records">
-            </lesli-table>
-        </div>
-    </div>
-</template>
+session = user.sessions.first
+
+# Iterate through the dates
+(start_date..end_date).each do |date|
+
+    Lesli::Account::Request.create_with(
+        :request_method => "show",
+        :request_count => rand(1..100),
+    ).find_or_create_by(
+        :request_controller => "lesli_audit/dashboards",
+        :request_action => "show",
+        :created_at => date,
+        :account => account
+    )
+
+    Lesli::User::Request.create_with(
+        :request_count => rand(1..100)
+    ).find_or_create_by(
+        :created_at => date,
+        :session => session,
+        :user => user
+    )
+end
