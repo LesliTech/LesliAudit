@@ -1,4 +1,4 @@
 module LesliAudit
-  class Analytic < ApplicationRecord
-  end
+    class Analytic < ApplicationRecord
+    end
 end

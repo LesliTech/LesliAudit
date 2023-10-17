@@ -9,10 +9,6 @@ module LesliAudit
             respond_with_successful(AnalyticService.new(current_user, query).visitors)
         end
 
-        def resourcess
-            respond_with_successful(AnalyticService.new(current_user, query).resourcess)
-        end
-
         def users 
             respond_with_successful(AnalyticService.new(current_user, query).users)
         end

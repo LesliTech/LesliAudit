@@ -15,7 +15,6 @@ const storeAnalytics = useAnalytics()
 // · 
 import visitors from "../../components/visitors.vue";
 import requests from "../../components/requests.vue";
-import resources from "../../components/resources.vue";
 //import trends from "./trends.vue";
 
 
@@ -28,10 +27,8 @@ function reload() {
 // · initializing
 onMounted(() => {
     storeAnalytics.fetchVisits()
-    setTimeout(() => storeAnalytics.fetchUsers(), 500)
-    setTimeout(() => storeAnalytics.fetchDevices(), 1000)
-    setTimeout(() => storeAnalytics.fetchResources(), 1500)
-    setTimeout(() => storeAnalytics.fetchControllers(), 2000)
+    setTimeout(() => storeAnalytics.fetchUsers(), 600)
+    setTimeout(() => storeAnalytics.fetchControllers(), 1200)
 })
 
 </script>
@@ -53,8 +50,7 @@ onMounted(() => {
             ]">
             </lesli-select>
         </lesli-header>
-        <visitors class="mb-5"></visitors>
-        <resources class="mb-5"></resources>
+        <visitors class="mb-6"></visitors>
         <requests></requests>
     </lesli-application-container>
 </template>

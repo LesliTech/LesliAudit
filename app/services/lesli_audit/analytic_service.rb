@@ -35,14 +35,6 @@ module LesliAudit
 
         LIMIT=5
 
-        def resourcess 
-            return current_user.account.requests.group(:created_at).limit(30)
-            .select(
-                "count(id) resources",
-                "created_at date"
-            )
-        end 
-
         # @overwrite
         # @return {Hash} Paginated list of the records
         # @param {query} Has of the formated queries/filters that will be applied to filter data
@@ -56,62 +48,35 @@ module LesliAudit
             # only the users of the account
             usrs = current_user.account.users
 
-            requests = Lesli::User::Request.where(user: usrs).group("DATE_TRUNC('month', created_at)") if group == 'month'
-            requests = Lesli::User::Request.where(user: usrs).group("DATE_TRUNC('week', created_at)") if group == 'week'
-            requests = Lesli::User::Request.where(user: usrs).group("DATE_TRUNC('day', created_at)") if group == 'day'
+
+            requests = current_user.account.audit.account_requests
+            requests = requests.group("DATE_TRUNC('month', created_at)") if group == 'month'
+            requests = requests.group("DATE_TRUNC('week', created_at)") if group == 'week'
+            requests = requests.group("DATE_TRUNC('day', created_at)") if group == 'day'
 
             requests = apply_filters(requests, query)
             
             requests.limit(30).order("date DESC").select(
-                #"count(id) resources", 
+                "count(id) resources", 
                 "sum(request_count) requests",
                 "DATE_TRUNC('day', created_at) date"
-            ).map do |request|
-                { 
-                    :requests => request[:requests],
-                    #:resources => request[:resources],
-                    :date => Date2.new(request[:date]).date.to_s
-                }
-            end  
+            )
         end
 
         def users 
 
-            requests = Lesli::User::Request
+            current_user.account.audit.user_requests
             .joins(:user)
-            .where(user: current_user.account.users)
             .group(:email)
-
-            requests = apply_filters(requests, query)
-
-            requests = requests.limit(LIMIT).order("requests DESC").select(
+            .limit(LIMIT).order("requests DESC").select(
                 :email,
-                "count(lesli_user_requests.id) resources", 
-                "sum(lesli_user_requests.request_count) requests"
-            ).map do |request|
-                { 
-                    :requests => request[:requests],
-                    :resources => request[:resources],
-                    :email => request[:email]
-                }
-            end
-        end
-
-        def devices 
-            agents = Lesli::User::Agent.where(user: current_user.account.users)
-            agents = agents.group("platform", "browser") 
-            agents = agents.limit(LIMIT).order(sum_count: :desc).sum(:count).map do |req|
-                {
-                    :device => req[0].join("/"),
-                    :visits => req[1]
-                }
-            end
-
-            return agents
+                "count(lesli_audit_user_requests.id) resources", 
+                "sum(lesli_audit_user_requests.request_count) requests"
+            )
         end
 
         def controllers 
-            requests =  current_user.account.requests
+            requests = current_user.account.audit.account_requests
             .group("request_controller").limit(30)
 
             requests = apply_filters(requests, query)

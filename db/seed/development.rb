@@ -40,28 +40,35 @@ start_date = 10.days.ago.to_date
 
 account = Lesli::Account.first
 
-user = Lesli::User.first
+current_user = Lesli::User.first
 
-session = user.sessions.first
+session = current_user.sessions.first
 
-# Iterate through the dates
-(start_date..end_date).each do |date|
+# controllers to seed
+[
+    "lesli_audit/dashboards", 
+    "lesli_audit/analytics"
+].each do |controller|
 
-    Lesli::Account::Request.create_with(
-        :request_method => "show",
-        :request_count => rand(1..100),
-    ).find_or_create_by(
-        :request_controller => "lesli_audit/dashboards",
-        :request_action => "show",
-        :created_at => date,
-        :account => account
-    )
+    # Iterate through the dates
+    (start_date..end_date).each do |date|
 
-    Lesli::User::Request.create_with(
-        :request_count => rand(1..100)
-    ).find_or_create_by(
-        :created_at => date,
-        :session => session,
-        :user => user
-    )
+        current_user.account.audit.account_requests.create_with(
+            :request_count => rand(40..80),
+        ).find_or_create_by(
+            :request_controller => controller,
+            :request_action => "show",
+            :created_at => date,
+        )
+
+        current_user.account.audit.user_requests.create_with(
+            :request_count => rand(40..80),
+        ).find_or_create_by(
+            :request_controller => controller,
+            :request_action => "show",
+            :created_at => date,
+            :session => session,
+            :user => current_user
+        )
+    end
 end

@@ -1,5 +1,5 @@
-<script setup>
-/*
+=begin
+
 Lesli
 
 Copyright (c) 2023, Lesli Technologies, S. A.
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails Development Platform.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -27,35 +27,18 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
-*/
+// ·
+=end
 
-
-// · import vue tools
-import {  } from "vue"
-
-
-// · import stores
-import { useAnalytics } from "LesliAudit/stores/analytics"
-
-
-// · implement stores
-const storeAnalytics = useAnalytics()
-
-</script>
-<template>
-    <div class="columns">
-        <div class="column">
-            <lesli-table
-                :columns="storeAnalytics.users.columns"
-                :records="storeAnalytics.users.records">
-            </lesli-table>
-        </div>
-        <div class="column">
-            <lesli-table
-                :columns="storeAnalytics.controllers.columns"
-                :records="storeAnalytics.controllers.records">
-            </lesli-table>
-        </div>
-    </div>
-</template>
+class CreateLesliAuditAccountRequests < ActiveRecord::Migration[6.0]
+    def change
+        create_table :lesli_audit_account_requests do |t|
+            t.string    :request_controller
+            t.string    :request_action
+            t.integer   :request_count
+            t.date      :created_at
+        end
+        add_reference(:lesli_audit_account_requests, :account, foreign_key: { to_table: :lesli_audit_accounts })
+        add_index(:lesli_audit_account_requests, %i[request_controller request_action created_at account_id], unique: true, name: "lesli_audit_account_requests_index")
+    end
+end

@@ -58,6 +58,9 @@ watch(() => storeAnalytics.visitors.records, () => {
     series.value = [{
         name: "Requests",
         data: storeAnalytics.visitors.records.map(visit => visit.requests)
+    }, {
+        name: "Resources",
+        data: storeAnalytics.visitors.records.map(visit => visit.resources)
     }]
 })
 

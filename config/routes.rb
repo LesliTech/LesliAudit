@@ -31,6 +31,9 @@ Building a better future, one line of code at a time.
 =end
 
 LesliAudit::Engine.routes.draw do
+
+
+    # Dashboard alias
     root to: "dashboards#show"
     
 
@@ -41,32 +44,35 @@ LesliAudit::Engine.routes.draw do
     #   Trends
     resource :dashboard, only: [:show]
 
+
     # Users:
     #   Registrations   users grouped by creation date
     #   Working hours   first and last request of the day
     #   Activities      changes on users information
     #   Roles           total users by role
     #   Logs            relevant actions of users
-    # resources :users, only: []
+    resources :users, only: []
 
-    # Account:
-    #   Activities      changes on account information
-    #   Logs            relevant actions of the account
-    # resources :account, only: []
-
-    # Requests:         Raw request data
-    # resources :request, only: []
 
     # Analytics:
-    # 
     resources :analytics, only: [:index] do 
         collection do 
             get :trends
-            get :resourcess
-            get :visitors
             get :controllers
+            get :visitors
             get :devices
             get :users
         end
     end
+
+
+    # Account:
+    #   Activities      changes on account information
+    #   Logs            relevant actions of the account
+    resources :account, only: []
+
+
+    # Requests:         Raw request data
+    resources :request, only: []
+
 end
