@@ -2,6 +2,4 @@
 :en:
   lesli_audit:
     shared:
-      title_lesli: ":lesli.shared.title_lesli:"
-    users:
-      title_users: Users
+      button_save: Save

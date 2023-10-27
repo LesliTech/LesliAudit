@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS development platform.
+Lesli · Ruby on Rails SaaS Development Framework.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -30,8 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-module CloudAudit
-    class RequestServices < ApplicationLesliServices
+module LesliAudit
+    class RequestService < Lesli::ApplicationLesliService
 
         # @overwrite
         # @return {Hash} Paginated list of the records
@@ -39,6 +39,17 @@ module CloudAudit
         # @description
         # @example
         def index 
+
+
+            requests = Account::Request.all
+            .order(created_at: :desc)
+            .order(request_count: :desc)
+            .page(query[:pagination][:page])
+            .per(query[:pagination][:perPage])
+
+            return requests
+
+
             search_string = nil # query[:search].downcase.gsub(" ","%") unless query[:search].blank?
             order_string = "user_requests.created_at" 
             

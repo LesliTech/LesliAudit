@@ -73,6 +73,6 @@ LesliAudit::Engine.routes.draw do
 
 
     # Requests:         Raw request data
-    resources :request, only: []
+    resources :requests, only: [:index]
 
 end

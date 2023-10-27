@@ -1,60 +1,46 @@
+=begin
+
+Lesli
+
+Copyright (c) 2023, Lesli Technologies, S. A.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
+
+Lesli · Ruby on Rails SaaS Development Framework.
+
+Made with ♥ by https://www.lesli.tech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+// · 
+=end
+
 module LesliAudit
-  class RequestsController < ApplicationController
-    before_action :set_request, only: %i[ show edit update destroy ]
+    class RequestsController < ApplicationController
 
-    # GET /requests
-    def index
-      @requests = Request.all
+        # GET /requests
+        def index
+            respond_to do |format|
+                format.html
+                format.json { 
+                    respond_with_pagination(LesliAudit::RequestService.new(current_user, query).index)
+                }
+            end
+        end
     end
-
-    # GET /requests/1
-    def show
-    end
-
-    # GET /requests/new
-    def new
-      @request = Request.new
-    end
-
-    # GET /requests/1/edit
-    def edit
-    end
-
-    # POST /requests
-    def create
-      @request = Request.new(request_params)
-
-      if @request.save
-        redirect_to @request, notice: "Request was successfully created."
-      else
-        render :new, status: :unprocessable_entity
-      end
-    end
-
-    # PATCH/PUT /requests/1
-    def update
-      if @request.update(request_params)
-        redirect_to @request, notice: "Request was successfully updated.", status: :see_other
-      else
-        render :edit, status: :unprocessable_entity
-      end
-    end
-
-    # DELETE /requests/1
-    def destroy
-      @request.destroy
-      redirect_to requests_url, notice: "Request was successfully destroyed.", status: :see_other
-    end
-
-    private
-      # Use callbacks to share common setup or constraints between actions.
-      def set_request
-        @request = Request.find(params[:id])
-      end
-
-      # Only allow a list of trusted parameters through.
-      def request_params
-        params.fetch(:request, {})
-      end
-  end
 end

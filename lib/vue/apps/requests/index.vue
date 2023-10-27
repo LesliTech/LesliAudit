@@ -1,18 +1,33 @@
 <script setup>
 /*
-Copyright (c) 2022, all rights reserved.
 
-All the information provided by this platform is protected by international laws related  to 
-industrial property, intellectual property, copyright and relative international laws. 
-All intellectual or industrial property rights of the code, texts, trade mark, design, 
-pictures and any other information belongs to the owner of this platform.
+Lesli
 
-Without the written permission of the owner, any replication, modification,
-transmission, publication is strictly forbidden.
+Copyright (c) 2023, Lesli Technologies, S. A.
 
-For more information read the license file including with this software.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
+
+Lesli · Ruby on Rails SaaS Development Framework.
+
+Made with ♥ by https://www.lesli.tech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 */
 
@@ -22,28 +37,18 @@ import { ref, reactive, onMounted, watch, computed } from "vue"
 
 
 // · import lesli stores
-import { useLogRequest } from "CloudAudit/stores/request"
+import { useRequests } from "LesliAudit/stores/request"
 
 
 // · implement stores
-const store = useLogRequest()
+const storeRequests = useRequests()
 
 
 // · define variables
 const columns = [{
     field: "id",
     label: "ID"
-}, {
-    field: "email",
-    label: "Email",
-    sort: true
-}, {
-    field: "request_agent",
-    label: "Device"
-}, {
-    field: "request_method",
-    label: "Method"
-}, {
+}, {    
     field: "request_controller",
     label: "Controller",
     sort: true
@@ -51,22 +56,19 @@ const columns = [{
     field: "request_action",
     label: "Action"
 }, {
-    field: "created_at_date",
+    field: "request_count",
+    align: "center",
+    label: "Count"
+}, {
+    field: "created_at",
     label: "Date"
 }]
 
 
 // · initializing
 onMounted(() => {
-    store.fetchLogsIfEmpty()
+    storeRequests.fetch()
 })
-
-
-function itemProjection(item){ console.log("itemprojection", item) }
-function selectItemEventHandler(item){ console.log("selectItem", item) }
-function onInputEventHandler(item){ console.log("onInput", item) }
-function onFocusEventHandler(item){ console.log("onFocus", item) }
-function onBlurEventHandler(item){ console.log("onBlur", item) }
 
 </script>
 <script>
@@ -79,12 +81,12 @@ export default {
 }
 </script>
 <template>
-    <section class="application-component">
+    <lesli-application-container>
         <lesli-header
-            title="Users activity"
-            @reload="store.fetchLogs()">
+            title="Account requests"
+            @reload="storeRequests.fetchLogs()">
         </lesli-header>
-        <lesli-toolbar @search="store.search">
+        <lesli-toolbar @search="storeRequests.search">
             <!--
             <Autocomplete
                 id="typeahead_id"
@@ -111,13 +113,13 @@ export default {
             -->
         </lesli-toolbar>
         <lesli-table
-            @sort="store.sort"
-            @paginate="store.paginate"
-            :pagination="store.pagination"
-            :loading="store.loading"
+            @sort="storeRequests.sort"
+            @paginate="storeRequests.paginate"
+            :pagination="storeRequests.pagination"
+            :loading="storeRequests.loading"
             :columns="columns"
-            :records="store.records"
+            :records="storeRequests.records"
             @click="showUser">
         </lesli-table>
-    </section>
+    </lesli-application-container>
 </template>

@@ -46,12 +46,14 @@ const storeAnalytics = useAnalytics()
 <template>
     <div class="columns">
         <div class="column">
+            <h3>Most active users</h3>
             <lesli-table
                 :columns="storeAnalytics.users.columns"
                 :records="storeAnalytics.users.records">
             </lesli-table>
         </div>
         <div class="column">
+            <h3>Most active controllers</h3>
             <lesli-table
                 :columns="storeAnalytics.controllers.columns"
                 :records="storeAnalytics.controllers.records">
