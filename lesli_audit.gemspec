@@ -55,5 +55,7 @@ Gem::Specification.new do |spec|
         Dir["{app,config,db,lib}/**/*", "license", "Rakefile", "readme.md"]
     end
 
+    spec.required_ruby_version = ">= 2.7.2"
+
     spec.add_dependency "rails", "~> 7"
 end

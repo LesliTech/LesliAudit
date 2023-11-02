@@ -1,12 +1,12 @@
 <p align="center">
-	<img width="90" alt="LesliCloud logo" src="./app/assets/images/lesli_admin/admin-logo.svg" />
+	<img width="90" alt="LesliCloud logo" src="./app/assets/images/lesli_audit/audit-logo.svg" />
     <h3 align="center">Administration area for the Lesli Framework.</h3>
 </p>
 
 <hr/>
     <p align="center">
-        <a target="blank" href="https://rubygems.org/gems/lesli_admin">
-            <img src="https://badge.fury.io/rb/lesli_admin.svg" alt="Gem Version" height="18">
+        <a target="blank" href="https://rubygems.org/gems/lesli_audit">
+            <img src="https://badge.fury.io/rb/lesli_audit.svg" alt="Gem Version" height="22">
         </a>
     </p>
 <hr/>
@@ -14,8 +14,8 @@
 ### Quick start
 
 ```shell
-# Add LesliAdmin engine
-bundle add lesli_admin
+# Add LesliAudit engine
+bundle add lesli_audit
 ```
 
 ```shell
@@ -24,20 +24,20 @@ rake lesli:db:setup
 ```
 
 ```ruby
-# Load LesliAdmin
+# Load LesliAudit
 Rails.application.routes.draw do
-    mount LesliAdmin::Engine => "/admin"
+    mount LesliAudit::Engine => "/audit"
 end
 ```
 
 
 ### Documentation
-* [Roadmap](./docs/roadmap.md)
+* [website](https://www.lesli.dev/audit/)
 * [database](./docs/database.md)
 * [documentation](https://www.lesli.dev/documentation/)
 
 
-### Get in touch
+### Get in touch with Lesli
 
 * [Website: https://www.lesli.tech](https://www.lesli.tech)
 * [Email: hello@lesli.tech](hello@lesli.tech)

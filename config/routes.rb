@@ -51,7 +51,9 @@ LesliAudit::Engine.routes.draw do
     #   Activities      changes on users information
     #   Roles           total users by role
     #   Logs            relevant actions of users
-    resources :users, only: []
+    resources :users, only: [:index] do 
+        
+    end
 
 
     # Analytics:
