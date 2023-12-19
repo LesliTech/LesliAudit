@@ -2,36 +2,16 @@
   "en": {
     "lesli": {
       "shared": {
-        "title_lesli": ":lesli.shared.title_lesli:"
-      },
-      "users": {
-        "title_users": "Users"
-      }
-    },
-    "lesli_audit": {
-      "shared": {
-        "title_lesli": ":lesli.shared.title_lesli:"
-      },
-      "users": {
-        "title_users": "Users"
+        "button_add_new": "Add new",
+        "button_reload": "Reload"
       }
     }
   },
   "es": {
     "lesli": {
       "shared": {
-        "title_lesli": "Lesli en español "
-      },
-      "users": {
-        "title_users": "Usuarios"
-      }
-    },
-    "lesli_audit": {
-      "shared": {
-        "title_lesli": "Lesli en español "
-      },
-      "users": {
-        "title_users": "Usuarios"
+        "button_add_new": "Agregar nuevo",
+        "button_reload": "Recargar"
       }
     }
   }

@@ -1,5 +1,6 @@
 ---
 :es:
-  lesli_audit:
+  lesli:
     shared:
-      button_save: Guardar
+      button_add_new: Agregar nuevo
+      button_reload: Recargar

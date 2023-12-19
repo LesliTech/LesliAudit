@@ -1,5 +1,6 @@
 ---
 :en:
-  lesli_audit:
+  lesli:
     shared:
-      button_save: Save
+      button_add_new: Add new
+      button_reload: Reload

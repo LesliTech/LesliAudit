@@ -31,6 +31,9 @@ Building a better future, one line of code at a time.
 =end
 
 LesliAudit::Engine.routes.draw do
+  namespace :dashboard do
+    resources :components
+  end
 
 
     # Dashboard alias
@@ -43,6 +46,16 @@ LesliAudit::Engine.routes.draw do
     #   Visits
     #   Trends
     resource :dashboard, only: [:show]
+
+    resources :dashboards do
+        collection do
+            post "list" => :index
+            get :options
+        end
+        scope module: :dashboard do
+            resources :components
+        end
+    end
 
 
     # Users:

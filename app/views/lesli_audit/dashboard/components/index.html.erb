@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Components</h1>
+
+<div id="dashboard_components">
+  <% @dashboard_components.each do |dashboard_component| %>
+    <%= render dashboard_component %>
+    <p>
+      <%= link_to "Show this component", dashboard_component %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New component", new_dashboard_component_path %>
