@@ -35,6 +35,9 @@ Building a better future, one line of code at a time.
 #   Seed files are only for development, if you need to create default resources 
 #   for production you must use the initializer method in the Engine account model
 if Rails.env.development? 
-    L2.msg("Loading seeds for LesliAudit", "Version: #{LesliAudit::VERSION}", "Build: #{LesliAudit::BUILD}")
+    L2.msg(
+        "LesliAudit", 
+        "Version: #{LesliAudit::VERSION}", 
+        "Build: #{LesliAudit::BUILD}")
     load(LesliAudit::Engine.root.join("db", "seed", "#{ Rails.env.downcase }.rb"))
 end 

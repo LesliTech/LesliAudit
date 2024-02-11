@@ -8,11 +8,7 @@ module LesliAudit
         after_create :initialize_account
 
         def initialize_account
-            #Workflow.initialize_data(self)
-            Dashboard.initialize_data(self)
-            #Sla.initialize_data(self)
-            #Catalog.initialize_data(self)
-            #Account::Setting.initialize_data(self)
+            Dashboard.initialize_account(self)
         end
     end
 end

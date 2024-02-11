@@ -4,7 +4,7 @@ module LesliAudit
         belongs_to :dashboard, inverse_of: :components
 
         def self.component_ids
-            ["users", "active_roles"]
+            ["audit-users", "audit-roles"]
         end
         # components_ids: {
         #     list_new_tickets: "list_new_tickets",

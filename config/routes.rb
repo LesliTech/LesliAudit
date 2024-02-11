@@ -31,10 +31,6 @@ Building a better future, one line of code at a time.
 =end
 
 LesliAudit::Engine.routes.draw do
-  namespace :dashboard do
-    resources :components
-  end
-
 
     # Dashboard alias
     root to: "dashboards#show"
@@ -46,7 +42,6 @@ LesliAudit::Engine.routes.draw do
     #   Visits
     #   Trends
     resource :dashboard, only: [:show]
-
     resources :dashboards do
         collection do
             post "list" => :index
@@ -70,6 +65,10 @@ LesliAudit::Engine.routes.draw do
 
 
     # Analytics:
+    #   Visitors by date
+    #   Trends by date
+    #   Most active users
+    #   Most active controllers
     resources :analytics, only: [:index] do 
         collection do 
             get :trends
