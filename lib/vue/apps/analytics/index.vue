@@ -5,7 +5,7 @@ import { ref, reactive, onMounted, watch, computed } from "vue"
 
 
 // · import stores
-import { useAnalytics } from "LesliAudit/stores/analytics"
+import { useAnalytics } from "LesliAudit/vue/stores/analytics"
 
 
 // · implement stores

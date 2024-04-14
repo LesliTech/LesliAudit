@@ -30,8 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-module CloudAudit
-    class Users::RegistrationServices < ApplicationLesliServices
+module LesliAudit
+    class Users::RegistrationServices < Lesli::ApplicationLesliService
 
         # @overwrite
         # @return {Hash} Paginated list of the records

@@ -14,6 +14,7 @@
         "button_save": "Save",
         "button_settings": "Settings",
         "button_show": "Show",
+        "toolbar_search": "Search...",
         "view_discussions": "Discussions",
         "view_files": "Files",
         "view_quick_actions": "Quick actions",
@@ -37,11 +38,84 @@
         "button_save": "Guardar",
         "button_settings": "Configuración",
         "button_show": "Ver",
+        "toolbar_search": "Buscar...",
         "view_discussions": "Discusiones",
         "view_files": "Archivos",
         "view_quick_actions": "Acciones rapidas",
         "view_status_active": "Activo",
         "view_status_inactive": "Inactivo"
+      }
+    }
+  },
+  "fr": {
+    "lesli": {
+      "application": {
+        "navigation_logout": ":lesli.application.navigation_logout:",
+        "navigation_my_profile": ":lesli.application.navigation_my_profile:"
+      },
+      "shared": {
+        "button_add_new": ":lesli.shared.button_add_new:",
+        "button_delete": ":lesli.shared.button_delete:",
+        "button_edit": ":lesli.shared.button_edit:",
+        "button_list": ":lesli.shared.button_list:",
+        "button_reload": ":lesli.shared.button_reload:",
+        "button_save": ":lesli.shared.button_save:",
+        "button_settings": ":lesli.shared.button_settings:",
+        "button_show": ":lesli.shared.button_show:",
+        "toolbar_search": ":lesli.shared.toolbar_search:",
+        "view_discussions": ":lesli.shared.view_discussions:",
+        "view_files": ":lesli.shared.view_files:",
+        "view_quick_actions": ":lesli.shared.view_quick_actions:",
+        "view_status_active": ":lesli.shared.view_status_active:",
+        "view_status_inactive": ":lesli.shared.view_status_inactive:"
+      }
+    }
+  },
+  "it": {
+    "lesli": {
+      "application": {
+        "navigation_logout": ":lesli.application.navigation_logout:",
+        "navigation_my_profile": ":lesli.application.navigation_my_profile:"
+      },
+      "shared": {
+        "button_add_new": ":lesli.shared.button_add_new:",
+        "button_delete": ":lesli.shared.button_delete:",
+        "button_edit": ":lesli.shared.button_edit:",
+        "button_list": ":lesli.shared.button_list:",
+        "button_reload": ":lesli.shared.button_reload:",
+        "button_save": ":lesli.shared.button_save:",
+        "button_settings": ":lesli.shared.button_settings:",
+        "button_show": ":lesli.shared.button_show:",
+        "toolbar_search": ":lesli.shared.toolbar_search:",
+        "view_discussions": ":lesli.shared.view_discussions:",
+        "view_files": ":lesli.shared.view_files:",
+        "view_quick_actions": ":lesli.shared.view_quick_actions:",
+        "view_status_active": ":lesli.shared.view_status_active:",
+        "view_status_inactive": ":lesli.shared.view_status_inactive:"
+      }
+    }
+  },
+  "pt": {
+    "lesli": {
+      "application": {
+        "navigation_logout": ":lesli.application.navigation_logout:",
+        "navigation_my_profile": ":lesli.application.navigation_my_profile:"
+      },
+      "shared": {
+        "button_add_new": ":lesli.shared.button_add_new:",
+        "button_delete": ":lesli.shared.button_delete:",
+        "button_edit": ":lesli.shared.button_edit:",
+        "button_list": ":lesli.shared.button_list:",
+        "button_reload": ":lesli.shared.button_reload:",
+        "button_save": ":lesli.shared.button_save:",
+        "button_settings": ":lesli.shared.button_settings:",
+        "button_show": ":lesli.shared.button_show:",
+        "toolbar_search": ":lesli.shared.toolbar_search:",
+        "view_discussions": ":lesli.shared.view_discussions:",
+        "view_files": ":lesli.shared.view_files:",
+        "view_quick_actions": ":lesli.shared.view_quick_actions:",
+        "view_status_active": ":lesli.shared.view_status_active:",
+        "view_status_inactive": ":lesli.shared.view_status_inactive:"
       }
     }
   }

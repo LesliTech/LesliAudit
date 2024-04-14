@@ -37,7 +37,7 @@ import { ref, reactive, onMounted, watch, computed } from "vue"
 
 
 // · import lesli stores
-import { useRequests } from "LesliAudit/stores/request"
+import { useRequests } from "LesliAudit/vue/stores/request"
 
 
 // · implement stores

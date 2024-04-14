@@ -1,6 +1,6 @@
 <script setup>
 
-import LesliDashboard from "Lesli/shared/dashboards/apps/show.vue"
+import LesliDashboard from "Lesli/vue/shared/dashboards/apps/show.vue"
 
 </script>
 <template>

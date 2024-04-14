@@ -30,8 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-module CloudAudit
-    class Analytics::ActivityServices < ApplicationLesliServices
+module LesliAudit
+    class Account::ActivityServices < Lesli::ApplicationLesliService
 
         def index
             search_string = nil # query[:search].downcase.gsub(" ","%") unless query[:search].blank?

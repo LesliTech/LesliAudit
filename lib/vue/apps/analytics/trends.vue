@@ -22,12 +22,11 @@ import { ref, reactive, onMounted, watch, computed } from "vue"
 
 
 // . import Lesli components
-import chartBar from "Lesli/components/charts/bar.vue"
-import chartLine from "Lesli/components/charts/line.vue"
+import { lesliChartBar, lesliChartLine } from "lesli-vue/components"
 
 
 // · import lesli stores
-import { useAnalytics } from "CloudAudit/stores/analytics"
+import { useAnalytics } from "LesliAudit/vue/stores/analytics"
 
 
 // · implement stores

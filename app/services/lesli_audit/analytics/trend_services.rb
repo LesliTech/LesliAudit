@@ -30,8 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-module CloudAudit
-    class Analytics::TrendServices < ApplicationLesliServices
+module LesliAudit
+    class Analytics::TrendServices < Lesli::ApplicationLesliService
 
         def index
 

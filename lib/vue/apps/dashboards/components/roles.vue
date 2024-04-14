@@ -36,7 +36,7 @@ import { onMounted } from "vue"
 
 
 // · 
-import { useUsers } from "Lesli/stores/users"
+import { useUsers } from "LesliSecurity/vue/stores/users"
 
 
 // · 
@@ -54,14 +54,14 @@ const props = defineProps({
 
 // · 
 onMounted(() => {
-    storeUsers.getUsersList()
+    //storeUsers.getUsersList()
 })
 
 </script>
 <template>
     <lesli-card>    
         <h6 class="title is-6 mb-4">{{ props.component.name }}</h6>
-        <p>{{ storeUsers.list.length }}</p>
+        <p>{ { storeUsers.list.length } }</p>
     </lesli-card>
 </template>
 <style scoped>

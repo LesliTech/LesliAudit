@@ -36,11 +36,11 @@ import { ref, reactive, onMounted, watch, computed } from "vue"
 
 
 // · import Lesli components
-import { ChartLine } from "lesli-vue/components"
+import { lesliChartLine } from "lesli-vue/components"
 
 
 // · import stores
-import { useAnalytics } from "LesliAudit/stores/analytics"
+import { useAnalytics } from "LesliAudit/vue/stores/analytics"
 
 
 // · implement stores
@@ -67,10 +67,10 @@ watch(() => storeAnalytics.visitors.records, () => {
 </script>
 <template>
     <lesli-application-component>
-        <chart-line
+        <lesli-chart-line
             :title="'Visitors'"
             :series="series"
             :labels="labels">
-        </chart-line>
+        </lesli-chart-line>
     </lesli-application-component>
 </template>
