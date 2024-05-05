@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails SaaS development platform.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -60,7 +60,9 @@ LesliAudit::Engine.routes.draw do
     #   Roles           total users by role
     #   Logs            relevant actions of users
     resources :users, only: [:index] do 
-        
+        collection do 
+            get :registrations
+        end 
     end
 
 

@@ -5,6 +5,12 @@
         "navigation_logout": "Logout",
         "navigation_my_profile": "My profile"
       },
+      "dashboards": {
+        "column_default": "Default",
+        "column_name": "Name",
+        "title": "Dashboards",
+        "view_add_component": "Add component"
+      },
       "shared": {
         "button_add_new": "Add new",
         "button_delete": "Delete",
@@ -28,6 +34,12 @@
       "application": {
         "navigation_logout": "Cerrar sesión",
         "navigation_my_profile": "Mi perfil"
+      },
+      "dashboards": {
+        "column_default": "Default",
+        "column_name": "Nombre",
+        "title": "Dashboards",
+        "view_add_component": "Agregar componente"
       },
       "shared": {
         "button_add_new": "Agregar nuevo",
@@ -53,6 +65,12 @@
         "navigation_logout": ":lesli.application.navigation_logout:",
         "navigation_my_profile": ":lesli.application.navigation_my_profile:"
       },
+      "dashboards": {
+        "column_default": ":lesli.dashboards.column_default:",
+        "column_name": ":lesli.dashboards.column_name:",
+        "title": ":lesli.dashboards.title:",
+        "view_add_component": ":lesli.dashboards.view_add_component:"
+      },
       "shared": {
         "button_add_new": ":lesli.shared.button_add_new:",
         "button_delete": ":lesli.shared.button_delete:",
@@ -77,6 +95,12 @@
         "navigation_logout": ":lesli.application.navigation_logout:",
         "navigation_my_profile": ":lesli.application.navigation_my_profile:"
       },
+      "dashboards": {
+        "column_default": ":lesli.dashboards.column_default:",
+        "column_name": ":lesli.dashboards.column_name:",
+        "title": ":lesli.dashboards.title:",
+        "view_add_component": ":lesli.dashboards.view_add_component:"
+      },
       "shared": {
         "button_add_new": ":lesli.shared.button_add_new:",
         "button_delete": ":lesli.shared.button_delete:",
@@ -100,6 +124,12 @@
       "application": {
         "navigation_logout": ":lesli.application.navigation_logout:",
         "navigation_my_profile": ":lesli.application.navigation_my_profile:"
+      },
+      "dashboards": {
+        "column_default": ":lesli.dashboards.column_default:",
+        "column_name": ":lesli.dashboards.column_name:",
+        "title": ":lesli.dashboards.title:",
+        "view_add_component": ":lesli.dashboards.view_add_component:"
       },
       "shared": {
         "button_add_new": ":lesli.shared.button_add_new:",

@@ -1,8 +1,4 @@
-/*!*********************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/sass-loader/dist/cjs.js!../LesliAudit/lib/scss/application.scss ***!
-  \*********************************************************************************************************************************************************/
-@charset "UTF-8";
-/*
+=begin
 
 Lesli
 
@@ -21,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails SaaS development platform.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -32,4 +28,36 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-*/
+=end
+
+module LesliAudit
+    class UserService < Lesli::ApplicationLesliService
+
+        def registrations
+
+            period = "month"
+
+            #Get filters from the request     
+            group = query[:group]
+
+            #Get period only if the request have filters
+            period = group unless group.blank?
+
+            registrations = []
+
+            if ["day", "week", "month", "year"].include?(period)
+                registrations = current_user.account.users
+                    .group("DATE_TRUNC('#{period}', created_at)")
+                    .count
+                    .map do |request|
+                        { 
+                            :date => Date2.new(request[0]).date.to_s,
+                            :count => request[1]
+                        }
+                end
+            end
+
+            registrations
+        end
+    end
+end

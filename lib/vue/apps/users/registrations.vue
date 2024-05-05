@@ -22,77 +22,54 @@ import { ref, reactive, onMounted, watch, computed } from "vue"
 
 
 // · import Lesli components
-import chartLine from "Lesli/components/charts/line.vue"
+import { lesliChartBar } from "lesli-vue/components"
 
 
 // · import stores
-import { useUsersRegistrations } from "CloudAudit/stores/users/registrations"
+import { useUsers } from "LesliAudit/vue/stores/users"
 
 
 // · implement stores
-const storeUsersRegistrations = useUsersRegistrations()
+const storeUsers = useUsers()
 
 
 // · define variables
 var registrationSeries = ref([]);
-var registrationLabels = ref([]);
-var selectedPeriod = ref("month");
-var filterPeriod = ref("");
-var selectOptions = ref([]);
 
 
 // · initializing
 onMounted(() => {
-    storeUsersRegistrations.fetchIfEmpty()
-    storeUsersRegistrations.getOptions()
+    storeUsers.getRegistrations()
 })
 
 
 // · 
-watch(() => storeUsersRegistrations.periods, () => {
-    selectOptions.value = storeUsersRegistrations.periods
-})
+watch(() => storeUsers.registrations, (oldData, newData) => {
 
+    if (storeUsers.registrations.length == 0) {
+        return 
+    }
 
-// · 
-watch(() => storeUsersRegistrations.records, () => {
-    registrationLabels.value = storeUsersRegistrations.records.map(visit => visit.date)
     registrationSeries.value = [{
-        name: "Users",
-        data: storeUsersRegistrations.records.map(visit => visit.count)
+        data: storeUsers.registrations.map(registration => {
+            return {
+                x: registration.date, 
+                y: registration.count
+            }
+        })
     }]
 })
-
-
-// · 
-function updateDate(){
-    filterPeriod = selectedPeriod.value;
-    storeUsersRegistrations.fetch(filterPeriod)
-}
 
 </script>
 <template>
     <section class="application-component">
-        <lesli-header title="User registered by date" @reload="storeUsersRegistrations.reload()">
-        </lesli-header>
-
-        <div class="block">
-            <lesli-select
-                id = "selectPeriod"
-                @change="updateDate"
-                v-model = "selectedPeriod"
-                :options="selectOptions">
-            </lesli-select>
-        </div>
-        <div class="card">
-            <div class="card-content">
-                <chartLine
-                    :series="registrationSeries"
-                    :labels="registrationLabels"
-                    @marker-click="markerClick">
-                </chartLine>    
-            </div>
-        </div>
+        <lesli-card>
+            <lesli-chart-bar
+                title="Registrations by date"
+                :series="registrationSeries"
+                @marker-click="markerClick">
+            </lesli-chart-bar> 
+        </lesli-card>
     </section>
 </template>
 
