@@ -35,25 +35,33 @@ module LesliAudit
 
         def registrations
 
-            period = "month"
-
             #Get filters from the request     
             group = query[:group]
+            group = "month"
 
             #Get period only if the request have filters
             period = group unless group.blank?
 
+            group_by = "DATE_TRUNC('month', created_at)" if group == 'month'
+            group_by = "DATE_TRUNC('week', created_at)" if group == 'week'
+            group_by = "DATE_TRUNC('day', created_at)" if group == 'day'
+
+            # compatibility for SQLite
+            if ActiveRecord::Base.connection.adapter_name == "SQLite"
+                group_by = "strftime('%Y-%m', created_at)"
+            end
+
             registrations = []
 
             if ["day", "week", "month", "year"].include?(period)
+
                 registrations = current_user.account.users
-                    .group("DATE_TRUNC('#{period}', created_at)")
-                    .count
-                    .map do |request|
-                        { 
-                            :date => Date2.new(request[0]).date.to_s,
-                            :count => request[1]
-                        }
+                .group(group_by)
+                .count.map do |request|
+                    {
+                        :date => request[0],
+                        :count => request[1]
+                    }
                 end
             end
 

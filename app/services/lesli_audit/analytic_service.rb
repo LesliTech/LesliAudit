@@ -48,18 +48,23 @@ module LesliAudit
             # only the users of the account
             usrs = current_user.account.users
 
+            group_by = "DATE_TRUNC('month', created_at)" if group == 'month'
+            group_by = "DATE_TRUNC('week', created_at)" if group == 'week'
+            group_by = "DATE_TRUNC('day', created_at)" if group == 'day'
 
-            requests = current_user.account.audit.account_requests
-            requests = requests.group("DATE_TRUNC('month', created_at)") if group == 'month'
-            requests = requests.group("DATE_TRUNC('week', created_at)") if group == 'week'
-            requests = requests.group("DATE_TRUNC('day', created_at)") if group == 'day'
+            # compatibility for SQLite
+            if ActiveRecord::Base.connection.adapter_name == "SQLite"
+                group_by = "strftime('%Y-%m', created_at)"
+            end
+
+            requests = current_user.account.audit.account_requests.group(group_by)
 
             requests = apply_filters(requests, query)
             
             requests.limit(30).order("date DESC").select(
                 "count(id) resources", 
                 "sum(request_count) requests",
-                "DATE_TRUNC('day', created_at) date"
+                "#{group_by} date"
             )
         end
 
