@@ -30,8 +30,8 @@
 # // · 
 # =end
 
-# module LesliAudit
-#     class Analytics::VisitorService < Lesli::ApplicationLesliService
+module LesliAudit
+    class Analytics::VisitorService < Lesli::ApplicationLesliService
 
 #         LIMIT=5
 
@@ -168,5 +168,5 @@
 #             requests
 
 #         end
-#     end
-# end
+    end
+end
