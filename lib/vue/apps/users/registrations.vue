@@ -62,14 +62,12 @@ watch(() => storeUsers.registrations, (oldData, newData) => {
 
 </script>
 <template>
-    <section class="application-component">
-        <lesli-card>
-            <lesli-chart-bar
-                title="Registrations by date"
-                :series="registrationSeries"
-                @marker-click="markerClick">
-            </lesli-chart-bar> 
-        </lesli-card>
-    </section>
+    <lesli-application-component>
+        <lesli-chart-bar
+            title="Registrations by date"
+            :series="registrationSeries"
+            @marker-click="markerClick">
+        </lesli-chart-bar> 
+    </lesli-application-component>
 </template>
 
