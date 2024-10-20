@@ -54,7 +54,7 @@ module LesliAudit
 
             # compatibility for SQLite
             if ActiveRecord::Base.connection.adapter_name == "SQLite"
-                group_by = "strftime('%Y-%m', created_at)"
+                group_by = "strftime('%Y-%m-%d', created_at)"
             end
 
             requests = current_user.account.audit.account_requests.group(group_by)

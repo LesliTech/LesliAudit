@@ -39,5 +39,5 @@ if Rails.env.development?
         "LesliAudit", 
         "Version: #{LesliAudit::VERSION}", 
         "Build: #{LesliAudit::BUILD}")
-    load(LesliAudit::Engine.root.join("db", "seed", "#{ Rails.env.downcase }.rb"))
+    #load(LesliAudit::Engine.root.join("db", "seed", "#{ Rails.env.downcase }.rb"))
 end 
