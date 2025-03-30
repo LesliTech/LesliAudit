@@ -35,12 +35,7 @@ module LesliAudit
 
         # GET /requests
         def index
-            respond_to do |format|
-                format.html
-                format.json { 
-                    respond_with_pagination(LesliAudit::RequestService.new(current_user, query).index)
-                }
-            end
+            @requests = respond_as_pagination(LesliAudit::RequestService.new(current_user, query).index)
         end
     end
 end

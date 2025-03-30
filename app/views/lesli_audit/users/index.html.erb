@@ -1,1 +1,48 @@
-<router-view></router-view>
+<%= render(LesliView::Layout::Container.new("audit-users")) do %>
+    <%= render(LesliView::Components::Header.new("Users")) %>
+
+    <% 
+        labels = @users.map { |item| item[:date] }
+        data = @users.map { |item| item[:count] }
+    %>
+
+    <div class="columns">
+        <div class="column">
+            <div class="box">
+                <%= render(LesliView::Charts::Bar.new(
+                    title:"Registered users", 
+                    labels: labels,
+                    data: data
+                ))%>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <%= render(LesliView::Charts::Bar.new(
+                    title:"Registered users", 
+                    labels: labels,
+                    data: data
+                ))%>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <%= render(LesliView::Charts::Bar.new(
+                    title:"Registered users", 
+                    labels: labels,
+                    data: data
+                ))%>
+            </div>
+        </div>
+    </div>
+
+    <%#= render(LesliView::Charts::Bar.new(
+        title:"Registered users", 
+        labels: labels,
+        datasets: datasets
+    ))%>
+    
+    <!-- 
+    <table class="charts-css area multiple   show-heading     show-9-secondary-axes"><caption> Multiple Dataset Table </caption> <thead><tr><th scope="col"> Year </th> <th scope="col"> Progress 1 </th> <th scope="col"> Progress 2 </th> <th scope="col"> Progress 3 </th> <th scope="col"> Progress 4 </th> <th scope="col"> Progress 5 </th></tr></thead> <tbody><tr><th scope="row"> 2000 </th> <td style="--start: 0.4; --end: 0.2;"><span class="data"> 20 </span></td> <td style="--start: 0.3; --end: 0.5;"><span class="data"> 50 </span></td> <td style="--start: 0.2; --end: 1.0;"><span class="data"> 100 </span></td> <td style="--start: 0.1; --end: 0.7;"><span class="data"> 70 </span></td> <td style="--start: 0.0; --end: 0.4;"><span class="data"> 40 </span></td></tr> <tr><th scope="row"> 2010 </th> <td style="--start: 0.2; --end: 0.9;"><span class="data"> 90 </span></td> <td style="--start: 0.5; --end: 0.6;"><span class="data"> 60 </span></td> <td style="--start: 1.0; --end: 0.4;"><span class="data"> 40 </span></td> <td style="--start: 0.7; --end: 0.3;"><span class="data"> 30 </span></td> <td style="--start: 0.4; --end: 0.2;"><span class="data"> 20 </span></td></tr> <tr><th scope="row"> 2020 </th> <td style="--start: 0.9; --end: 0.2;"><span class="data"> 20 </span></td> <td style="--start: 0.6; --end: 0.4;"><span class="data"> 40 </span></td> <td style="--start: 0.4; --end: 0.6;"><span class="data"> 60 </span></td> <td style="--start: 0.3; --end: 0.1;"><span class="data"> 10 </span></td> <td style="--start: 0.2; --end: 0.4;"><span class="data"> 40 </span></td></tr></tbody></table>
+    -->
+<% end %>

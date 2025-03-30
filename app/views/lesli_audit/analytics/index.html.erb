@@ -1,1 +1,46 @@
-<router-view></router-view>
+<%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
+    <%= render(LesliView::Components::Header.new("Analytics")) %>
+
+    <div class="box mb-5">
+        <% data = @visitors.map { |visitor| 
+            {
+                label:visitor[:date], 
+                value:visitor[:requests]
+            }
+        } %>
+        <%= render(LesliView::Charts::Line.new(
+            title:"Visitors",
+            data: data,
+            height: 300
+        ))%>
+    </div>
+    <div class="columns">
+            <div class="column">
+            <%= render(LesliView::Elements::Table.new(
+                columns: [{
+                    label: "User",
+                    field: "email"
+                },{
+                    label:"Resources",
+                    field:"resources"
+                },{
+                    label:"Requests",
+                    field:"requests"
+                }],
+                records: @users
+            )) %>
+        </div>
+        <div class="column">
+            <%= render(LesliView::Elements::Table.new(
+                columns: [{
+                    label: "Controller",
+                    field: "request_controller"
+                },{
+                    label:"Requests",
+                    field:"requests"
+                }],
+                records: @controllers
+            )) %>
+        </div>
+    </div>
+<% end %>

@@ -8,25 +8,25 @@ module LesliAudit
         accepts_nested_attributes_for :components, allow_destroy: true
 
         def self.initialize_account(account)
-            self.create!(
-                account: account,
-                name: "Audit Default Dashboard",
-                default: true,
-                main: false,
-                components_attributes: [{
-                    name: "Total users",
-                    component_id: "audit-users",
-                    layout: 3,
-                    query_configuration: {},
-                    custom_configuration: {}
-                }, {
-                    name: "Roles",
-                    component_id: "audit-roles",
-                    layout: 3,
-                    query_configuration: {},
-                    custom_configuration: {}
-                }]
-            )
+            # self.create!(
+            #     account: account,
+            #     name: "Audit Default Dashboard",
+            #     default: true,
+            #     main: false,
+            #     components_attributes: [{
+            #         name: "Total users",
+            #         component_id: "audit-users",
+            #         layout: 3,
+            #         query_configuration: {},
+            #         custom_configuration: {}
+            #     }, {
+            #         name: "Roles",
+            #         component_id: "audit-roles",
+            #         layout: 3,
+            #         query_configuration: {},
+            #         custom_configuration: {}
+            #     }]
+            # )
         end
     end
 end

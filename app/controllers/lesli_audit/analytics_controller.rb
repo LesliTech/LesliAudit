@@ -3,24 +3,14 @@ module LesliAudit
 
         # GET /analytics
         def index
-        end
-
-        def visitors
-            respond_with_successful(AnalyticService.new(current_user, query).visitors)
-        end
-
-        def users 
-            respond_with_successful(AnalyticService.new(current_user, query).users)
+            @visitors = respond_as_successful(AnalyticService.new(current_user, query).visitors)
+            @controllers = respond_as_successful(AnalyticService.new(current_user, query).controllers)
+            @users = respond_as_successful(AnalyticService.new(current_user, query).users)
         end
 
         def devices 
             respond_with_successful(AnalyticService.new(current_user, query).devices)
         end
-
-        def controllers 
-            respond_with_successful(AnalyticService.new(current_user, query).controllers)
-        end
-
 
         private
 

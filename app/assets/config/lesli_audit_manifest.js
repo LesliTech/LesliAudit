@@ -35,4 +35,3 @@ Building a better future, one line of code at a time.
 //= link_tree ../images/lesli_audit .svg
 
 //= link lesli_audit/application.css
-//= link lesli_audit/application.js

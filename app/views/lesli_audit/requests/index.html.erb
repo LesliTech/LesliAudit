@@ -1,1 +1,23 @@
-<router-view></router-view>
+<%= render(LesliView::Layout::Container.new("audit-requests")) do %>
+    <%= render(LesliView::Components::Header.new("Requests")) %>
+    <%= render LesliView::Components::Toolbar.new() %>
+    <%= render(LesliView::Elements::Table.new(
+        columns: [{
+            label: "ID",
+            field: "id"
+        },{
+            label: "Controller",
+            field: "request_controller"
+        },{
+            label:"Action",
+            field:"request_action"
+        },{
+            label:"Count",
+            field:"request_count"
+        },{
+            label:"Date",
+            field:"created_at"
+        }],
+        records: @requests[:records]
+    )) %>
+<% end %>
