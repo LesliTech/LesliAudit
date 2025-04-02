@@ -61,7 +61,7 @@ module LesliAudit
 
             requests = apply_filters(requests, query)
             
-            requests.limit(30).order("date DESC").select(
+            requests.limit(30).order("date ASC").select(
                 "count(id) resources", 
                 "sum(request_count) requests",
                 "#{group_by} date"
