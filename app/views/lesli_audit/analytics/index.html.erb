@@ -1,16 +1,17 @@
+
 <%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
     <%= render(LesliView::Components::Header.new("Analytics")) %>
 
     <div class="box mb-5">
         <% data = @visitors.map { |visitor| 
             {
-                label:visitor[:date], 
-                value:visitor[:requests]
+                label:visitor["date"], 
+                value:visitor["requests"]
             }
         } %>
         <%= render(LesliView::Charts::Line.new(
             title:"Visitors",
-            data: data,
+            data: data.reverse,
             height: 300
         ))%>
     </div>
