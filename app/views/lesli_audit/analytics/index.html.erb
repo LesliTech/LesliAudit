@@ -1,20 +1,15 @@
 
+<% @visitors = @visitors.reverse %>
+
 <%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
     <%= render(LesliView::Components::Header.new("Analytics")) %>
 
-    <div class="box mb-5">
-        <% data = @visitors.map { |visitor| 
-            {
-                label:visitor["date"], 
-                value:visitor["requests"]
-            }
-        } %>
-        <%= render(LesliView::Charts::Line.new(
-            title:"Visitors",
-            data: data.reverse,
-            height: 300
-        ))%>
-    </div>
+    <%= render(LesliView::Charts::Line.new(
+        title:"Visitors",
+        labels: @visitors.map { |visitor|  visitor["date"] },
+        serie: @visitors.map { |visitor|  visitor["requests"] }
+    ))%>
+
     <div class="columns">
             <div class="column">
             <%= render(LesliView::Elements::Table.new(
