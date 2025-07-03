@@ -55,12 +55,6 @@ Gem::Specification.new do |spec|
         Dir["{app,config,db,lib}/**/*", "license", "Rakefile", "readme.md"]
     end
 
-    spec.add_dependency("lesli", "~> 5")
-
     # HTTP User Agent parser
     spec.add_dependency("useragent", "~> 0.16.10")
-
-    #spec.add_dependency "chartkick"
-
-
 end

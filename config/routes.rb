@@ -32,25 +32,7 @@ Building a better future, one line of code at a time.
 
 LesliAudit::Engine.routes.draw do
 
-    # Dashboard alias
-    root to: "dashboards#show"
-    
-
-    # Dashboard:
-    #   Total users
-    #   Total roles
-    #   Visits
-    #   Trends
-    resource :dashboard, only: [:show]
-    resources :dashboards do
-        collection do
-            post "list" => :index
-            get :options
-        end
-        scope module: :dashboard do
-            resources :components
-        end
-    end
+    Lesli::Routing.mount_dashboard_for(LesliAudit)
 
 
     # Users:

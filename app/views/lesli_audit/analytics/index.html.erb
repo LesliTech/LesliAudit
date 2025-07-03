@@ -9,7 +9,7 @@
         labels: @visitors.map { |visitor|  visitor["date"] },
         serie: @visitors.map { |visitor|  visitor["requests"] }
     ))%>
-
+    <br>
     <div class="columns">
             <div class="column">
             <%= render(LesliView::Elements::Table.new(
