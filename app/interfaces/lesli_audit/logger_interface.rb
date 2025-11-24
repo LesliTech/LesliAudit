@@ -62,7 +62,6 @@ module LesliAudit
 
         def log_account_requests
             return unless Lesli.config.security.dig(:enable_analytics)
-            return unless defined?(LesliAudit)
             return unless current_user
 
             # Try to save a unique record for this request configuration
@@ -86,7 +85,6 @@ module LesliAudit
         # this is disabled by default in the settings file
         def log_user_requests
             return unless Lesli.config.security.dig(:enable_analytics)
-            return unless defined?(LesliAudit)
             return unless current_user
             return unless session[:user_session_id]
             

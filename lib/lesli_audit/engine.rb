@@ -1,3 +1,4 @@
+require "useragent"
 module LesliAudit
     class Engine < ::Rails::Engine
         isolate_namespace LesliAudit

@@ -32,7 +32,7 @@ Building a better future, one line of code at a time.
 
 LesliAudit::Engine.routes.draw do
 
-    Lesli::Routing.mount_dashboard_for(LesliAudit)
+    Lesli::Router.mount_dashboard_for(LesliAudit)
 
 
     # Users:
