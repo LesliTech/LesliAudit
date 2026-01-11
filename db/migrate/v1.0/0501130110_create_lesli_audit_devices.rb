@@ -30,40 +30,16 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-LesliAudit::Engine.routes.draw do
-
-    Lesli::Router.mount_dashboard_for(LesliAudit)
-
-    # Users:
-    #   Registrations   users grouped by creation date
-    #   Working hours   first and last request of the day
-    #   Activities      changes on users information
-    #   Roles           total users by role
-    #   Logs            relevant actions of users
-    resources :users, only: [:index] do 
-        collection do 
-            get :registrations
-        end 
-    end
-
-    # Analytics:
-    #   Visitors by date
-    #   Trends by date
-    #   Most active users
-    #   Most active controllers
-    resources :analytics, only: [:index] do 
-        collection do 
-            get :trends
-            get :controllers
-            get :visitors
-            get :devices
-            get :users
+class CreateLesliAuditDevices < ActiveRecord::Migration[8.1]
+    def change
+        create_table :lesli_audit_devices do |t|
+            t.string  :agent_platform
+            t.string  :agent_browser
+            t.integer :agent_count
+            t.date    :created_at
         end
+
+        add_reference(:lesli_audit_devices, :account, foreign_key: { to_table: :lesli_audit_accounts })
+        add_index(:lesli_audit_devices, %i[agent_platform agent_browser created_at account_id], unique: true, name: "lesli_audit_devices_index")
     end
-
-    resources :logs, only: [:index, :show]
-
-    resources :requests, only: [:index]
-
-    resources :devices, only: [:index]
 end

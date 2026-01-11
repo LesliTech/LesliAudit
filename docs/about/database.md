@@ -17,37 +17,3 @@
 13.01. audit/devices
 
 ```
-
-
-<fieldset>
-
-```mermaid
-erDiagram
-    audit_accounts {
-        bigint   id
-        integer  status
-        datetime deleted_at
-        datetime timestamps 
-    }
-
-    audit_account_requests {
-        string    request_controller
-        string    request_action
-        string    request_method
-        integer   request_count
-        date      created_at
-    }
-
-    audit_user_requests {
-        integer   request_count
-        date      created_at
-        datetime  updated_at
-    }
-
-    audit_accounts ||--|| lesli_accounts : ""
-    audit_account_requests }|--|| audit_accounts : ""
-    audit_user_requests }|--|| audit_accounts : ""
-    audit_user_requests ||--|| lesli_users : ""
-
-```
-</fieldset>

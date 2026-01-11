@@ -111,6 +111,33 @@ module LesliAudit
             )
         end
 
+        def log_devices
+            return unless Lesli.config.security.dig(:enable_analytics)
+            return unless current_user
+            
+            user_agent = get_user_agent(false)
+            
+            # Try to save a unique record for this request configuration
+            current_user.account.audit.devices.upsert(
+                {
+                    :created_at => Date2.new.date.to_s,
+                    :agent_platform => user_agent&.dig(:platform) || "unknown",
+                    :agent_browser => user_agent&.dig(:browser) || "unknown",
+                    :agent_count => 1
+                },
+
+                # group of columns to consider a request as unique
+                unique_by: %i[agent_platform agent_browser created_at account_id],
+
+                # if request id is not unique
+                #   - increase the counter for this configuration
+                #   - update the datetime of the last request
+                on_duplicate: Arel.sql(
+                    'agent_count = lesli_audit_devices.agent_count + 1'
+                )
+            )
+        end
+
         # Track specific account activity
         # this is disabled by default in the settings file
         def log_account_activity(system_module, system_process, title = nil, payload = nil, description = nil)
