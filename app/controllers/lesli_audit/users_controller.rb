@@ -34,7 +34,7 @@ module LesliAudit
 
         # GET /users
         def index
-            @users = respond_as_successful(UserService.new(current_user, query).registrations)
+            @users = UserService.new(current_user, query).registrations
         end
     end
 end
