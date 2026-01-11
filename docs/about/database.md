@@ -5,15 +5,17 @@
 
 <h3 align="center">Lesli Audit database</h3>
 
-### 08.03. Audit
+### 05.01. Audit
 ```plaintext
 00.01. audit/account
 
 05.01. audit/dashboards 
-05.02. audit/dasboard/components 
 
-10.00. audit/account_requests
-11.00. audit/user_requests
+10.01. audit/activities
+11.01. audit/account_requests
+12.01. audit/user_requests
+13.01. audit/devices
+
 ```
 
 
