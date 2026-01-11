@@ -11,7 +11,7 @@
 
 05.01. audit/dashboards 
 
-10.01. audit/activities
+10.01. audit/logs
 11.01. audit/account_requests
 12.01. audit/user_requests
 13.01. audit/devices

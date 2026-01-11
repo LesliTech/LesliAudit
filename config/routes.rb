@@ -62,12 +62,7 @@ LesliAudit::Engine.routes.draw do
         end
     end
 
-
-    # Account:
-    #   Activities      changes on account information
-    #   Logs            relevant actions of the account
-    resources :account, only: []
-
+    resources :logs, only: [:index, :show]
 
     # Requests:         Raw request data
     resources :requests, only: [:index]

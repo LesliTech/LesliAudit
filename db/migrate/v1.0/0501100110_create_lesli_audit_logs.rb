@@ -1,3 +1,5 @@
+=begin
+
 Lesli
 
 Copyright (c) 2026, Lesli Technologies, S. A.
@@ -26,3 +28,29 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
+=end
+
+class CreateLesliAuditLogs < ActiveRecord::Migration[8.1]
+    def change
+        create_table :lesli_audit_logs do |t|
+            t.string :engine
+            t.string :action
+
+            # Polymorphic subject
+            t.string :subject_type
+            t.bigint :subject_id
+
+            t.string :description
+            t.string :session_id
+
+            t.timestamps
+        end
+
+        add_reference(:lesli_audit_logs, :user, foreign_key: { to_table: :lesli_users },  null: true)
+        add_reference(:lesli_audit_logs, :account, foreign_key: { to_table: :lesli_accounts })
+
+        add_index(:lesli_audit_logs, [:subject_type, :subject_id])
+        add_index(:lesli_audit_logs, :engine)
+        add_index(:lesli_audit_logs, :action)
+    end
+end
