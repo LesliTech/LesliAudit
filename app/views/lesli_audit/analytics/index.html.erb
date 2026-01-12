@@ -11,7 +11,7 @@
     ))%>
     <br>
     <div class="columns">
-            <div class="column">
+        <div class="column">
             <%= render(LesliView::Elements::Table.new(
                 columns: [{
                     label: "User",
@@ -37,6 +37,26 @@
                 }],
                 records: @controllers
             )) %>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column">
+            <%= render(LesliView::Charts::Bar.new(
+                title: "Platforms",
+                labels: @devices[:platforms][:labels],
+                series: @devices[:platforms][:series]
+            ))%>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column">
+            <%= render(LesliView::Charts::Bar.new(
+                title: "Browsers",
+                labels: @devices[:browsers][:labels],
+                series: @devices[:browsers][:series]
+            ))%>
         </div>
     </div>
 <% end %>

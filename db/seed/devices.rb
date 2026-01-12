@@ -31,11 +31,38 @@ Building a better future, one line of code at a time.
 =end
 
 
-L2.msg("LesliAudit", "Version: #{LesliAudit::VERSION}", "Build: #{LesliAudit::BUILD}")
 
+# Get the current date
+end_date = Date.today
 
-# · load specific environment seeds
-if Rails.env.development? || Lesli.config.demo 
-    load LesliAudit::Engine.root.join("db", "seed", "requests.rb")
-    load LesliAudit::Engine.root.join("db", "seed", "devices.rb")
+# Calculate the date 10 days ago
+start_date = 10.days.ago.to_date
+
+account = Lesli::Account.first
+
+current_user = Lesli::User.first
+
+# controllers to seed
+[
+    "Macintosh", 
+    "Windows"
+].each do |platform|
+
+    [
+        "Firefox", 
+        "Chrome",
+        "Safari"
+    ].each do |browser|
+        # Iterate through the dates
+        (start_date..end_date).each do |date|
+
+            current_user.account.audit.devices.create_with(
+                :agent_count => rand(40..80),
+            ).find_or_create_by(
+                :agent_platform => platform,
+                :agent_browser => browser,
+                :created_at => date,
+            )
+        end
+    end
 end

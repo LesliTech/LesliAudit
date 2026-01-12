@@ -92,6 +92,47 @@ module LesliAudit
             )
         end
 
+        def devices 
+
+            platforms = current_user.account.audit.devices
+            .group(:agent_platform, :created_at)
+            .select(
+                'created_at as label',
+                'agent_platform as name',
+                'sum(agent_count) as data'
+            )
+
+            browsers = current_user.account.audit.devices
+            .group(:agent_browser, :created_at)
+            .select(
+                'created_at as label',
+                'agent_browser as name',
+                'sum(agent_count) as data'
+            )
+
+            {
+                :platforms => data_from_database_to_chart(platforms),
+                :browsers => data_from_database_to_chart(browsers)
+            }
+        end 
+
+        def data_from_database_to_chart data
+            labels = []
+            series = data
+            .group_by { |r| r[:name] }
+            .map do |name, records|
+                {
+                    :name => name,
+                    :data => records.map { |record| { x: record[:label], y: record[:data]} }
+                }
+            end
+
+            {
+                :labels => labels,
+                :series => series
+            }
+        end
+
         private 
 
         def apply_filters requests, params

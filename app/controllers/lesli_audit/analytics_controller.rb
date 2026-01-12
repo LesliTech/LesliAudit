@@ -6,6 +6,7 @@ module LesliAudit
             @visitors = AnalyticService.new(current_user, query).visitors
             @controllers = AnalyticService.new(current_user, query).controllers
             @users = AnalyticService.new(current_user, query).users
+            @devices = AnalyticService.new(current_user, query).devices
         end
 
         def devices 
