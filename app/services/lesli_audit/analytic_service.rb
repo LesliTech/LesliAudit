@@ -41,31 +41,32 @@ module LesliAudit
         # @description
         # @example
         def visitors 
+            Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 1.hour) do 
+                group = 'day' 
+                #group = params[:bygroup] if ['month','week','day'].include?(params[:bygroup])
 
-            group = 'day' 
-            #group = params[:bygroup] if ['month','week','day'].include?(params[:bygroup])
+                # only the users of the account
+                usrs = current_user.account.users
 
-            # only the users of the account
-            usrs = current_user.account.users
+                group_by = "DATE_TRUNC('month', created_at)" if group == 'month'
+                group_by = "DATE_TRUNC('week', created_at)" if group == 'week'
+                group_by = "DATE_TRUNC('day', created_at)" if group == 'day'
 
-            group_by = "DATE_TRUNC('month', created_at)" if group == 'month'
-            group_by = "DATE_TRUNC('week', created_at)" if group == 'week'
-            group_by = "DATE_TRUNC('day', created_at)" if group == 'day'
+                # compatibility for SQLite
+                if ActiveRecord::Base.connection.adapter_name == "SQLite"
+                    group_by = "strftime('%Y-%m-%d', created_at)"
+                end
 
-            # compatibility for SQLite
-            if ActiveRecord::Base.connection.adapter_name == "SQLite"
-                group_by = "strftime('%Y-%m-%d', created_at)"
+                requests = current_user.account.audit.account_requests.group(group_by)
+
+                requests = apply_filters(requests, query)
+                
+                requests.limit(10).order("date desc").select(
+                    "count(id) resources", 
+                    "sum(request_count) requests",
+                    "#{group_by} date"
+                ).as_json
             end
-
-            requests = current_user.account.audit.account_requests.group(group_by)
-
-            requests = apply_filters(requests, query)
-            
-            requests.limit(10).order("date desc").select(
-                "count(id) resources", 
-                "sum(request_count) requests",
-                "#{group_by} date"
-            ).as_json
         end 
 
         def requests
@@ -81,28 +82,31 @@ module LesliAudit
         end
 
         def devices 
+            Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
+                platforms = current_user.account.audit.account_devices
+                .group(:agent_platform, :created_at)
+                .select(
+                    'created_at as label',
+                    'agent_platform as name',
+                    'sum(agent_count) as data'
+                )
 
-            platforms = current_user.account.audit.account_devices
-            .group(:agent_platform, :created_at)
-            .select(
-                'created_at as label',
-                'agent_platform as name',
-                'sum(agent_count) as data'
-            )
-
-            data_from_database_to_chart(platforms)
+                data_from_database_to_chart(platforms)
+            end
         end 
 
         def browsers
-            browsers = current_user.account.audit.account_devices
-            .group(:agent_browser, :created_at)
-            .select(
-                'created_at as label',
-                'agent_browser as name',
-                'sum(agent_count) as data'
-            )
+            Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
+                browsers = current_user.account.audit.account_devices
+                .group(:agent_browser, :created_at)
+                .select(
+                    'created_at as label',
+                    'agent_browser as name',
+                    'sum(agent_count) as data'
+                )
 
-            data_from_database_to_chart(browsers)
+                data_from_database_to_chart(browsers)
+            end
         end
 
         def data_from_database_to_chart data
