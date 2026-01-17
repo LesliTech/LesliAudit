@@ -31,6 +31,7 @@ Building a better future, one line of code at a time.
 =end
 
 LesliAudit::Engine.routes.draw do
+  resources :logs
 
     Lesli::Router.mount_dashboard_for(LesliAudit)
 

@@ -6,9 +6,39 @@
         <div class="column">
             <%= render(LesliView::Charts::Bar.new(
                 title:"Registered users", 
-                labels: @users.map { |item| item[:date] },
-                serie: @users.map { |item| item[:count] }
+                labels: @registrations.map { |item| item[:date] },
+                serie: @registrations.map { |item| item[:count] }
             ))%>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column">
+            <%= render(LesliView::Elements::Table.new(
+                columns: [{
+                    label: "id",
+                    field: "user_id"
+                },{
+                    label: "User",
+                    field: "user_email"
+                },{
+                    label:"First activity",
+                    field:"first_activity"
+                },{
+                    label:"Last activity",
+                    field:"last_activity"
+                },{
+                    label:"Resources",
+                    field:"resources"
+                },{
+                    label:"Requests",
+                    field:"requests"
+                },{
+                    label:"Date",
+                    field:"date"
+                }],
+                records: @working_hours
+            )) %>
         </div>
     </div>
 <% end %>

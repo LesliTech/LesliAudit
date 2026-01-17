@@ -33,17 +33,10 @@ Building a better future, one line of code at a time.
 module LesliAudit
     class LogService < Lesli::ApplicationLesliService
 
-        def create payload
-            current_user.account.audit.logs.create!({
-                action: payload[:action], 
-                engine: payload[:subject].class.name.deconstantize, 
-                description:payload[:description],
-                subject_type: payload[:subject].class.name, 
-                subject_id: payload[:subject].id, 
-                session_id: payload[:session_id], 
-                account: current_user.account,
-                user: current_user
-            })
+        def index
+            current_user.logs.all
+            .page(query[:pagination][:page])
+            .per(query[:pagination][:perPage])
         end
     end
 end

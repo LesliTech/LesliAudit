@@ -1,60 +1,25 @@
 module LesliAudit
-  class LogsController < ApplicationController
-    before_action :set_activity, only: %i[ show edit update destroy ]
+    class LogsController < ApplicationController
+        before_action :set_log, only: %i[ show ]
 
-    # GET /activities
-    def index
-      @activities = Activity.all
+        # GET /logs
+        def index
+            @logs = respond_as_pagination(LesliAudit::LogService.new(current_user, query).index)
+        end
+
+        # GET /logs/1
+        def show
+        end
+
+        private
+
+        def set_log
+            @log = Log.find(params.expect(:id))
+        end
+
+        # Only allow a list of trusted parameters through.
+        def log_params
+            params.fetch(:log, {})
+        end
     end
-
-    # GET /activities/1
-    def show
-    end
-
-    # GET /activities/new
-    def new
-      @activity = Activity.new
-    end
-
-    # GET /activities/1/edit
-    def edit
-    end
-
-    # POST /activities
-    def create
-      @activity = Activity.new(activity_params)
-
-      if @activity.save
-        redirect_to @activity, notice: "Activity was successfully created."
-      else
-        render :new, status: :unprocessable_content
-      end
-    end
-
-    # PATCH/PUT /activities/1
-    def update
-      if @activity.update(activity_params)
-        redirect_to @activity, notice: "Activity was successfully updated.", status: :see_other
-      else
-        render :edit, status: :unprocessable_content
-      end
-    end
-
-    # DELETE /activities/1
-    def destroy
-      @activity.destroy!
-      redirect_to activities_path, notice: "Activity was successfully destroyed.", status: :see_other
-    end
-
-    private
-      # Use callbacks to share common setup or constraints between actions.
-      def set_activity
-        @activity = Activity.find(params.expect(:id))
-      end
-
-      # Only allow a list of trusted parameters through.
-      def activity_params
-        params.fetch(:activity, {})
-      end
-  end
 end

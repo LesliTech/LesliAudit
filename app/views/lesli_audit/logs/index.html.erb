@@ -1,16 +1,23 @@
-<p style="color: green"><%= notice %></p>
-
-<% content_for :title, "Activities" %>
-
-<h1>Activities</h1>
-
-<div id="activities">
-  <% @activities.each do |activity| %>
-    <%= render activity %>
-    <p>
-      <%= link_to "Show this activity", activity %>
-    </p>
-  <% end %>
-</div>
-
-<%= link_to "New activity", new_activity_path %>
+<%= render(LesliView::Layout::Container.new("audit-logs")) do %>
+    <%= render(LesliView::Components::Header.new("User logs")) %>
+    <%= render LesliView::Components::Toolbar.new() %>
+    <%= render(LesliView::Elements::Table.new(
+        columns: [{
+            label: "Module",
+            field: "engine"
+        },{
+            label:"Action",
+            field:"action"
+        },{
+            label:"Operation",
+            field:"operation"
+        },{
+            label:"Description",
+            field:"description"
+        },{
+            label:"Date",
+            field:"created_at"
+        }],
+        records: @logs[:records]
+    )) %>
+<% end %>

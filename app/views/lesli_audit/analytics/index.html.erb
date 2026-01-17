@@ -14,28 +14,13 @@
         <div class="column">
             <%= render(LesliView::Elements::Table.new(
                 columns: [{
-                    label: "User",
-                    field: "email"
-                },{
-                    label:"Resources",
-                    field:"resources"
-                },{
-                    label:"Requests",
-                    field:"requests"
-                }],
-                records: @users
-            )) %>
-        </div>
-        <div class="column">
-            <%= render(LesliView::Elements::Table.new(
-                columns: [{
                     label: "Controller",
                     field: "request_controller"
                 },{
                     label:"Requests",
                     field:"requests"
                 }],
-                records: @controllers
+                records: @requests
             )) %>
         </div>
     </div>
@@ -44,8 +29,8 @@
         <div class="column">
             <%= render(LesliView::Charts::Bar.new(
                 title: "Platforms",
-                labels: @devices[:platforms][:labels],
-                series: @devices[:platforms][:series]
+                labels: @platforms[:labels],
+                series: @platforms[:series]
             ))%>
         </div>
     </div>
@@ -54,8 +39,8 @@
         <div class="column">
             <%= render(LesliView::Charts::Bar.new(
                 title: "Browsers",
-                labels: @devices[:browsers][:labels],
-                series: @devices[:browsers][:series]
+                labels: @browsers[:labels],
+                series: @browsers[:series]
             ))%>
         </div>
     </div>

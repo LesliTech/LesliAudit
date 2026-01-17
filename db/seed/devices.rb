@@ -56,7 +56,7 @@ current_user = Lesli::User.first
         # Iterate through the dates
         (start_date..end_date).each do |date|
 
-            current_user.account.audit.devices.create_with(
+            current_user.account.audit.account_devices.create_with(
                 :agent_count => rand(40..80),
             ).find_or_create_by(
                 :agent_platform => platform,

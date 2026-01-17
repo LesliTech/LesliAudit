@@ -36,11 +36,12 @@ class CreateLesliAuditUserRequests < ActiveRecord::Migration[6.0]
             t.string  :request_controller
             t.string  :request_action
             t.integer :request_count
-            t.date    :created_at
+            t.date    :date, index: true
+            t.timestamps
         end
         add_reference(:lesli_audit_user_requests, :user, foreign_key: { to_table: :lesli_users })
         add_reference(:lesli_audit_user_requests, :session, foreign_key: { to_table: :lesli_user_sessions })
         add_reference(:lesli_audit_user_requests, :account, foreign_key: { to_table: :lesli_audit_accounts })
-        add_index(:lesli_audit_user_requests, %i[request_controller request_action created_at user_id session_id], unique: true, name: "lesli_audit_user_requests_index")
+        add_index(:lesli_audit_user_requests, %i[request_controller request_action date user_id session_id], unique: true, name: "lesli_audit_user_requests_index")
     end
 end

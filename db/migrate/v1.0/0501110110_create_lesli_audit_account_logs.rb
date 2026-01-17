@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS development platform.
+Lesli · Ruby on Rails SaaS Development Framework.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -30,7 +30,24 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-module LesliAudit
-    class DeviceService < Lesli::ApplicationLesliService
+class CreateLesliAuditAccountLogs < ActiveRecord::Migration[6.0]
+    def change
+        create_table :lesli_audit_account_logs do |t|
+            t.string :engine
+            t.string :action
+
+            # Polymorphic subject
+            t.string :subject_type
+            t.bigint :subject_id
+
+            t.string :operation
+            t.string :description
+            t.string :session_id
+
+            t.timestamps
+        end
+
+        add_reference(:lesli_audit_account_logs, :user, foreign_key: { to_table: :lesli_users }, null: true) 
+        add_reference(:lesli_audit_account_logs, :account, foreign_key: { to_table: :lesli_audit_accounts }, null: true)
     end
 end

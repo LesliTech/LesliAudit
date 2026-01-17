@@ -66,21 +66,9 @@ module LesliAudit
                 "sum(request_count) requests",
                 "#{group_by} date"
             ).as_json
-        end
+        end 
 
-        def users 
-
-            current_user.account.audit.user_requests
-            .joins(:user)
-            .group(:email)
-            .limit(LIMIT).order("requests DESC").select(
-                :email,
-                "count(lesli_audit_user_requests.id) resources", 
-                "sum(lesli_audit_user_requests.request_count) requests"
-            )
-        end
-
-        def controllers 
+        def requests
             requests = current_user.account.audit.account_requests
             .group("request_controller").limit(30)
 
@@ -94,7 +82,7 @@ module LesliAudit
 
         def devices 
 
-            platforms = current_user.account.audit.devices
+            platforms = current_user.account.audit.account_devices
             .group(:agent_platform, :created_at)
             .select(
                 'created_at as label',
@@ -102,7 +90,11 @@ module LesliAudit
                 'sum(agent_count) as data'
             )
 
-            browsers = current_user.account.audit.devices
+            data_from_database_to_chart(platforms)
+        end 
+
+        def browsers
+            browsers = current_user.account.audit.account_devices
             .group(:agent_browser, :created_at)
             .select(
                 'created_at as label',
@@ -110,11 +102,8 @@ module LesliAudit
                 'sum(agent_count) as data'
             )
 
-            {
-                :platforms => data_from_database_to_chart(platforms),
-                :browsers => data_from_database_to_chart(browsers)
-            }
-        end 
+            data_from_database_to_chart(browsers)
+        end
 
         def data_from_database_to_chart data
             labels = []

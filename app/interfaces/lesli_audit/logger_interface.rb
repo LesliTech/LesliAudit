@@ -64,6 +64,11 @@ module LesliAudit
             return unless Lesli.config.security.dig(:enable_analytics)
             return unless current_user
 
+            current_user.account.log(
+                :account_creation,
+                'test'
+             )
+
             # Try to save a unique record for this request configuration
             current_user.account.audit.account_requests.upsert(
                 {
@@ -87,7 +92,19 @@ module LesliAudit
             return unless Lesli.config.security.dig(:enable_analytics)
             return unless current_user
             return unless session[:user_session_id]
+
+            # current_user.account.audit.user_requests.create({
+            #     request_controller: controller_path,
+            #     request_action: action_name,
+            #     session_id: session[:user_session_id],
+            #     user_id: current_user.id,
+            #     request_count: 1,
+            #     #created_at: Date2.new.date.to_s
+            # })
             
+            # Determine the correct SQL "now" keyword based on the database connection
+            now_func = ActiveRecord::Base.connection.adapter_name =~ /sqlite/i ? 'CURRENT_TIMESTAMP' : 'NOW()'
+
             # Try to save a unique record for this request configuration
             current_user.account.audit.user_requests.upsert(
                 {
@@ -95,18 +112,18 @@ module LesliAudit
                     request_action: action_name,
                     session_id: session[:user_session_id],
                     user_id: current_user.id,
-                    request_count: 1,
-                    created_at: Date2.new.date.to_s
+                    date: Date2.new.date.to_s,
+                    request_count: 1
                 },
                         
                 # group of columns to consider a request as unique
-                unique_by: %i[request_controller request_action created_at user_id session_id],
+                unique_by: %i[request_controller request_action date user_id session_id],
 
                 # if request id is not unique
                 #   - increase the counter for this configuration
                 #   - update the datetime of the last request
                 on_duplicate: Arel.sql(
-                    'request_count = lesli_audit_user_requests.request_count + 1'
+                    "request_count = lesli_audit_user_requests.request_count + 1,updated_at = #{LesliDate::Compatibility.db_now}"
                 )
             )
         end
@@ -118,7 +135,7 @@ module LesliAudit
             user_agent = get_user_agent(false)
             
             # Try to save a unique record for this request configuration
-            current_user.account.audit.devices.upsert(
+            current_user.account.audit.account_devices.upsert(
                 {
                     :created_at => Date2.new.date.to_s,
                     :agent_platform => user_agent&.dig(:platform) || "unknown",
@@ -133,7 +150,7 @@ module LesliAudit
                 #   - increase the counter for this configuration
                 #   - update the datetime of the last request
                 on_duplicate: Arel.sql(
-                    'agent_count = lesli_audit_devices.agent_count + 1'
+                    'agent_count = lesli_audit_account_devices.agent_count + 1'
                 )
             )
         end

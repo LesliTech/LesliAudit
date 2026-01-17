@@ -6,9 +6,7 @@ module LesliAudit
         has_many :logs
         has_many :user_requests
         has_many :account_requests
-        has_many :devices
-        
-        
+        has_many :account_devices
 
         after_create :initialize_account
 

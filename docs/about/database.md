@@ -8,12 +8,17 @@
 ### 05.01. Audit
 ```plaintext
 00.01. audit/account
-
 05.01. audit/dashboards 
 
 10.01. audit/logs
-11.01. audit/account_requests
-12.01. audit/user_requests
-13.01. audit/devices
 
+11.01. audit/account_logs
+11.02. audit/account_devices
+11.03. audit/account_requests
+
+
+12.01. audit/user_logs
+12.02. audit/user_requests
+
+13.01. audit/role_versions
 ```

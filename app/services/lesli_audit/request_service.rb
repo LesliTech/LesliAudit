@@ -41,9 +41,8 @@ module LesliAudit
         def index 
 
 
-            requests = Account::Request.all
+            requests = current_user.requests
             .order(created_at: :desc)
-            .order(request_count: :desc)
             .page(query[:pagination][:page])
             .per(query[:pagination][:perPage])
 

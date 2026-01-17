@@ -4,13 +4,9 @@ module LesliAudit
         # GET /analytics
         def index
             @visitors = AnalyticService.new(current_user, query).visitors
-            @controllers = AnalyticService.new(current_user, query).controllers
-            @users = AnalyticService.new(current_user, query).users
-            @devices = AnalyticService.new(current_user, query).devices
-        end
-
-        def devices 
-            AnalyticService.new(current_user, query).devices
+            @requests = AnalyticService.new(current_user, query).requests
+            @browsers = AnalyticService.new(current_user, query).browsers
+            @platforms = AnalyticService.new(current_user, query).devices
         end
 
         private
