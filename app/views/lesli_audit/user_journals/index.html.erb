@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "User journals" %>
+
+<h1>User journals</h1>
+
+<div id="user_journals">
+  <% @user_journals.each do |user_journal| %>
+    <%= render user_journal %>
+    <p>
+      <%= link_to "Show this user journal", user_journal %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New user journal", new_user_journal_path %>

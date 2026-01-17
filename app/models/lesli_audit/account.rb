@@ -3,10 +3,13 @@ module LesliAudit
         belongs_to :account, class_name: "Lesli::Account"
         has_many :dashboards
 
-        has_many :logs
-        has_many :user_requests
-        has_many :account_requests
+        has_many :account_logs
         has_many :account_devices
+        has_many :account_requests
+
+        has_many :user_logs
+        has_many :user_journals
+        has_many :user_requests
 
         after_create :initialize_account
 

@@ -93,14 +93,13 @@ module LesliAudit
             return unless current_user
             return unless session[:user_session_id]
 
-            # current_user.account.audit.user_requests.create({
-            #     request_controller: controller_path,
-            #     request_action: action_name,
-            #     session_id: session[:user_session_id],
-            #     user_id: current_user.id,
-            #     request_count: 1,
-            #     #created_at: Date2.new.date.to_s
-            # })
+            current_user.account.audit.user_journals.create({
+                request_controller: controller_path,
+                request_action: action_name,
+                session_id: session[:user_session_id],
+                user_id: current_user.id,
+                date: Date2.new.date.to_s
+            })
             
             # Determine the correct SQL "now" keyword based on the database connection
             now_func = ActiveRecord::Base.connection.adapter_name =~ /sqlite/i ? 'CURRENT_TIMESTAMP' : 'NOW()'

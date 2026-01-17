@@ -2,7 +2,7 @@
 
 Lesli
 
-Copyright (c) 2025, Lesli Technologies, S. A.
+Copyright (c) 2023, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails Development Platform.
 
-Made with ♥ by LesliTech
+Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -27,31 +27,19 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 
-LesliAudit::Engine.routes.draw do
-
-    Lesli::Router.mount_dashboard_for(LesliAudit)
-
-    # Users:
-    #   Registrations   users grouped by creation date
-    #   Working hours   first and last request of the day
-    #   Activities      changes on users information
-    #   Roles           total users by role
-    #   Logs            relevant actions of users
-    resources :users, only: [:index] 
-
-    # Analytics:
-    #   Visitors by date
-    #   Trends by date
-    #   Most active users
-    #   Most active controllers
-    resources :analytics, only: [:index] 
-
-    resources :logs, only: [:index, :show]
-
-    resources :requests, only: [:index]
-
-    resources :devices, only: [:index]
+class CreateLesliAuditUserJournals < ActiveRecord::Migration[6.0]
+    def change
+        create_table :lesli_audit_user_journals do |t|
+            t.string  :request_controller
+            t.string  :request_action
+            t.date    :date, index: true
+            t.timestamps
+        end
+        add_reference(:lesli_audit_user_journals, :user, foreign_key: { to_table: :lesli_users })
+        add_reference(:lesli_audit_user_journals, :session, foreign_key: { to_table: :lesli_user_sessions })
+        add_reference(:lesli_audit_user_journals, :account, foreign_key: { to_table: :lesli_audit_accounts })
+    end
 end

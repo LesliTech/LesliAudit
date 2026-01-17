@@ -10,15 +10,14 @@
 00.01. audit/account
 05.01. audit/dashboards 
 
-10.01. audit/logs
-
-11.01. audit/account_logs
-11.02. audit/account_devices
-11.03. audit/account_requests
+10.01. audit/account_logs       # Audit
+10.02. audit/account_devices    # Insights
+10.03. audit/account_requests   # Analytics
 
 
-12.01. audit/user_logs
-12.02. audit/user_requests
+11.01. audit/user_logs          # Audit
+11.02. audit/user_journal       # Tracking
+11.03. audit/user_requests      # Analytics
 
-13.01. audit/role_versions
+12.01. audit/role_versions
 ```
