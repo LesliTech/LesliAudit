@@ -61,13 +61,8 @@ module LesliAudit
         end 
 
         def log_account_requests
-            return unless Lesli.config.security.dig(:enable_analytics)
+            return unless Lesli.config.audit.dig(:enable_analytics)
             return unless current_user
-
-            current_user.account.log(
-                :account_creation,
-                'test'
-             )
 
             # Try to save a unique record for this request configuration
             current_user.account.audit.account_requests.upsert(
@@ -89,7 +84,6 @@ module LesliAudit
         # Track all user activity
         # this is disabled by default in the settings file
         def log_user_requests
-            return unless Lesli.config.security.dig(:enable_analytics)
             return unless current_user
             return unless session[:user_session_id]
 
@@ -99,7 +93,7 @@ module LesliAudit
                 session_id: session[:user_session_id],
                 user_id: current_user.id,
                 date: Date2.new.date.to_s
-            })
+            }) if Lesli.config.audit.dig(:enable_journals)
             
             # Determine the correct SQL "now" keyword based on the database connection
             now_func = ActiveRecord::Base.connection.adapter_name =~ /sqlite/i ? 'CURRENT_TIMESTAMP' : 'NOW()'
@@ -124,11 +118,11 @@ module LesliAudit
                 on_duplicate: Arel.sql(
                     "request_count = lesli_audit_user_requests.request_count + 1,updated_at = #{LesliDate::Compatibility.db_now}"
                 )
-            )
+            ) if Lesli.config.audit.dig(:enable_analytics)
         end
 
         def log_devices
-            return unless Lesli.config.security.dig(:enable_analytics)
+            return unless Lesli.config.audit.dig(:enable_analytics)
             return unless current_user
             
             user_agent = get_user_agent(false)
