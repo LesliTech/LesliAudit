@@ -32,7 +32,5 @@ Building a better future, one line of code at a time.
 
 module LesliAudit
     class DashboardsController < Lesli::Shared::DashboardsController
-        def show 
-        end
     end
 end
