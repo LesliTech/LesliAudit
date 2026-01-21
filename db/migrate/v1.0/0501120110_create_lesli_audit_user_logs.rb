@@ -42,7 +42,7 @@ class CreateLesliAuditUserLogs < ActiveRecord::Migration[6.0]
 
             t.string :operation
             t.string :description
-            t.string :session_id
+            t.bigint :session_id
 
             t.timestamps
         end

@@ -36,10 +36,10 @@ class CreateLesliAuditUserJournals < ActiveRecord::Migration[6.0]
             t.string  :request_controller
             t.string  :request_action
             t.date    :date, index: true
+            t.bigint  :session_id
             t.timestamps
         end
         add_reference(:lesli_audit_user_journals, :user, foreign_key: { to_table: :lesli_users })
-        add_reference(:lesli_audit_user_journals, :session, foreign_key: { to_table: :lesli_user_sessions })
         add_reference(:lesli_audit_user_journals, :account, foreign_key: { to_table: :lesli_audit_accounts })
     end
 end
