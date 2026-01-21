@@ -72,13 +72,16 @@ module LesliAudit
                 "sum(lesli_audit_user_requests.request_count) requests"
             )
            
-            user_requests = user_requests.group(:user_id, group_by)
+            user_requests = user_requests
+                .group(:user_id, group_by)
 
             user_requests.map do |request|
                 request[:first_activity] = Date2.new(request[:first_activity]).time
                 request[:last_activity] = Date2.new(request[:last_activity]).time
                 request
-            end 
+            end
+            
+            user_requests.reverse
         end
 
         def registrations

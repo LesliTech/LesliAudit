@@ -35,6 +35,7 @@ module LesliAudit
 
         def index
             current_user.logs.all
+            .order(created_at: :desc)
             .page(query[:pagination][:page])
             .per(query[:pagination][:perPage])
         end
