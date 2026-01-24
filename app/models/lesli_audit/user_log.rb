@@ -6,7 +6,8 @@ module LesliAudit
         
         enum :operation, { 
             user_creation: 'user_creation',
-            session_creation: 'session_creation'
+            session_creation: 'session_creation',
+            authorize_request: 'authorize_request'
         }
     end
 end
