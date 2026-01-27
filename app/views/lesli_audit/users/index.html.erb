@@ -6,8 +6,7 @@
         <div class="column">
             <%= render(LesliView::Charts::Bar.new(
                 title:"Registered users", 
-                labels: @registrations.map { |item| item[:date] },
-                serie: @registrations.map { |item| item[:count] }
+                database_to_dataset: @registrations.as_json
             ))%>
         </div>
     </div>

@@ -6,8 +6,7 @@
 
     <%= render(LesliView::Charts::Line.new(
         title:"Visitors",
-        labels: @visitors.map { |visitor|  visitor["date"] },
-        serie: @visitors.map { |visitor|  visitor["requests"] }
+        database_to_dataset: @visitors
     ))%>
     <br>
     <div class="columns">
@@ -29,8 +28,7 @@
         <div class="column">
             <%= render(LesliView::Charts::Bar.new(
                 title: "Platforms",
-                labels: @platforms[:labels],
-                series: @platforms[:series]
+                database_to_datasets: @platforms
             ))%>
         </div>
     </div>
@@ -39,8 +37,7 @@
         <div class="column">
             <%= render(LesliView::Charts::Bar.new(
                 title: "Browsers",
-                labels: @browsers[:labels],
-                series: @browsers[:series]
+                database_to_datasets: @browsers
             ))%>
         </div>
     </div>

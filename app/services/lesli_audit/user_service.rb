@@ -110,8 +110,8 @@ module LesliAudit
                 .group(group_by)
                 .count.map do |request|
                     {
-                        :date => request[0],
-                        :count => request[1]
+                        :xaxiskey => request[0],
+                        :yaxiskey => request[1]
                     }
                 end
             end

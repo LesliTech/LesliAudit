@@ -35,7 +35,7 @@ module LesliAudit
 
         # GET /requests
         def index
-            @requests = respond_as_pagination(LesliAudit::RequestService.new(current_user, query).index)
+            @requests = respond_with_pagination(LesliAudit::RequestService.new(current_user, query).index)
         end
     end
 end

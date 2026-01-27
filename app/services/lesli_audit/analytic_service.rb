@@ -41,7 +41,7 @@ module LesliAudit
         # @description
         # @example
         def visitors 
-            Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 1.hour) do 
+            #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 1.hour) do 
                 group = 'day' 
                 #group = params[:bygroup] if ['month','week','day'].include?(params[:bygroup])
 
@@ -61,12 +61,11 @@ module LesliAudit
 
                 requests = apply_filters(requests, query)
                 
-                requests.limit(10).order("date desc").select(
-                    "count(id) resources", 
-                    "sum(request_count) requests",
-                    "#{group_by} date"
+                requests.limit(10).order("xaxiskey desc").select(
+                    "sum(request_count) yaxiskey",
+                    "#{group_by} xaxiskey"
                 ).as_json
-            end
+            #end
         end 
 
         def requests
@@ -78,52 +77,31 @@ module LesliAudit
             requests = requests.limit(LIMIT).order("requests DESC").select(
                 :request_controller,
                 "sum(request_count) requests"
-            )
+            ).as_json
         end
 
         def devices 
-            Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
-                platforms = current_user.account.audit.account_devices
+            #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
+                current_user.account.audit.account_devices
                 .group(:agent_platform, :created_at)
                 .select(
-                    'created_at as label',
-                    'agent_platform as name',
-                    'sum(agent_count) as data'
-                )
-
-                data_from_database_to_chart(platforms)
-            end
+                    'created_at as xaxiskey',
+                    'agent_platform as dataname',
+                    'sum(agent_count) as yaxiskey'
+                ).as_json
+            #end
         end 
 
         def browsers
-            Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
-                browsers = current_user.account.audit.account_devices
+            #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
+                current_user.account.audit.account_devices
                 .group(:agent_browser, :created_at)
                 .select(
-                    'created_at as label',
-                    'agent_browser as name',
-                    'sum(agent_count) as data'
-                )
-
-                data_from_database_to_chart(browsers)
-            end
-        end
-
-        def data_from_database_to_chart data
-            labels = []
-            series = data
-            .group_by { |r| r[:name] }
-            .map do |name, records|
-                {
-                    :name => name,
-                    :data => records.map { |record| { x: record[:label], y: record[:data]} }
-                }
-            end
-
-            {
-                :labels => labels,
-                :series => series
-            }
+                    'created_at as xaxiskey',
+                    'agent_browser as dataname',
+                    'sum(agent_count) as yaxiskey'
+                ).as_json
+            #end
         end
 
         private 

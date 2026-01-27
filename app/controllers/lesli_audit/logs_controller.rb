@@ -4,7 +4,7 @@ module LesliAudit
 
         # GET /logs
         def index
-            @logs = respond_as_pagination(LesliAudit::LogService.new(current_user, query).index)
+            @logs = respond_with_pagination(LesliAudit::LogService.new(current_user, query).index)
         end
 
         # GET /logs/1
