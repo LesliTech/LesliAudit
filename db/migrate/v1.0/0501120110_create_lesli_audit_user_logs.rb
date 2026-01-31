@@ -34,15 +34,16 @@ class CreateLesliAuditUserLogs < ActiveRecord::Migration[6.0]
     def change
         create_table :lesli_audit_user_logs do |t|
             t.string :engine
+            t.string :source
             t.string :action
-
-            # Polymorphic subject
-            t.string :subject_type
-            t.bigint :subject_id
 
             t.string :operation
             t.string :description
             t.bigint :session_id
+
+            # Polymorphic subject
+            t.string :subject_type
+            t.bigint :subject_id
 
             t.timestamps
         end
