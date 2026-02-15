@@ -16,7 +16,7 @@
 
 
 11.01. audit/user_logs          # Audit user activities
-11.02. audit/user_journal       # Tracking user changes
+11.02. audit/user_journal       # Tracking user performance
 11.03. audit/user_requests      # Analytic user performance
 
 12.01. audit/role_versions
