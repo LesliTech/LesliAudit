@@ -1,4 +1,4 @@
 module LesliAudit
-    VERSION = "1.0.1"
-    BUILD = "1751546554"
+    VERSION = "1.0.2"
+    BUILD = "1771710537"
 end

@@ -55,6 +55,9 @@ Gem::Specification.new do |spec|
         Dir["{app,config,db,lib}/**/*", "license", "Rakefile", "readme.md"]
     end
 
+    # Lesli core minimum requirements
+    spec.add_dependency("lesli", "~> 5.0")
+
     # HTTP User Agent parser
     spec.add_dependency("useragent", "~> 0.16.10")
 end
