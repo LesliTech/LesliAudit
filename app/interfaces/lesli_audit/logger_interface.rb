@@ -42,14 +42,13 @@ module LesliAudit
             user_agent_version = user_agent.version.to_a.first(2).join(".")
 
             # return user agent as object
-            if as_string == false
-                return {
-                    platform: user_agent.platform,
-                    os: user_agent.os,
-                    browser: user_agent.browser,
-                    version: user_agent_version
-                }
-            end
+            return {
+                platform: user_agent.platform,
+                os: user_agent.os,
+                browser: user_agent.browser,
+                version: user_agent_version,
+                mobile: user_agent.mobile?
+            } if as_string == false
 
             # return user agent info as string
             "#{user_agent.platform} #{user_agent.os} - #{user_agent.browser} #{user_agent_version}"
@@ -58,6 +57,7 @@ module LesliAudit
         def log_requests
             log_account_requests
             log_user_requests
+            log_devices
         end 
 
         def log_account_requests
@@ -86,17 +86,7 @@ module LesliAudit
         def log_user_requests
             return unless current_user
             return unless session[:user_session_id]
-
-            current_user.account.audit.user_journals.create({
-                request_controller: controller_path,
-                request_action: action_name,
-                session_id: session[:user_session_id],
-                user_id: current_user.id,
-                date: Date2.new.date.to_s
-            }) if Lesli.config.audit.dig(:enable_journals)
-            
-            # Determine the correct SQL "now" keyword based on the database connection
-            now_func = ActiveRecord::Base.connection.adapter_name =~ /sqlite/i ? 'CURRENT_TIMESTAMP' : 'NOW()'
+            return unless Lesli.config.audit.dig(:enable_analytics)
 
             # Try to save a unique record for this request configuration
             current_user.account.audit.user_requests.upsert(
@@ -118,7 +108,16 @@ module LesliAudit
                 on_duplicate: Arel.sql(
                     "request_count = lesli_audit_user_requests.request_count + 1,updated_at = #{LesliDate::Compatibility.db_now}"
                 )
-            ) if Lesli.config.audit.dig(:enable_analytics)
+            ) 
+
+            return unless Lesli.config.audit.dig(:enable_journals)
+            current_user.account.audit.user_journals.create({
+                request_controller: controller_path,
+                request_action: action_name,
+                session_id: session[:user_session_id],
+                user_id: current_user.id,
+                date: Date2.new.date.to_s
+            }) 
         end
 
         def log_devices

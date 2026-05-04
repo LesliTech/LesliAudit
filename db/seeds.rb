@@ -30,8 +30,7 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-
-L2.msg("LesliAudit", "Version: #{LesliAudit::VERSION}", "Build: #{LesliAudit::BUILD}")
+Termline.info("Loading seeds for: LesliAudit #{LesliAudit::VERSION} (#{LesliAudit::BUILD})")
 
 
 # · load specific environment seeds

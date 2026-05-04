@@ -1,0 +1,104 @@
+
+<% @visitors = @visitors.reverse %>
+<% top_days = (@visitors.last(5)) %>
+
+<%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
+    <%= render(LesliView::Components::Header.new("Analytics")) %>
+
+    <div class="columns">
+        <% top_days.each do |day| %>
+            <div class="column">
+                <div class="box">
+                <h4><%= day['xaxiskey'] %></h4>
+                <p class="is-size-3"><%= day['yaxiskey'] %></p>
+                </div>
+            </div>
+        <% end %>
+    </div>
+
+    <div class="box">
+        <%= render(LesliView::Charts::Line.new(
+            title:"Visitors",
+            database_to_dataset: @visitors
+        ))%>
+    </div>
+
+    <div class="columns">
+        <div class="column">
+            <%= render(LesliView::Elements::Table.new(columns: [{label:'Browsers', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
+                <% @browsers.each do |browser| %>
+                    <% table.with_row(css_class:"") do |row| %>
+                        <% row.with_cell(css_class:"p-0") do %>
+                            <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= browser[:percentage] %>%, transparent 0%);">
+                                <span class="icon-text">
+                                    <span class="icon">
+                                        <span class="ri-<%= browser[:browser].downcase %>-fill"></span>
+                                    </span>
+                                    <span><%= browser[:browser] %></span>
+                                </span>
+                            </p>
+                        <% end %>
+                        <% row.with_cell(css_class:"has-text-centered") do %>
+                            <%= browser[:count] %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+        </div>
+        <div class="column">
+            <%= render(LesliView::Elements::Table.new(columns: [{label:'Browsers', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
+                <% @devices.each do |device| %>
+                    <% table.with_row(css_class:"") do |row| %>
+                        <% row.with_cell(css_class:"p-0") do %>
+                            <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
+                                <span class="icon-text">
+                                    <span class="icon">
+                                        <span class="ri-<%= device[:icon].downcase %>-fill"></span>
+                                    </span>
+                                    <span><%= device[:device] %></span>
+                                </span>
+                            </p>
+                        <% end %>
+                        <% row.with_cell(css_class:"has-text-centered") do %>
+                            <%= device[:count] %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+    
+    <div class="columns">
+        <div class="column">
+            <%= render(LesliView::Elements::Table.new(
+                columns: [{
+                    label: "Top controllers",
+                    field: "request_controller"
+                },{
+                    label:"Requests",
+                    field:"requests"
+                }],
+                records: @requests
+            )) %>
+        </div>
+    </div>
+    <!-- 
+    <div class="columns">
+        <div class="column">
+            < % = render(LesliView::Charts::Bar.new(
+                title: "Platforms",
+                database_to_datasets: @platforms
+            ) ) % >
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column">
+            < % = render(LesliView::Charts::Bar.new(
+                title: "Browsers",
+                database_to_datasets: @browsers
+            ) ) % >
+        </div>
+    </div>
+    -->
+<% end %>

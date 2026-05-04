@@ -47,7 +47,7 @@ LesliAudit::Engine.routes.draw do
     #   Trends by date
     #   Most active users
     #   Most active controllers
-    resources :analytics, only: [:index] 
+    resources :visitors, only: [:index] 
 
     resources :logs, only: [:index, :show]
 

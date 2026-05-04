@@ -56,7 +56,7 @@ Gem::Specification.new do |spec|
     end
 
     # Lesli core minimum requirements
-    spec.add_dependency("lesli", "~> 5.0")
+    spec.add_dependency("lesli", "~> 5.1.0")
 
     # HTTP User Agent parser
     spec.add_dependency("useragent", "~> 0.16.10")

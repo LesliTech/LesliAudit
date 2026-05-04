@@ -31,9 +31,17 @@ Building a better future, one line of code at a time.
 =end
 
 module LesliAudit
-    class AnalyticService < Lesli::ApplicationLesliService
+    class VisitorService < Lesli::ApplicationLesliService
 
-        LIMIT=5
+        LIMIT=15
+
+        DEVICE_ICONS = {
+            /macintosh|mac os|ios|iphone|ipad/i => "apple",
+            /windows/i                         => "windows",
+            /linux|ubuntu|debian|fedora/i       => "linux",
+            /android/i                         => "android",
+            /chrome os|cros/i                   => "chrome",
+        }.freeze
 
         # @overwrite
         # @return {Hash} Paginated list of the records
@@ -70,7 +78,7 @@ module LesliAudit
 
         def requests
             requests = current_user.account.audit.account_requests
-            .group("request_controller").limit(30)
+            .group("request_controller")
 
             requests = apply_filters(requests, query)
 
@@ -81,30 +89,65 @@ module LesliAudit
         end
 
         def devices 
-            #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
-                current_user.account.audit.account_devices
-                .group(:agent_platform, :created_at)
-                .select(
-                    'created_at as xaxiskey',
-                    'agent_platform as dataname',
-                    'sum(agent_count) as yaxiskey'
-                ).as_json
-            #end
+            device_counts = current_user.account.audit.account_devices
+            .group(:agent_platform)
+            .sum(:agent_count)
+
+            total = device_counts.values.sum
+
+            device_counts.map do |device, count|
+                {
+                    device: device,
+                    count: count,
+                    icon: device_icon(device),
+                    percentage: total.zero? ? 0 : ((count.to_f / total) * 100).round()
+                }
+            end
+
+            # #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
+            #     current_user.account.audit.account_devices
+            #     .group(:agent_platform, :created_at)
+            #     .select(
+            #         'created_at as xaxiskey',
+            #         'agent_platform as dataname',
+            #         'sum(agent_count) as yaxiskey'
+            #     ).as_json
+            # #end
         end 
 
         def browsers
+            browser_counts = current_user.account.audit.account_devices
+            .group(:agent_browser)
+            .sum(:agent_count)
+
+            total = browser_counts.values.sum
+
+            browser_counts.map do |browser, count|
+                {
+                    browser: browser,
+                    count: count,
+                    percentage: total.zero? ? 0 : ((count.to_f / total) * 100).round()
+                }
+            end
             #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
-                current_user.account.audit.account_devices
-                .group(:agent_browser, :created_at)
-                .select(
-                    'created_at as xaxiskey',
-                    'agent_browser as dataname',
-                    'sum(agent_count) as yaxiskey'
-                ).as_json
+                # current_user.account.audit.account_devices
+                # .group(:agent_browser, :created_at)
+                # .select(
+                #     'created_at as xaxiskey',
+                #     'agent_browser as dataname',
+                #     'sum(agent_count) as yaxiskey'
+                # ).as_json
             #end
         end
 
         private 
+
+        def device_icon(device)
+            DEVICE_ICONS.each do |pattern, category|
+                return category if device.match?(pattern)
+            end
+            "unknown"
+        end
 
         def apply_filters requests, params
 

@@ -4,12 +4,41 @@
 
     <div class="columns">
         <div class="column">
-            <%= render(LesliView::Charts::Bar.new(
-                title:"Registered users", 
-                database_to_dataset: @registrations.as_json
-            ))%>
+            <div class="box">
+                <h4>Total users</h4>
+                <p class="is-size-3">40</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <h4>Active users</h4>
+                <p class="is-size-3">22</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <h4>Inactive users</h4>
+                <p class="is-size-3">15</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <h4>Locked users</h4>
+                <p class="is-size-3">3</p>
+            </div>
         </div>
     </div>
+
+    <!-- 
+    <div class="columns">
+        <div class="column">
+            < % = render(LesliView::Charts::Bar.new(
+                title:"Registered users", 
+                database_to_dataset: @registrations.as_json
+            )) % >
+        </div>
+    </div>
+    -->
 
     <div class="columns">
         <div class="column">
