@@ -37,17 +37,26 @@ module LesliAudit
 
         DEVICE_ICONS = {
             /macintosh|mac os|ios|iphone|ipad/i => "apple",
-            /windows/i                         => "windows",
+            /windows/i                          => "windows",
             /linux|ubuntu|debian|fedora/i       => "linux",
-            /android/i                         => "android",
+            /android/i                          => "android",
             /chrome os|cros/i                   => "chrome",
         }.freeze
 
-        # @overwrite
-        # @return {Hash} Paginated list of the records
-        # @param {query} Has of the formated queries/filters that will be applied to filter data
-        # @description
-        # @example
+        def visits
+            requests = current_user.account.audit.account_requests
+
+            controllers, total_requests = requests.pick(
+                Arel.sql("COUNT(DISTINCT request_controller)"),
+                Arel.sql("SUM(request_count)")
+            )
+
+            {
+                controllers: controllers.to_i,
+                requests: total_requests.to_i
+            }
+        end 
+
         def visitors 
             #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 1.hour) do 
                 group = 'day' 

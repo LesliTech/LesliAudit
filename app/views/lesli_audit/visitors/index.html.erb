@@ -1,16 +1,28 @@
 
 <% @visitors = @visitors.reverse %>
-<% top_days = (@visitors.last(5)) %>
+<% top_days = (@visitors.last(3)) %>
 
 <%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
     <%= render(LesliView::Components::Header.new("Analytics")) %>
 
     <div class="columns">
+        <div class="column">
+            <div class="box">
+                <h4>Controllers</h4>
+                <p class="is-size-3"><%= @visits[:controllers] %></p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="box">
+                <h4>Requests</h4>
+                <p class="is-size-3"><%= @visits[:requests] %></p>
+            </div>
+        </div>
         <% top_days.each do |day| %>
             <div class="column">
                 <div class="box">
-                <h4><%= day['xaxiskey'] %></h4>
-                <p class="is-size-3"><%= day['yaxiskey'] %></p>
+                    <h4><%= day['xaxiskey'] %></h4>
+                    <p class="is-size-3"><%= day['yaxiskey'] %></p>
                 </div>
             </div>
         <% end %>
@@ -82,23 +94,4 @@
             )) %>
         </div>
     </div>
-    <!-- 
-    <div class="columns">
-        <div class="column">
-            < % = render(LesliView::Charts::Bar.new(
-                title: "Platforms",
-                database_to_datasets: @platforms
-            ) ) % >
-        </div>
-    </div>
-
-    <div class="columns">
-        <div class="column">
-            < % = render(LesliView::Charts::Bar.new(
-                title: "Browsers",
-                database_to_datasets: @browsers
-            ) ) % >
-        </div>
-    </div>
-    -->
 <% end %>
