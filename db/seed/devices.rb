@@ -44,25 +44,33 @@ current_user = Lesli::User.first
 
 # controllers to seed
 [
-    "Macintosh", 
+    "Mac", 
     "Windows"
 ].each do |platform|
 
     [
-        "Firefox", 
-        "Chrome",
-        "Safari"
-    ].each do |browser|
-        # Iterate through the dates
-        (start_date..end_date).each do |date|
+        "smartphone",
+        "tablet",
+        "desktop"
+    ].each do |device|
 
-            current_user.account.audit.account_devices.create_with(
-                :agent_count => rand(40..80),
-            ).find_or_create_by(
-                :agent_platform => platform,
-                :agent_browser => browser,
-                :created_at => date,
-            )
+        [
+            "Firefox", 
+            "Chrome",
+            "Safari"
+        ].each do |browser|
+            # Iterate through the dates
+            (start_date..end_date).each do |date|
+
+                current_user.account.audit.account_devices.create_with(
+                    :agent_count => rand(40..80),
+                ).find_or_create_by(
+                    :agent_platform => platform,
+                    :agent_browser => browser,
+                    :agent_device => device,
+                    :created_at => date,
+                )
+            end
         end
     end
 end

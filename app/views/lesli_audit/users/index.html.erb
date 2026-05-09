@@ -2,43 +2,47 @@
 <%= render(LesliView::Layout::Container.new("audit-users")) do %>
     <%= render(LesliView::Components::Header.new("Users")) %>
 
+    <pre><code><%= dd @users %></code></pre>
+
     <div class="columns">
-        <div class="column">
-            <div class="box">
-                <h4>Total users</h4>
-                <p class="is-size-3">40</p>
+        <% @users[:overview].each do |overview| %>
+            <div class="column">
+                <div class="box">
+                    <h4><%= overview[:label] %></h4>
+                    <p class="is-size-3"><%= overview[:value] %></p>
+                    <small><%= overview[:percentage] %>%</small>
+                </div>
             </div>
-        </div>
-        <div class="column">
-            <div class="box">
-                <h4>Active users</h4>
-                <p class="is-size-3">22</p>
-            </div>
-        </div>
-        <div class="column">
-            <div class="box">
-                <h4>Inactive users</h4>
-                <p class="is-size-3">15</p>
-            </div>
-        </div>
-        <div class="column">
-            <div class="box">
-                <h4>Locked users</h4>
-                <p class="is-size-3">3</p>
-            </div>
-        </div>
+        <% end %>
     </div>
 
-    <!-- 
     <div class="columns">
-        <div class="column">
-            < % = render(LesliView::Charts::Bar.new(
-                title:"Registered users", 
-                database_to_dataset: @registrations.as_json
-            )) % >
+        <div class="column is-8">
+            <div class="box">
+            <%= render(LesliView::Elements::Table.new(columns: [])) do |table| %>
+                <% @users[:distribution].each do |user| %>
+                    <% table.with_row(css_class:"is-white") do |row| %>
+                        <% row.with_cell(css_class:"") do %>
+                            <%= user[:label] %>
+                        <% end %>
+                        <% row.with_cell(css_class:"p-0 is-fullwidth") do %>
+                            <p style="padding:8px;border-radius:4px;background:<%= user[:color] %>;width:<%= user[:percentage] %>%">
+                            </p>
+                        <% end %>
+                        <% row.with_cell(css_class:"has-text-right") do %>
+                            <%= user[:value] %>
+                        <% end %>
+                        <% row.with_cell(css_class:"has-text-right") do %>
+                            <span class="has-text-grey-light has-text-weight-bold">
+                                <%= user[:percentage] %>%
+                            </span>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+            </div>
         </div>
     </div>
-    -->
 
     <div class="columns">
         <div class="column">
@@ -69,4 +73,6 @@
             )) %>
         </div>
     </div>
+
+    <br>
 <% end %>

@@ -1,6 +1,6 @@
 <%= render(LesliView::Layout::Container.new("audit-requests")) do %>
     <%= render(LesliView::Components::Header.new("Requests")) %>
-    <%= render LesliView::Components::Toolbar.new() %>
+    <%= render(LesliView::Components::Toolbar.new()) %>
     <%= render(LesliView::Elements::Table.new(
         columns: [{
             label: "ID",

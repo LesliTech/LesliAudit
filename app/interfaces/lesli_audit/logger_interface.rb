@@ -29,29 +29,22 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 =end
-
+require 'device_detector'
 module LesliAudit
     module LoggerInterface
         def get_user_agent(as_string=true)
 
-            http_user_agent = request.env["HTTP_USER_AGENT"]
-
             # parse user agent
-            user_agent = UserAgent.parse(http_user_agent)
+            user_agent = DeviceDetector.new(request.env["HTTP_USER_AGENT"])
 
-            user_agent_version = user_agent.version.to_a.first(2).join(".")
+            #user_agent_version = user_agent.version.to_a.first(2).join(".")
 
             # return user agent as object
-            return {
-                platform: user_agent.platform,
-                os: user_agent.os,
-                browser: user_agent.browser,
-                version: user_agent_version,
-                mobile: user_agent.mobile?
-            } if as_string == false
-
-            # return user agent info as string
-            "#{user_agent.platform} #{user_agent.os} - #{user_agent.browser} #{user_agent_version}"
+            {
+                platform: user_agent.os_name,
+                browser: user_agent.name,
+                device: user_agent.device_type
+            }
         end
 
         def log_requests
@@ -132,11 +125,12 @@ module LesliAudit
                     :created_at => Date2.new.date.to_s,
                     :agent_platform => user_agent&.dig(:platform) || "unknown",
                     :agent_browser => user_agent&.dig(:browser) || "unknown",
+                    :agent_device => user_agent&.dig(:device) || "unknown",
                     :agent_count => 1
                 },
 
                 # group of columns to consider a request as unique
-                unique_by: %i[agent_platform agent_browser created_at account_id],
+                unique_by: %i[agent_platform agent_browser agent_device created_at account_id],
 
                 # if request id is not unique
                 #   - increase the counter for this configuration

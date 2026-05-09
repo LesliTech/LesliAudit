@@ -37,4 +37,5 @@ Termline.info("Loading seeds for: LesliAudit #{LesliAudit::VERSION} (#{LesliAudi
 if Rails.env.development? || Lesli.config.demo 
     load LesliAudit::Engine.root.join("db", "seed", "requests.rb")
     load LesliAudit::Engine.root.join("db", "seed", "devices.rb")
+    load LesliAudit::Engine.root.join("db", "seed", "users.rb")
 end

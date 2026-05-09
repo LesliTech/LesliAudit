@@ -33,16 +33,6 @@ Building a better future, one line of code at a time.
 module LesliAudit
     class VisitorService < Lesli::ApplicationLesliService
 
-        LIMIT=15
-
-        DEVICE_ICONS = {
-            /macintosh|mac os|ios|iphone|ipad/i => "apple",
-            /windows/i                          => "windows",
-            /linux|ubuntu|debian|fedora/i       => "linux",
-            /android/i                          => "android",
-            /chrome os|cros/i                   => "chrome",
-        }.freeze
-
         def visits
             requests = current_user.account.audit.account_requests
 
@@ -97,9 +87,26 @@ module LesliAudit
             ).as_json
         end
 
-        def devices 
+        def os 
             device_counts = current_user.account.audit.account_devices
             .group(:agent_platform)
+            .sum(:agent_count)
+
+            total = device_counts.values.sum
+
+            device_counts.map do |device, count|
+                {
+                    device: device,
+                    count: count,
+                    icon: platform_icon(device),
+                    percentage: total.zero? ? 0 : ((count.to_f / total) * 100).round()
+                }
+            end
+        end 
+
+        def devices 
+            device_counts = current_user.account.audit.account_devices
+            .group(:agent_device)
             .sum(:agent_count)
 
             total = device_counts.values.sum
@@ -112,16 +119,6 @@ module LesliAudit
                     percentage: total.zero? ? 0 : ((count.to_f / total) * 100).round()
                 }
             end
-
-            # #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
-            #     current_user.account.audit.account_devices
-            #     .group(:agent_platform, :created_at)
-            #     .select(
-            #         'created_at as xaxiskey',
-            #         'agent_platform as dataname',
-            #         'sum(agent_count) as yaxiskey'
-            #     ).as_json
-            # #end
         end 
 
         def browsers
@@ -135,6 +132,7 @@ module LesliAudit
                 {
                     browser: browser,
                     count: count,
+                    icon: browser_icon(browser),
                     percentage: total.zero? ? 0 : ((count.to_f / total) * 100).round()
                 }
             end
@@ -151,11 +149,58 @@ module LesliAudit
 
         private 
 
-        def device_icon(device)
-            DEVICE_ICONS.each do |pattern, category|
-                return category if device.match?(pattern)
+        LIMIT=15
+
+        DEFAULT_PLATFORM_ICON_CLASS = "computer-fill"
+        PLATFORM_ICON_CLASSES = {
+            /chrome os|cros/i           => "chrome-fill",
+            /ios|ipad|iphone|mac/i      => "apple-fill",
+            /windows/i                  => "windows-fill",
+            /ubuntu/i                   => "ubuntu-fill",
+            /debian|fedora|linux/i      => "linux-fill",
+            /android/i                  => "android-fill"
+        }.freeze
+
+        DEFAULT_BROWSER_ICON_CLASS = "global-fill"
+        BROWSER_ICON_CLASSES = {
+            /chrome|chromium/i        => "chrome-fill",
+            /firefox/i                => "firefox-fill",
+            /safari/i                 => "safari-fill",
+            /edge/i                   => "edge-fill",
+            /opera|opr/i              => "opera-fill",
+            /internet explorer|msie/i => "ie-fill",
+            /brave/i                  => "brave-fill"
+        }.freeze
+
+        DEVICE_ICON_CLASSES = {
+            "desktop"       => "mac-line",
+            "tablet"        => "tablet-line",
+            "smartphone"    => "smartphone-line",
+            "unknown"       => "file-unknow-line"
+        }.freeze
+
+        def platform_icon(platform)
+            return DEFAULT_PLATFORM_ICON_CLASS if platform.blank?
+
+            match = PLATFORM_ICON_CLASSES.find do |pattern, _icon_class|
+                platform.match?(pattern)
             end
-            "unknown"
+
+            match ? match.last : DEFAULT_PLATFORM_ICON_CLASS
+        end
+
+        def browser_icon(browser)
+            return DEFAULT_BROWSER_ICON_CLASS if browser.blank?
+
+            match = BROWSER_ICON_CLASSES.find do |pattern, _icon_class|
+                browser.match?(pattern)
+            end
+
+            match ? match.last : DEFAULT_BROWSER_ICON_CLASS
+        end
+
+        def device_icon(device)
+            DEVICE_ICON_CLASSES.fetch(device.to_s, DEVICE_ICON_CLASSES["unknown"])
         end
 
         def apply_filters requests, params

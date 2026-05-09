@@ -8,6 +8,7 @@ module LesliAudit
             @requests = VisitorService.new(current_user, query).requests
             @browsers = VisitorService.new(current_user, query).browsers
             @devices = VisitorService.new(current_user, query).devices
+            @os = VisitorService.new(current_user, query).os
         end
     end
 end

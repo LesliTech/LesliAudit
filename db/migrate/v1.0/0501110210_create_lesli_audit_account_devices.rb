@@ -35,11 +35,12 @@ class CreateLesliAuditAccountDevices < ActiveRecord::Migration[8.1]
         create_table :lesli_audit_account_devices do |t|
             t.string  :agent_platform
             t.string  :agent_browser
+            t.string  :agent_device
             t.integer :agent_count
             t.date    :created_at
         end
 
         add_reference(:lesli_audit_account_devices, :account, foreign_key: { to_table: :lesli_audit_accounts })
-        add_index(:lesli_audit_account_devices, %i[agent_platform agent_browser created_at account_id], unique: true, name: "lesli_audit_devices_index")
+        add_index(:lesli_audit_account_devices, %i[agent_platform agent_browser agent_device created_at account_id], unique: true, name: "lesli_audit_devices_index")
     end
 end

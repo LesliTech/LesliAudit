@@ -59,5 +59,5 @@ Gem::Specification.new do |spec|
     spec.add_dependency("lesli", "~> 5.1.0")
 
     # HTTP User Agent parser
-    spec.add_dependency("useragent", "~> 0.16.10")
+    spec.add_dependency("device_detector", "~> 1.1.3")
 end

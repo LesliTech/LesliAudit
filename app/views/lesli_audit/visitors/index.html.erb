@@ -44,7 +44,7 @@
                             <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= browser[:percentage] %>%, transparent 0%);">
                                 <span class="icon-text">
                                     <span class="icon">
-                                        <span class="ri-<%= browser[:browser].downcase %>-fill"></span>
+                                        <span class="ri-<%= browser[:icon] %>"></span>
                                     </span>
                                     <span><%= browser[:browser] %></span>
                                 </span>
@@ -58,14 +58,35 @@
             <% end %>
         </div>
         <div class="column">
-            <%= render(LesliView::Elements::Table.new(columns: [{label:'Browsers', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
+            <%= render(LesliView::Elements::Table.new(columns: [{label:'OS', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
+                <% @os.each do |device| %>
+                    <% table.with_row(css_class:"") do |row| %>
+                        <% row.with_cell(css_class:"p-0") do %>
+                            <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
+                                <span class="icon-text">
+                                    <span class="icon">
+                                        <span class="ri-<%= device[:icon].downcase %>"></span>
+                                    </span>
+                                    <span><%= device[:device] %></span>
+                                </span>
+                            </p>
+                        <% end %>
+                        <% row.with_cell(css_class:"has-text-centered") do %>
+                            <%= device[:count] %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+        </div>
+        <div class="column">
+            <%= render(LesliView::Elements::Table.new(columns: [{label:'Device', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
                 <% @devices.each do |device| %>
                     <% table.with_row(css_class:"") do |row| %>
                         <% row.with_cell(css_class:"p-0") do %>
                             <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
                                 <span class="icon-text">
                                     <span class="icon">
-                                        <span class="ri-<%= device[:icon].downcase %>-fill"></span>
+                                        <span class="ri-<%= device[:icon] %>"></span>
                                     </span>
                                     <span><%= device[:device] %></span>
                                 </span>

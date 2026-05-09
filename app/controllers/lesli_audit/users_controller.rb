@@ -34,7 +34,7 @@ module LesliAudit
 
         # GET /users
         def index
-            @requests = UserService.new(current_user, query).requests
+            @users = UserService.new(current_user, query).users
             @registrations = UserService.new(current_user, query).registrations
             @working_hours = UserService.new(current_user, query).working_hours
         end
