@@ -2,45 +2,42 @@
 <%= render(LesliView::Layout::Container.new("audit-users")) do %>
     <%= render(LesliView::Components::Header.new("Users")) %>
 
-    <pre><code><%= dd @users %></code></pre>
-
     <div class="columns">
-        <% @users[:overview].each do |overview| %>
+        <% @users[:overview].each do |user| %>
             <div class="column">
                 <div class="box">
-                    <h4><%= overview[:label] %></h4>
-                    <p class="is-size-3"><%= overview[:value] %></p>
-                    <small><%= overview[:percentage] %>%</small>
+                    <h4><%= user[:label] %></h4>
+                    <p class="is-size-3 has-text-<%= user[:color] %>"><%= user[:value] %></p>
                 </div>
             </div>
         <% end %>
     </div>
 
-    <div class="columns">
-        <div class="column is-8">
+    <div class="columns">    
+        <div class="column">
             <div class="box">
-            <%= render(LesliView::Elements::Table.new(columns: [])) do |table| %>
-                <% @users[:distribution].each do |user| %>
-                    <% table.with_row(css_class:"is-white") do |row| %>
-                        <% row.with_cell(css_class:"") do %>
-                            <%= user[:label] %>
-                        <% end %>
-                        <% row.with_cell(css_class:"p-0 is-fullwidth") do %>
-                            <p style="padding:8px;border-radius:4px;background:<%= user[:color] %>;width:<%= user[:percentage] %>%">
-                            </p>
-                        <% end %>
-                        <% row.with_cell(css_class:"has-text-right") do %>
-                            <%= user[:value] %>
-                        <% end %>
-                        <% row.with_cell(css_class:"has-text-right") do %>
-                            <span class="has-text-grey-light has-text-weight-bold">
-                                <%= user[:percentage] %>%
-                            </span>
+                <%= render(LesliView::Elements::Table.new(columns: [])) do |table| %>
+                    <% @users[:attention_needed].each do |user| %>
+                        <% table.with_row(css_class:"is-white") do |row| %>
+                            <% row.with_cell(css_class:"") do %>
+                                <span class="icon has-text-<%= user[:color] %>">
+                                    <span class="is-size-4 ri-<%= user[:icon] %>"></span>
+                                </span>
+                            <% end %>
+                            <% row.with_cell(css_class:"is-fullwidth") do %>
+                                <%= user[:label] %>
+                            <% end %>
+                            <% row.with_cell(css_class:"has-text-right") do %>
+                                <span class="is-size-6 has-text-weight-bold">
+                                    <%= user[:value] %>
+                                </span>
+                            <% end %>
                         <% end %>
                     <% end %>
                 <% end %>
-            <% end %>
             </div>
+        </div>
+        <div class="column is-three-fifths">
         </div>
     </div>
 
