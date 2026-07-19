@@ -18,16 +18,16 @@
             <div class="box">
                 <%= render(LesliView::Elements::Table.new(columns: [])) do |table| %>
                     <% @users[:attention_needed].each do |user| %>
-                        <% table.with_row(css_class:"is-white") do |row| %>
-                            <% row.with_cell(css_class:"") do %>
+                        <% table.with_row do |row| %>
+                            <% row.with_cell do %>
                                 <span class="icon has-text-<%= user[:color] %>">
                                     <span class="is-size-4 ri-<%= user[:icon] %>"></span>
                                 </span>
                             <% end %>
-                            <% row.with_cell(css_class:"is-fullwidth") do %>
+                            <% row.with_cell(class_name: "w-full") do %>
                                 <%= user[:label] %>
                             <% end %>
-                            <% row.with_cell(css_class:"has-text-right") do %>
+                            <% row.with_cell(align: :right) do %>
                                 <span class="is-size-6 has-text-weight-bold">
                                     <%= user[:value] %>
                                 </span>

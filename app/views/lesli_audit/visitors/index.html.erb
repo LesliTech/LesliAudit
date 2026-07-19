@@ -39,8 +39,8 @@
         <div class="column">
             <%= render(LesliView::Elements::Table.new(columns: [{label:'Browsers', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
                 <% @browsers.each do |browser| %>
-                    <% table.with_row(css_class:"") do |row| %>
-                        <% row.with_cell(css_class:"p-0") do %>
+                    <% table.with_row do |row| %>
+                        <% row.with_cell(class_name: "p-0") do %>
                             <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= browser[:percentage] %>%, transparent 0%);">
                                 <span class="icon-text">
                                     <span class="icon">
@@ -50,7 +50,7 @@
                                 </span>
                             </p>
                         <% end %>
-                        <% row.with_cell(css_class:"has-text-centered") do %>
+                        <% row.with_cell(align: :center) do %>
                             <%= browser[:count] %>
                         <% end %>
                     <% end %>
@@ -60,8 +60,8 @@
         <div class="column">
             <%= render(LesliView::Elements::Table.new(columns: [{label:'OS', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
                 <% @os.each do |device| %>
-                    <% table.with_row(css_class:"") do |row| %>
-                        <% row.with_cell(css_class:"p-0") do %>
+                    <% table.with_row do |row| %>
+                        <% row.with_cell(class_name: "p-0") do %>
                             <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
                                 <span class="icon-text">
                                     <span class="icon">
@@ -71,7 +71,7 @@
                                 </span>
                             </p>
                         <% end %>
-                        <% row.with_cell(css_class:"has-text-centered") do %>
+                        <% row.with_cell(align: :center) do %>
                             <%= device[:count] %>
                         <% end %>
                     <% end %>
@@ -81,8 +81,8 @@
         <div class="column">
             <%= render(LesliView::Elements::Table.new(columns: [{label:'Device', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
                 <% @devices.each do |device| %>
-                    <% table.with_row(css_class:"") do |row| %>
-                        <% row.with_cell(css_class:"p-0") do %>
+                    <% table.with_row do |row| %>
+                        <% row.with_cell(class_name: "p-0") do %>
                             <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
                                 <span class="icon-text">
                                     <span class="icon">
@@ -92,7 +92,7 @@
                                 </span>
                             </p>
                         <% end %>
-                        <% row.with_cell(css_class:"has-text-centered") do %>
+                        <% row.with_cell(align: :center) do %>
                             <%= device[:count] %>
                         <% end %>
                     <% end %>
