@@ -1,23 +1,26 @@
+# Database
 
-<p align="center">
-    <img width="70" alt="Lesli logo" src="../app/assets/images/lesli_audit/audit-logo.svg" />
-</p>
+LesliAudit uses collection code `05` and engine code `01`. Its migrations live under `db/migrate/v1.0` and are loaded into the host application's migration set.
 
-<h3 align="center">Lesli Audit database</h3>
+| Migration code | Table | Responsibility | Important relationships |
+| --- | --- | --- | --- |
+| `05.01.00.01.10` | `lesli_audit_accounts` | Engine state for a Lesli account | Required core account reference |
+| `05.01.11.01.10` | `lesli_audit_account_logs` | Account-level activity records | Audit account and optional user |
+| `05.01.11.02.10` | `lesli_audit_account_devices` | Aggregated browser, platform, and device observations | Audit account |
+| `05.01.11.03.10` | `lesli_audit_account_requests` | Account request counts by controller and action | Audit account |
+| `05.01.12.01.10` | `lesli_audit_user_logs` | User-specific activity records | Audit account and core user |
+| `05.01.12.02.10` | `lesli_audit_user_journals` | User work-session journal data | Audit account and core user |
+| `05.01.12.03.10` | `lesli_audit_user_requests` | User request analytics | Audit account and core user |
 
-### 05.01. Audit
-```plaintext
-00.01. audit/account
-05.01. audit/dashboards 
+The accounts table uses `create_table_lesli_shared_account_10(:lesli_audit)`. Request and device tables enforce composite uniqueness for their aggregation dimensions; preserve those indexes when changing how events are grouped.
 
-10.01. audit/account_logs       # Audit system activities
-10.02. audit/account_devices    # Insight work sources
-10.03. audit/account_requests   # Analytic users activities
+Run schema operations through the host application:
 
-
-11.01. audit/user_logs          # Audit user activities
-11.02. audit/user_journal       # Tracking user performance
-11.03. audit/user_requests      # Analytic user performance
-
-12.01. audit/role_versions
+```shell
+bin/rails lesli:db:prepare
+bin/rails db:migrate:status
 ```
+
+Audit data can grow quickly. New queries should remain account-scoped and be supported by indexes matching their filters and grouping columns.
+
+See [Database Architecture](/engines/lesli/database/structure) and [Migration Versioning](/engines/lesli/database/versioning) for shared rules.

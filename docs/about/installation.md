@@ -1,18 +1,44 @@
-# Installation & configuration
+# Installation
+
+LesliAudit adds account and user activity history to a Lesli application. It requires Lesli `~> 5.1.0` and stores its records in the host database.
+
+## Install the Engine
 
 ```shell
-# Add lesli_calendar engine
-bundle add lesli_calendar
+bundle add lesli_audit
 ```
 
-```shell
-# Setup database
-rake lesli:db:setup
-```
+The standard Lesli router mounts it at `/audit`:
 
 ```ruby
-# Load lesli_calendar
 Rails.application.routes.draw do
-    mount lesli_calendar::Engine => "/calendar"
+  Lesli::Router.mount(self)
 end
 ```
+
+Mount it directly only when the host does not use the standard router:
+
+```ruby
+Rails.application.routes.draw do
+  mount LesliAudit::Engine => "/audit"
+end
+```
+
+Prepare migrations and initialize existing accounts:
+
+```shell
+bin/rails lesli:db:prepare
+```
+
+LesliAudit uses `device_detector` to classify request agents. No additional initializer is required for the default integration.
+
+## Verify the Installation
+
+```shell
+bin/rails routes -g audit
+bin/rails server
+```
+
+Visit `http://127.0.0.1:3000/audit`. Install LesliDashboard and run `bin/rails lesli_dashboard:register` when the Audit dashboard component should be available to existing accounts.
+
+See [Dashboards](/engines/audit/about/dashboards), [Translations](/engines/audit/about/translations), and [Database](/engines/audit/about/database) for the integration details.

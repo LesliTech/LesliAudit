@@ -73,7 +73,7 @@ Add the engine to the host Rails application and prepare its database:
 
 ```shell
 bundle add lesli_audit
-bin/rails db:prepare
+bin/rails lesli:db:prepare
 ```
 
 ### Mount the engine
@@ -124,7 +124,7 @@ Install dependencies, prepare the host database, and start Rails:
 
 ```shell
 bundle install
-bin/rails db:prepare
+bin/rails lesli:db:prepare
 bin/rails server
 ```
 
