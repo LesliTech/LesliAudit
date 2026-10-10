@@ -41,4 +41,4 @@ bin/rails server
 
 Visit `http://127.0.0.1:3000/audit`. Install LesliDashboard and run `bin/rails lesli_dashboard:register` when the Audit dashboard component should be available to existing accounts.
 
-See [Dashboards](/engines/audit/about/dashboards), [Translations](/engines/audit/about/translations), and [Database](/engines/audit/about/database) for the integration details.
+See [Dashboards](/engines/audit/about/dashboards), [Translations](/engines/audit/about/translations), [Database](/engines/audit/about/database), and [Frontend](/engines/audit/about/frontend) for the integration details.

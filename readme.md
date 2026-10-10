@@ -143,6 +143,7 @@ bin/rails test
 
 - [Lesli website](https://www.lesli.dev/)
 - [Documentation](https://www.lesli.dev/engines/audit)
+- [Frontend development](./docs/about/frontend.md)
 - [Release notes](https://github.com/LesliTech/LesliAudit/releases)
 - [Issue tracker](https://github.com/LesliTech/LesliAudit/issues)
 - [Source code](https://github.com/LesliTech/LesliAudit)
