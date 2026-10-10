@@ -1,118 +1,164 @@
 
-<% @visitors = @visitors.reverse %>
-<% top_days = (@visitors.last(3)) %>
+<%
+visitors = @visitors.reverse
+top_days = visitors.last(3)
+%>
 
 <%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
     <%= render(LesliView::Components::Header.new("Analytics")) %>
 
-    <div class="columns">
-        <div class="column">
-            <div class="box">
-                <h4>Controllers</h4>
-                <p class="is-size-3"><%= @visits[:controllers] %></p>
-            </div>
-        </div>
-        <div class="column">
-            <div class="box">
-                <h4>Requests</h4>
-                <p class="is-size-3"><%= @visits[:requests] %></p>
-            </div>
-        </div>
+    <section
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
+        aria-label="Visitor overview">
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-medium text-slate-500">Controllers</h2>
+            <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+                <%= @visits[:controllers] %>
+            </p>
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-medium text-slate-500">Requests</h2>
+            <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+                <%= @visits[:requests] %>
+            </p>
+        </article>
+
         <% top_days.each do |day| %>
-            <div class="column">
-                <div class="box">
-                    <h4><%= day['xaxiskey'] %></h4>
-                    <p class="is-size-3"><%= day['yaxiskey'] %></p>
-                </div>
-            </div>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-sm font-medium text-slate-500"><%= day["xaxiskey"] %></h2>
+                <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+                    <%= day["yaxiskey"] %>
+                </p>
+            </article>
         <% end %>
-    </div>
+    </section>
 
-    <div class="box">
+    <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <%= render(LesliView::Charts::Line.new(
-            title:"Visitors",
-            database_to_dataset: @visitors
-        ))%>
-    </div>
+            title: "Visitors",
+            database_to_dataset: visitors
+        )) %>
+    </section>
 
-    <div class="columns">
-        <div class="column">
-            <%= render(LesliView::Elements::Table.new(columns: [{label:'Browsers', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
+    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3" aria-label="Visitor breakdown">
+        <article class="min-w-0">
+            <%= render(LesliView::Elements::Table.new(
+                columns: [
+                    { label: "Browsers", align: :left },
+                    { label: "Visitors", align: :center }
+                ],
+                class_name: "!min-w-0",
+                compact: true,
+                caption: "Visitors by browser"
+            )) do |table| %>
                 <% @browsers.each do |browser| %>
+                    <% percentage = browser[:percentage].to_i.clamp(0, 100) %>
                     <% table.with_row do |row| %>
-                        <% row.with_cell(class_name: "p-0") do %>
-                            <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= browser[:percentage] %>%, transparent 0%);">
-                                <span class="icon-text">
-                                    <span class="icon">
-                                        <span class="ri-<%= browser[:icon] %>"></span>
+                        <% row.with_cell(class_name: "!p-0") do %>
+                            <div class="relative isolate overflow-hidden px-3 py-2.5">
+                                <span
+                                    class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                    style="width: <%= percentage %>%"
+                                    aria-hidden="true"></span>
+                                <span class="flex items-center gap-2 text-slate-700">
+                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
+                                        <span class="ri-<%= browser[:icon] %> text-lg leading-none" aria-hidden="true"></span>
                                     </span>
-                                    <span><%= browser[:browser] %></span>
+                                    <span class="truncate"><%= browser[:browser] %></span>
                                 </span>
-                            </p>
+                            </div>
                         <% end %>
-                        <% row.with_cell(align: :center) do %>
+                        <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
                             <%= browser[:count] %>
                         <% end %>
                     <% end %>
                 <% end %>
             <% end %>
-        </div>
-        <div class="column">
-            <%= render(LesliView::Elements::Table.new(columns: [{label:'OS', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
-                <% @os.each do |device| %>
-                    <% table.with_row do |row| %>
-                        <% row.with_cell(class_name: "p-0") do %>
-                            <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
-                                <span class="icon-text">
-                                    <span class="icon">
-                                        <span class="ri-<%= device[:icon].downcase %>"></span>
-                                    </span>
-                                    <span><%= device[:device] %></span>
-                                </span>
-                            </p>
-                        <% end %>
-                        <% row.with_cell(align: :center) do %>
-                            <%= device[:count] %>
-                        <% end %>
-                    <% end %>
-                <% end %>
-            <% end %>
-        </div>
-        <div class="column">
-            <%= render(LesliView::Elements::Table.new(columns: [{label:'Device', align:'left'},{label:'Visitors', align:'center'}])) do |table| %>
-                <% @devices.each do |device| %>
-                    <% table.with_row do |row| %>
-                        <% row.with_cell(class_name: "p-0") do %>
-                            <p style="padding:8px;background: linear-gradient(to right, #E5EAF0 <%= device[:percentage] %>%, transparent 0%);">
-                                <span class="icon-text">
-                                    <span class="icon">
-                                        <span class="ri-<%= device[:icon] %>"></span>
-                                    </span>
-                                    <span><%= device[:device] %></span>
-                                </span>
-                            </p>
-                        <% end %>
-                        <% row.with_cell(align: :center) do %>
-                            <%= device[:count] %>
-                        <% end %>
-                    <% end %>
-                <% end %>
-            <% end %>
-        </div>
-    </div>
-    
-    <div class="columns">
-        <div class="column">
+        </article>
+
+        <article class="min-w-0">
             <%= render(LesliView::Elements::Table.new(
-                columns: [{
-                    label: "Top controllers",
-                    field: "request_controller"
-                },{
-                    label:"Requests",
-                    field:"requests"
-                }],
-                records: @requests
-            )) %>
-        </div>
-    </div>
+                columns: [
+                    { label: "OS", align: :left },
+                    { label: "Visitors", align: :center }
+                ],
+                class_name: "!min-w-0",
+                compact: true,
+                caption: "Visitors by operating system"
+            )) do |table| %>
+                <% @os.each do |device| %>
+                    <% percentage = device[:percentage].to_i.clamp(0, 100) %>
+                    <% table.with_row do |row| %>
+                        <% row.with_cell(class_name: "!p-0") do %>
+                            <div class="relative isolate overflow-hidden px-3 py-2.5">
+                                <span
+                                    class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                    style="width: <%= percentage %>%"
+                                    aria-hidden="true"></span>
+                                <span class="flex items-center gap-2 text-slate-700">
+                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
+                                        <span class="ri-<%= device[:icon].downcase %> text-lg leading-none" aria-hidden="true"></span>
+                                    </span>
+                                    <span class="truncate"><%= device[:device] %></span>
+                                </span>
+                            </div>
+                        <% end %>
+                        <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
+                            <%= device[:count] %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+        </article>
+
+        <article class="min-w-0">
+            <%= render(LesliView::Elements::Table.new(
+                columns: [
+                    { label: "Device", align: :left },
+                    { label: "Visitors", align: :center }
+                ],
+                class_name: "!min-w-0",
+                compact: true,
+                caption: "Visitors by device"
+            )) do |table| %>
+                <% @devices.each do |device| %>
+                    <% percentage = device[:percentage].to_i.clamp(0, 100) %>
+                    <% table.with_row do |row| %>
+                        <% row.with_cell(class_name: "!p-0") do %>
+                            <div class="relative isolate overflow-hidden px-3 py-2.5">
+                                <span
+                                    class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                    style="width: <%= percentage %>%"
+                                    aria-hidden="true"></span>
+                                <span class="flex items-center gap-2 text-slate-700">
+                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
+                                        <span class="ri-<%= device[:icon] %> text-lg leading-none" aria-hidden="true"></span>
+                                    </span>
+                                    <span class="truncate"><%= device[:device] %></span>
+                                </span>
+                            </div>
+                        <% end %>
+                        <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
+                            <%= device[:count] %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+        </article>
+    </section>
+
+    <section class="mt-6 pb-8" aria-label="Top controllers">
+        <%= render(LesliView::Elements::Table.new(
+            columns: [{
+                label: "Top controllers",
+                field: "request_controller"
+            }, {
+                label: "Requests",
+                field: "requests"
+            }],
+            records: @requests,
+            caption: "Requests by controller"
+        )) %>
+    </section>
 <% end %>

@@ -1,0 +1,8 @@
+/* Tailwind utilities used by LesliAudit views. */
+@layer theme, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "../../app/views/lesli_audit/users/index.html.erb";
+@source "../../app/views/lesli_audit/visitors/index.html.erb";

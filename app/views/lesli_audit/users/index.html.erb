@@ -1,75 +1,81 @@
 
+<%
+color_classes = {
+    "info" => "text-sky-600",
+    "warning" => "text-amber-600",
+    "danger" => "text-rose-600"
+}.freeze
+%>
+
 <%= render(LesliView::Layout::Container.new("audit-users")) do %>
     <%= render(LesliView::Components::Header.new("Users")) %>
 
-    <div class="columns">
+    <section
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
+        aria-label="User overview">
         <% @users[:overview].each do |user| %>
-            <div class="column">
-                <div class="box">
-                    <h4><%= user[:label] %></h4>
-                    <p class="is-size-3 has-text-<%= user[:color] %>"><%= user[:value] %></p>
-                </div>
-            </div>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-sm font-medium text-slate-500"><%= user[:label] %></h2>
+                <p class="mt-3 text-3xl font-semibold tracking-tight tabular-nums <%= color_classes.fetch(user[:color], "text-slate-700") %>">
+                    <%= user[:value] %>
+                </p>
+            </article>
         <% end %>
-    </div>
+    </section>
 
-    <div class="columns">    
-        <div class="column">
-            <div class="box">
-                <%= render(LesliView::Elements::Table.new(columns: [])) do |table| %>
-                    <% @users[:attention_needed].each do |user| %>
-                        <% table.with_row do |row| %>
-                            <% row.with_cell do %>
-                                <span class="icon has-text-<%= user[:color] %>">
-                                    <span class="is-size-4 ri-<%= user[:icon] %>"></span>
-                                </span>
-                            <% end %>
-                            <% row.with_cell(class_name: "w-full") do %>
-                                <%= user[:label] %>
-                            <% end %>
-                            <% row.with_cell(align: :right) do %>
-                                <span class="is-size-6 has-text-weight-bold">
-                                    <%= user[:value] %>
-                                </span>
-                            <% end %>
-                        <% end %>
+    <section class="mt-6 lg:w-2/5" aria-label="Users needing attention">
+        <%= render(LesliView::Elements::Table.new(
+            columns: [],
+            headless: true,
+            striped: false,
+            compact: true,
+            class_name: "!min-w-0",
+            caption: "Users needing attention"
+        )) do |table| %>
+            <% @users[:attention_needed].each do |user| %>
+                <% table.with_row do |row| %>
+                    <% row.with_cell do %>
+                        <span class="inline-flex h-8 w-8 items-center justify-center <%= color_classes.fetch(user[:color], "text-slate-500") %>">
+                            <span class="ri-<%= user[:icon] %> text-xl leading-none" aria-hidden="true"></span>
+                        </span>
+                    <% end %>
+                    <% row.with_cell(class_name: "w-full font-medium text-slate-700") do %>
+                        <%= user[:label] %>
+                    <% end %>
+                    <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :right) do %>
+                        <%= user[:value] %>
                     <% end %>
                 <% end %>
-            </div>
-        </div>
-        <div class="column is-three-fifths">
-        </div>
-    </div>
+            <% end %>
+        <% end %>
+    </section>
 
-    <div class="columns">
-        <div class="column">
-            <%= render(LesliView::Elements::Table.new(
-                columns: [{
-                    label: "id",
-                    field: "user_id"
-                },{
-                    label: "User",
-                    field: "user_email"
-                },{
-                    label:"First activity",
-                    field:"first_activity"
-                },{
-                    label:"Last activity",
-                    field:"last_activity"
-                },{
-                    label:"Resources",
-                    field:"resources"
-                },{
-                    label:"Requests",
-                    field:"requests"
-                },{
-                    label:"Date",
-                    field:"date"
-                }],
-                records: @working_hours
-            )) %>
-        </div>
-    </div>
-
-    <br>
+    <section class="mt-6 pb-8" aria-label="User working hours">
+        <%= render(LesliView::Elements::Table.new(
+            columns: [{
+                label: "id",
+                field: "user_id"
+            }, {
+                label: "User",
+                field: "user_email"
+            }, {
+                label: "First activity",
+                field: "first_activity"
+            }, {
+                label: "Last activity",
+                field: "last_activity"
+            }, {
+                label: "Resources",
+                field: "resources"
+            }, {
+                label: "Requests",
+                field: "requests"
+            }, {
+                label: "Date",
+                field: "date"
+            }],
+            records: @working_hours,
+            caption: "User working hours"
+        )) %>
+    </section>
 <% end %>
