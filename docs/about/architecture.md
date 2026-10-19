@@ -120,9 +120,19 @@ cleanup and configuration implementation is released.
 
 ## Implementation Boundary
 
-The implementation should expose separate `RequestAnalytics` and
-`ActivityAudit` entry points. They may share event normalization and account
-resolution, but they must not share failure or retention behavior.
+The controller integration delegates request traffic to
+`LesliAudit::RequestAnalytics`. Each aggregate or journal write is isolated and
+reported through `Rails.error`, so an analytics failure does not alter the
+application response. The `enable_analytics` and `enable_journals` settings are
+evaluated independently.
+
+Request analytics remains synchronous until its delivery mechanism has a
+durable idempotency key. Moving counter increments directly to a retryable job
+would risk counting the same request more than once.
+
+Activity auditing must use a separate `ActivityAudit` entry point. It may share
+event normalization and account resolution with request analytics, but it must
+not share failure or retention behavior.
 
 Until the first production deployment, schema hardening may be consolidated in
 the existing `v1.0` migrations so a fresh installation starts from the target

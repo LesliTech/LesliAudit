@@ -29,117 +29,15 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 =end
-require 'device_detector'
 module LesliAudit
     module LoggerInterface
-        def get_user_agent(as_string=true)
-
-            # parse user agent
-            user_agent = DeviceDetector.new(request.env["HTTP_USER_AGENT"])
-
-            #user_agent_version = user_agent.version.to_a.first(2).join(".")
-
-            # return user agent as object
-            {
-                platform: user_agent.os_name,
-                browser: user_agent.name,
-                device: user_agent.device_type
-            }
-        end
-
         def log_requests
-            log_account_requests
-            log_user_requests
-            log_devices
-        end 
-
-        def log_account_requests
-            return unless Lesli.config.audit.dig(:enable_analytics)
-            return unless current_user
-
-            # Try to save a unique record for this request configuration
-            current_user.account.audit.account_requests.upsert(
-                {
-                    request_controller: controller_path,
-                    request_action: action_name,
-                    request_count: 1,
-                    date: Date2.new.date.to_s
-                },
-                
-                # group of columns to consider a request as unique
-                unique_by: :lesli_audit_account_requests_index,
-
-                # if request id is not unique, increase the counter for this configuration
-                on_duplicate: Arel.sql(
-                    "request_count = lesli_audit_account_requests.request_count + 1, updated_at = #{LesliDate::Compatibility.db_now}"
-                )
-            )
-        end
-
-        # Track all user activity
-        # this is disabled by default in the settings file
-        def log_user_requests
-            return unless current_user
-            return unless session[:user_session_id]
-            return unless Lesli.config.audit.dig(:enable_analytics)
-
-            # Try to save a unique record for this request configuration
-            current_user.account.audit.user_requests.upsert(
-                {
-                    request_controller: controller_path,
-                    request_action: action_name,
-                    session_id: session[:user_session_id],
-                    user_id: current_user.id,
-                    date: Date2.new.date.to_s,
-                    request_count: 1
-                },
-                        
-                # group of columns to consider a request as unique
-                unique_by: :lesli_audit_user_requests_index,
-
-                # if request id is not unique
-                #   - increase the counter for this configuration
-                #   - update the datetime of the last request
-                on_duplicate: Arel.sql(
-                    "request_count = lesli_audit_user_requests.request_count + 1,updated_at = #{LesliDate::Compatibility.db_now}"
-                )
-            ) 
-
-            return unless Lesli.config.audit.dig(:enable_journals)
-            current_user.account.audit.user_journals.create({
-                request_controller: controller_path,
-                request_action: action_name,
+            LesliAudit::RequestAnalytics.capture(
+                user: current_user,
+                controller: controller_path,
+                action: action_name,
                 session_id: session[:user_session_id],
-                user_id: current_user.id,
-                date: Date2.new.date.to_s
-            }) 
-        end
-
-        def log_devices
-            return unless Lesli.config.audit.dig(:enable_analytics)
-            return unless current_user
-            
-            user_agent = get_user_agent(false)
-            
-            # Try to save a unique record for this request configuration
-            current_user.account.audit.account_devices.upsert(
-                {
-                    :date => Date2.new.date.to_s,
-                    :agent_platform => user_agent&.dig(:platform) || "unknown",
-                    :agent_browser => user_agent&.dig(:browser) || "unknown",
-                    :agent_device => user_agent&.dig(:device) || "unknown",
-                    :agent_count => 1
-                },
-
-                # group of columns to consider a request as unique
-                unique_by: :lesli_audit_devices_index,
-
-                # if request id is not unique
-                #   - increase the counter for this configuration
-                #   - update the datetime of the last request
-                on_duplicate: Arel.sql(
-                    "agent_count = lesli_audit_account_devices.agent_count + 1, updated_at = #{LesliDate::Compatibility.db_now}"
-                )
+                user_agent: request.user_agent
             )
         end
 
