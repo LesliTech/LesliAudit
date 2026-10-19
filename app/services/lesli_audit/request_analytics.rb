@@ -30,7 +30,6 @@ Building a better future, one line of code at a time.
 // ·
 =end
 
-require "device_detector"
 require "securerandom"
 
 module LesliAudit
@@ -117,7 +116,7 @@ module LesliAudit
         end
 
         def create_event(analytics_enabled:, retain:)
-            agent = DeviceDetector.new(user_agent)
+            agent = LesliAudit::UserAgentParser.parse(user_agent)
 
             audit_account.user_journals.create_or_find_by!(event_uid: event_uid) do |journal|
                 journal.assign_attributes(
@@ -126,9 +125,9 @@ module LesliAudit
                         session_id: session_id,
                         analytics_enabled: analytics_enabled,
                         retain: retain,
-                        agent_platform: agent_value(agent.os_name),
-                        agent_browser: agent_value(agent.name),
-                        agent_device: agent_value(agent.device_type)
+                        agent_platform: agent_value(agent[:platform]),
+                        agent_browser: agent_value(agent[:browser]),
+                        agent_device: agent_value(agent[:device])
                     )
                 )
             end
