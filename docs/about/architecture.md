@@ -44,7 +44,8 @@ authentication provider.
 - Analytics may include a session reference when one is available.
 - Activity events may exist without a session, for example system jobs.
 - LesliAudit does not add a database foreign key to a LesliShield table.
-- Model associations with LesliShield must be conditional and optional.
+- Audit models expose `session_id` as plain metadata and do not declare a
+  LesliShield association.
 - A session reference must never be treated as proof that its external record
   still exists.
 

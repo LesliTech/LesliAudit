@@ -1,19 +1,33 @@
 module LesliAudit
     class Account < ApplicationRecord
-        belongs_to :account, class_name: "Lesli::Account"
+        belongs_to :account,
+            class_name: "Lesli::Account",
+            inverse_of: :audit
+
         has_many :dashboards
 
-        has_many :account_logs
-        has_many :account_devices
-        has_many :account_requests
+        has_many :account_logs,
+            inverse_of: :account,
+            dependent: :delete_all
 
-        has_many :user_logs
-        has_many :user_journals
-        has_many :user_requests
+        has_many :account_devices,
+            inverse_of: :account,
+            dependent: :delete_all
 
-        after_create :initialize_account
+        has_many :account_requests,
+            inverse_of: :account,
+            dependent: :delete_all
 
-        def initialize_account
-        end
+        has_many :user_logs,
+            inverse_of: :account,
+            dependent: :delete_all
+
+        has_many :user_journals,
+            inverse_of: :account,
+            dependent: :delete_all
+
+        has_many :user_requests,
+            inverse_of: :account,
+            dependent: :delete_all
     end
 end

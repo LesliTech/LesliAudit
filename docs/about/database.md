@@ -14,6 +14,12 @@ LesliAudit uses collection code `05` and engine code `01`. Its migrations live u
 
 The accounts table uses `create_table_lesli_shared_account_10(:lesli_audit)` and adds a unique index over `account_id`, so each core account has exactly one audit account. Request and device tables use a dedicated `date` column for their aggregation bucket and normal Rails timestamps for record lifecycle metadata.
 
+LesliAudit installs the `audit` association on `Lesli::Account` through
+`LesliAudit::AccountAssociations`. Every Audit-owned record then belongs to
+`LesliAudit::Account`, while user-owned records also reference `Lesli::User`.
+Destroying an Audit account is a deliberate hard purge and deletes its
+dependent Audit records.
+
 The initial schema enforces required tenant and dimension columns,
 nonnegative 64-bit counters, and tenant-first unique indexes. Logger upserts
 identify these constraints by index name so column order can continue to

@@ -67,7 +67,7 @@ session = current_user.sessions.first
             :request_controller => controller,
             :request_action => "show",
             :date => date,
-            :session => session,
+            :session_id => session&.id,
             :user => current_user
         )
     end
