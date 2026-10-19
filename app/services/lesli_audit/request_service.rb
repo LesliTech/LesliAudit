@@ -38,43 +38,10 @@ module LesliAudit
         # @param {query} Has of the formated queries/filters that will be applied to filter data
         # @description
         # @example
-        def index 
-
-
-            requests = current_user.requests
+        def index
+            current_user.requests
             .order(created_at: :desc)
             .page(query[:pagination][:page])
-            .per(query[:pagination][:perPage])
-
-            return requests
-
-
-            search_string = nil # query[:search].downcase.gsub(" ","%") unless query[:search].blank?
-            order_string = "user_requests.created_at" 
-            
-            user_requests = current_user.account.users.joins(:requests)
-            #user_requests = user_requests.where("users.email = ?", query[:filters][:user]) unless query[:filters][:user].blank?
-
-            if !search_string.blank?
-                # user_requests = user_requests.where([
-                #     "lower(users.email) like :search_string",
-                #     "lower(request_controller) like :search_string",
-                #     "lower(request_action) like :search_string"
-                # ].join(" or "), { 
-                #     search_string: "%#{search_string}%"
-                # }) 
-            end
-
-            user_requests.select(
-                :id,
-                "users.id as user_id",
-                "users.email",
-                :request_controller,
-                :request_action,
-                :request_method,
-                :user_session_id,
-                Date2.new.date_time.db_timestamps("user_requests")
-            ).page(query[:pagination][:page])
             .per(query[:pagination][:perPage])
         end
     end

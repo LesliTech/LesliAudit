@@ -1,5 +1,7 @@
 module LesliAudit
     class UserLog < ApplicationRecord
+        include LesliAudit::AppendOnly
+
         belongs_to :account,
             class_name: "LesliAudit::Account",
             inverse_of: :user_logs
@@ -8,5 +10,7 @@ module LesliAudit
             class_name: "Lesli::User",
             inverse_of: :logs,
             optional: true
+
+        validates :operation, presence: true
     end
 end

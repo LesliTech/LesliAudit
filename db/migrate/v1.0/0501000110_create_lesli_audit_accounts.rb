@@ -38,5 +38,13 @@ class CreateLesliAuditAccounts < ActiveRecord::Migration[8.1]
         add_index :lesli_audit_accounts, :account_id,
             unique: true,
             name: "index_lesli_audit_accounts_on_account_id"
+
+        # Soft deletion keeps the core row and its audit history. Only a
+        # deliberate hard deletion activates this cascade.
+        remove_foreign_key :lesli_audit_accounts, :lesli_accounts,
+            column: :account_id
+        add_foreign_key :lesli_audit_accounts, :lesli_accounts,
+            column: :account_id,
+            on_delete: :cascade
     end
 end

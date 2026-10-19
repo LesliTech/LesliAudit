@@ -48,8 +48,15 @@ It records account activity and provides administrators with searchable operatio
 - Account activity and audit logs
 - Request and navigation history
 - Request, device, and authenticated-user analytics
-- Device and user-agent information
+- Idempotent background processing with a durable request inbox
+- Configurable batched data retention
+- Normalized browser, platform, and device categories
 - Detailed views for investigating recorded activity
+
+Activity logs are explicit append-only business or security events. They are
+separate from request analytics: user requests are grouped counters, while
+user journals are individual normalized HTTP request events and the durable
+analytics inbox.
 
 <br />
 
@@ -64,7 +71,8 @@ It records account activity and provides administrators with searchable operatio
 
 ### Requirements
 
-- A Rails application with [Lesli](https://rubygems.org/gems/lesli)
+- Ruby 3.x and Rails `~> 8.1`
+- A Rails application with [Lesli](https://rubygems.org/gems/lesli) `~> 5.1.0`
 - SQLite by default, or PostgreSQL when preferred by the host application
 
 ### Install LesliAudit
@@ -144,6 +152,11 @@ bin/rails test
 - [Lesli website](https://www.lesli.dev/)
 - [Documentation](https://www.lesli.dev/engines/audit)
 - [Architecture and data policy](./docs/about/architecture.md)
+- [Configuration](./docs/about/configuration.md)
+- [Request analytics](./docs/analytics/index)
+- [Activity events](./docs/events/index)
+- [Operational tasks](./docs/about/tasks.md)
+- [Database](./docs/about/database.md)
 - [Frontend development](./docs/about/frontend.md)
 - [Release notes](https://github.com/LesliTech/LesliAudit/releases)
 - [Issue tracker](https://github.com/LesliTech/LesliAudit/issues)

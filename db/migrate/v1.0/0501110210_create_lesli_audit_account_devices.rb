@@ -41,8 +41,9 @@ class CreateLesliAuditAccountDevices < ActiveRecord::Migration[8.1]
             t.timestamps null: false
         end
 
-        add_reference(:lesli_audit_account_devices, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_reference(:lesli_audit_account_devices, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts, on_delete: :cascade })
         add_check_constraint(:lesli_audit_account_devices, "agent_count >= 0", name: "lesli_audit_account_devices_agent_count_nonnegative")
         add_index(:lesli_audit_account_devices, %i[account_id date agent_platform agent_browser agent_device], unique: true, name: "lesli_audit_devices_index")
+        add_index(:lesli_audit_account_devices, :date, name: "index_lesli_audit_account_devices_on_date")
     end
 end

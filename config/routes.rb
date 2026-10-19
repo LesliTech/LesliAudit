@@ -43,11 +43,12 @@ LesliAudit::Engine.routes.draw do
     resources :users, only: [:index] 
 
     # Analytics:
-    #   Visitors by date
+    #   Requests by date
     #   Trends by date
     #   Most active users
     #   Most active controllers
-    resources :visitors, only: [:index] 
+    get "analytics", to: "visitors#index", as: :analytics
+    resources :visitors, only: [:index]
 
     resources :logs, only: [:index, :show]
 

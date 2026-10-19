@@ -39,8 +39,9 @@ class CreateLesliAuditAccountRequests < ActiveRecord::Migration[8.1]
             t.date :date, null: false
             t.timestamps null: false
         end
-        add_reference(:lesli_audit_account_requests, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_reference(:lesli_audit_account_requests, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts, on_delete: :cascade })
         add_check_constraint(:lesli_audit_account_requests, "request_count >= 0", name: "lesli_audit_account_requests_request_count_nonnegative")
         add_index(:lesli_audit_account_requests, %i[account_id date request_controller request_action], unique: true, name: "lesli_audit_account_requests_index")
+        add_index(:lesli_audit_account_requests, :date, name: "index_lesli_audit_account_requests_on_date")
     end
 end

@@ -34,7 +34,7 @@ module LesliAudit
     class VisitorService < Lesli::ApplicationLesliService
 
         def visits
-            requests = current_user.account.audit.account_requests
+            requests = apply_time_filter(current_user.account.audit.account_requests)
 
             controllers, total_requests = requests.pick(
                 Arel.sql("COUNT(DISTINCT request_controller)"),
@@ -47,13 +47,10 @@ module LesliAudit
             }
         end 
 
-        def visitors 
+        def traffic
             #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 1.hour) do 
                 group = 'day' 
                 #group = params[:bygroup] if ['month','week','day'].include?(params[:bygroup])
-
-                # only the users of the account
-                usrs = current_user.account.users
 
                 group_by = "DATE_TRUNC('month', date)" if group == 'month'
                 group_by = "DATE_TRUNC('week', date)" if group == 'week'
@@ -64,9 +61,8 @@ module LesliAudit
                     group_by = "strftime('%Y-%m-%d', date)"
                 end
 
-                requests = current_user.account.audit.account_requests.group(group_by)
-
-                requests = apply_filters(requests, query)
+                requests = apply_time_filter(current_user.account.audit.account_requests)
+                .group(group_by)
                 
                 requests.limit(10).order("xaxiskey desc").select(
                     "sum(request_count) yaxiskey",
@@ -76,10 +72,8 @@ module LesliAudit
         end 
 
         def requests
-            requests = current_user.account.audit.account_requests
+            requests = apply_time_filter(current_user.account.audit.account_requests)
             .group("request_controller")
-
-            requests = apply_filters(requests, query)
 
             requests = requests.limit(LIMIT).order("requests DESC").select(
                 :request_controller,
@@ -88,7 +82,7 @@ module LesliAudit
         end
 
         def os 
-            device_counts = current_user.account.audit.account_devices
+            device_counts = apply_time_filter(current_user.account.audit.account_devices)
             .group(:agent_platform)
             .sum(:agent_count)
 
@@ -105,7 +99,7 @@ module LesliAudit
         end 
 
         def devices 
-            device_counts = current_user.account.audit.account_devices
+            device_counts = apply_time_filter(current_user.account.audit.account_devices)
             .group(:agent_device)
             .sum(:agent_count)
 
@@ -122,7 +116,7 @@ module LesliAudit
         end 
 
         def browsers
-            browser_counts = current_user.account.audit.account_devices
+            browser_counts = apply_time_filter(current_user.account.audit.account_devices)
             .group(:agent_browser)
             .sum(:agent_count)
 
@@ -203,37 +197,16 @@ module LesliAudit
             DEVICE_ICON_CLASSES.fetch(device.to_s, DEVICE_ICON_CLASSES["unknown"])
         end
 
-        def apply_filters requests, params
-
-            return requests
-
-            # filter by search string
-            unless params[:search].blank?
-                requests = requests.where(
-                    "lower(request_agent) like :search_string or lower(request_controller) like :search_string or lower(request_action) like :search_string", 
-                    { 
-                        search_string: "%#{params[:search].downcase.gsub(" ","%")}%"
-                    }
-                ) 
+        def apply_time_filter(relation)
+            start_date = case query[:bytime]
+            when "day" then Date.current
+            when "week" then 6.days.ago.to_date
+            when "month" then 29.days.ago.to_date
+            when "sixmonth" then 6.months.ago.to_date
+            when "year" then 1.year.ago.to_date
             end
 
-            # filter by time
-            unless params[:bytime].blank? && params[:bytime] != 'all'
-                requests = requests.where(date: Date.current..) if params[:bytime] == 'day'
-                requests = requests.where(date: (Date.current - 7.days)..) if params[:bytime] == 'week'
-                requests = requests.where(date: (Date.current - 30.days)..) if params[:bytime] == 'month'
-                requests = requests.where(date: (Date.current - 6.months)..) if params[:bytime] == 'sixmonth'
-                requests = requests.where(date: (Date.current - 1.year)..) if params[:bytime] == 'year'
-            end
-
-            # filter by request format
-            if (!params[:byformat].blank? && ['html', 'json'].include?(params[:byformat]))
-                requests = requests.where(:request_action => 'show') if params[:byformat] == 'html'
-                requests = requests.where(:request_format => params[:byformat])
-            end
-
-            requests
-
+            start_date ? relation.where(date: start_date..) : relation
         end
     end
 end

@@ -1,7 +1,7 @@
 
 <%
-visitors = @visitors.reverse
-top_days = visitors.last(3)
+traffic = @traffic.reverse
+top_days = traffic.last(3)
 %>
 
 <%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
@@ -9,7 +9,7 @@ top_days = visitors.last(3)
 
     <section
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
-        aria-label="Visitor overview">
+        aria-label="Traffic overview">
         <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 class="text-sm font-medium text-slate-500">Controllers</h2>
             <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
@@ -36,21 +36,21 @@ top_days = visitors.last(3)
 
     <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <%= render(LesliView::Charts::Line.new(
-            title: "Visitors",
-            database_to_dataset: visitors
+            database_to_dataset: traffic,
+            title: "Requests"
         )) %>
     </section>
 
-    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3" aria-label="Visitor breakdown">
+    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3" aria-label="Request traffic breakdown">
         <article class="min-w-0">
             <%= render(LesliView::Elements::Table.new(
                 columns: [
                     { label: "Browsers", align: :left },
-                    { label: "Visitors", align: :center }
+                    { label: "Requests", align: :center }
                 ],
                 class_name: "!min-w-0",
                 compact: true,
-                caption: "Visitors by browser"
+                caption: "Requests by browser"
             )) do |table| %>
                 <% @browsers.each do |browser| %>
                     <% percentage = browser[:percentage].to_i.clamp(0, 100) %>
@@ -81,11 +81,11 @@ top_days = visitors.last(3)
             <%= render(LesliView::Elements::Table.new(
                 columns: [
                     { label: "OS", align: :left },
-                    { label: "Visitors", align: :center }
+                    { label: "Requests", align: :center }
                 ],
                 class_name: "!min-w-0",
                 compact: true,
-                caption: "Visitors by operating system"
+                caption: "Requests by operating system"
             )) do |table| %>
                 <% @os.each do |device| %>
                     <% percentage = device[:percentage].to_i.clamp(0, 100) %>
@@ -116,11 +116,11 @@ top_days = visitors.last(3)
             <%= render(LesliView::Elements::Table.new(
                 columns: [
                     { label: "Device", align: :left },
-                    { label: "Visitors", align: :center }
+                    { label: "Requests", align: :center }
                 ],
                 class_name: "!min-w-0",
                 compact: true,
-                caption: "Visitors by device"
+                caption: "Requests by device"
             )) do |table| %>
                 <% @devices.each do |device| %>
                     <% percentage = device[:percentage].to_i.clamp(0, 100) %>

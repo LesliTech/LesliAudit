@@ -24,6 +24,7 @@ covered by an `@source` rule. The current page-specific sources are:
 ```css
 @source "../../app/views/lesli_audit/users/index.html.erb";
 @source "../../app/views/lesli_audit/visitors/index.html.erb";
+@source "../../app/views/lesli_audit/logs/show.html.erb";
 ```
 
 Add another source when migrating or creating a view that contains utilities.

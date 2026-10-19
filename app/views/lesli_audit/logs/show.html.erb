@@ -1,10 +1,16 @@
-<p style="color: green"><%= notice %></p>
+<%= render(LesliView::Layout::Container.new("audit-log")) do %>
+    <%= render(LesliView::Components::Header.new("Audit event")) %>
 
-<%= render @log %>
+    <dl class="grid grid-cols-1 gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2">
+        <% %i[engine source action operation description actor_uid session_id created_at].each do |field| %>
+            <div>
+                <dt class="text-sm font-medium text-slate-500"><%= field.to_s.humanize %></dt>
+                <dd class="mt-1 break-words text-sm text-slate-900"><%= @log.public_send(field) %></dd>
+            </div>
+        <% end %>
+    </dl>
 
-<div>
-  <%= link_to "Edit this log", edit_log_path(@log) %> |
-  <%= link_to "Back to logs", logs_path %>
-
-  <%= button_to "Destroy this log", @log, method: :delete %>
-</div>
+    <div class="mt-6">
+        <%= link_to "Back to logs", logs_path, class: "text-sm font-medium text-sky-700 hover:text-sky-900" %>
+    </div>
+<% end %>

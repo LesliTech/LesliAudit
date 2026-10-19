@@ -35,22 +35,24 @@ module LesliAudit
 
         def users
             users = current_user.account.users
+            users = users.with_deleted if users.respond_to?(:with_deleted)
 
             now = Time.current
             last_30_days = 30.days.ago
+            quoted_false = ActiveRecord::Base.connection.quote(false)
 
             stats = users.pick(
                 # total users 
                 Arel.sql("COUNT(*)"),
 
                 # total deactivated users 
-                Arel.sql("SUM(CASE WHEN active = 0 AND deleted_at IS NULL THEN 1 ELSE 0 END)"),
+                Arel.sql("SUM(CASE WHEN active = #{quoted_false} AND deleted_at IS NULL THEN 1 ELSE 0 END)"),
 
                 # total locked users 
                 Arel.sql(
                     "SUM(CASE WHEN (
                         locked_at IS NOT NULL
-                        OR locked_until > #{ActiveRecord::Base.connection.quote(Time.current)}
+                        OR locked_until > #{ActiveRecord::Base.connection.quote(now)}
                     ) AND deleted_at IS NULL THEN 1 ELSE 0 END)"
                 ),
 
@@ -137,37 +139,37 @@ module LesliAudit
 
             group = 'day' 
 
-            group_by = "DATE_TRUNC('month', lesli_audit_user_requests.date)" if group == 'month'
-            group_by = "DATE_TRUNC('week', lesli_audit_user_requests.date)" if group == 'week'
-            group_by = "DATE_TRUNC('day', lesli_audit_user_requests.date)" if group == 'day'
+            group_by = "DATE_TRUNC('month', lesli_audit_user_journals.date)" if group == 'month'
+            group_by = "DATE_TRUNC('week', lesli_audit_user_journals.date)" if group == 'week'
+            group_by = "DATE_TRUNC('day', lesli_audit_user_journals.date)" if group == 'day'
 
             # compatibility for SQLite
             if ActiveRecord::Base.connection.adapter_name == "SQLite"
-                group_by = "strftime('%Y-%m-%d', lesli_audit_user_requests.date)"
+                group_by = "strftime('%Y-%m-%d', lesli_audit_user_journals.date)"
             end
 
-            user_requests = current_user.account.users.joins(:requests)
+            user_journals = current_user.account.users
+            .joins(:journals)
+            .merge(LesliAudit::UserJournal.retained.processed)
 
-            user_requests = user_requests.select(
-                :id,
+            user_journals = user_journals.select(
                 "lesli_users.id as user_id",
                 "lesli_users.email as user_email",
                 "#{group_by} date",
-                "min(lesli_audit_user_requests.created_at) as first_activity", 
-                "max(lesli_audit_user_requests.updated_at) as last_activity",
-                "count(lesli_audit_user_requests.id) resources", 
-                "sum(lesli_audit_user_requests.request_count) requests"
+                "min(lesli_audit_user_journals.created_at) as first_activity",
+                "max(lesli_audit_user_journals.created_at) as last_activity",
+                "count(lesli_audit_user_journals.id) requests"
             )
            
-            user_requests = user_requests.group(:user_id, group_by)
+            user_journals = user_journals.group("lesli_users.id", group_by)
 
-            user_requests.map do |request|
+            user_journals.map do |request|
                 request[:first_activity] = Date2.new(request[:first_activity]).time
                 request[:last_activity] = Date2.new(request[:last_activity]).time
                 request
             end
             
-            user_requests.reverse
+            user_journals.reverse
         end
 
         def registrations

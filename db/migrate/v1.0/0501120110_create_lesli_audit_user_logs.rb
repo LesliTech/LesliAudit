@@ -37,18 +37,22 @@ class CreateLesliAuditUserLogs < ActiveRecord::Migration[8.1]
             t.string :source
             t.string :action
 
-            t.string :operation
-            t.string :description
-            t.bigint :session_id
+            t.string :operation, null: false
+            t.text :description
+            t.string :session_id
+            t.string :actor_uid
 
             # Polymorphic subject
             t.string :subject_type
             t.bigint :subject_id
 
-            t.timestamps
+            t.timestamps null: false
         end
 
         add_reference(:lesli_audit_user_logs, :user, null: true, foreign_key: { to_table: :lesli_users, on_delete: :nullify })
-        add_reference(:lesli_audit_user_logs, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_reference(:lesli_audit_user_logs, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts, on_delete: :cascade })
+        add_index(:lesli_audit_user_logs, %i[account_id created_at], name: "index_lesli_audit_user_logs_on_account_and_created_at")
+        add_index(:lesli_audit_user_logs, %i[user_id created_at], name: "index_lesli_audit_user_logs_on_user_and_created_at")
+        add_index(:lesli_audit_user_logs, :created_at, name: "index_lesli_audit_user_logs_on_created_at")
     end
 end

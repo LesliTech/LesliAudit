@@ -36,25 +36,11 @@ module LesliAudit
                 user: current_user,
                 controller: controller_path,
                 action: action_name,
+                event_uid: request.request_id,
                 session_id: session[:user_session_id],
                 user_agent: request.user_agent
             )
         end
 
-        # Track specific account activity
-        # this is disabled by default in the settings file
-        def log_account_activity(system_module, system_process, title = nil, payload = nil, description = nil)
-            # return unless Rails.application.config.lesli.dig(:security, :enable_analytics)
-
-            # account = Account.first
-
-            # account.activities.create({
-            #     system_module:,
-            #     system_process:,
-            #     description:,
-            #     payload:,
-            #     title:
-            # })
-        end
     end
 end

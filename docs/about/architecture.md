@@ -1,6 +1,6 @@
 # Architecture and Data Policy
 
-This page defines the target contract for LesliAudit. It separates operational
+This page defines the data contract for LesliAudit. It separates operational
 analytics from durable activity auditing so each workload can use appropriate
 reliability, retention, and storage rules.
 
@@ -20,12 +20,31 @@ operation that understands the event must emit it explicitly.
 User journals belong to request analytics. They provide detailed operational
 timing but are not permanent audit evidence.
 
+## Storage Semantics
+
+Request capture produces two different representations:
+
+1. `UserJournal` stores one durable inbox event for the captured request. When
+   journal retention is enabled, it also supplies individual request timing.
+2. `UserRequest` and `AccountRequest` store grouped counters. A matching event
+   increments `request_count` instead of preserving another request timestamp.
+
+`AccountDevice` is another grouped request counter; it measures requests by
+normalized agent category, not distinct physical devices or people.
+
+`UserLog` and `AccountLog` are separate append-only activity records created
+only when application code explicitly emits a meaningful operation. They are
+the only records in this engine intended as audit evidence. See
+[Database](/engines/audit/about/database#choosing-the-correct-record) for the
+complete table-by-table comparison.
+
 ## Reliability
 
-Analytics is **fail-open**. A parsing, queue, or analytics database error must
-be reported through Rails error reporting, but it must not change an otherwise
-successful application response. Analytics events must be idempotent so a job
-can be retried without increasing a counter twice.
+Analytics is **fail-open**. A parsing, queue, or analytics database error is
+reported through Rails error reporting, but does not change an otherwise
+successful application response. Each request uses `request.request_id` as its
+tenant-scoped event UID, so duplicate callbacks and job retries do not increase
+a counter twice.
 
 Activity audit is **fail-closed** for operations declared auditable. The event
 must be written in the same transaction boundary as the business change. If
@@ -58,8 +77,8 @@ The existing account-device counters measure **requests**, not unique visitors
 or unique devices. Reports and interface labels must use terms such as
 "traffic", "requests by device", and "request analytics".
 
-The current `/visitors` route may remain as a compatibility alias while the
-interface is renamed. A future unique-session metric must use a separate table
+The `/visitors` route remains as a compatibility alias for `/analytics`. A
+future unique-session metric must use a separate table
 or aggregation key; it must not reinterpret historical request counters as
 visitors.
 
@@ -97,9 +116,9 @@ unfiltered request parameters must never be written. Subject identifiers and
 actor snapshots should contain only the information required to understand the
 event.
 
-## Target Configuration
+## Configuration
 
-Later implementation phases will expose these defaults through the Audit
+Write switches and retention periods are available through the Audit
 configuration namespace:
 
 ```ruby
@@ -115,25 +134,68 @@ Lesli.configure do |config|
 end
 ```
 
-`nil` means that LesliAudit does not automatically purge activity events. These
-keys describe the target contract and must not be treated as active until their
-cleanup and configuration implementation is released.
+All these settings are active. A retention value must be a positive integer of
+days or `nil`; `nil` makes retention cleanup skip that data class. The
+default `audit_retention_days: nil` therefore preserves activity events until
+the host application explicitly adopts a legal and operational retention
+period.
+
+## Retention Cleanup
+
+`LesliAudit::RetentionCleanup` removes expired records using bounded primary-key
+batches. Date-based analytics delete rows whose `date` is older than their
+cutoff; activity events use `created_at`. Rows exactly on the cutoff are kept.
+Pending request events are never deleted. Retained journals use the journal
+period, while scrubbed idempotency rows use the analytics period. The operation
+is idempotent and reports the number deleted from every table.
+
+The engine exposes `LesliAudit::RetentionCleanupJob` for the host scheduler and
+the following manual task:
+
+```shell
+bin/rails lesli_audit:retention:cleanup
+```
+
+LesliAudit does not choose a schedule because job backends and maintenance
+windows belong to the host application. Running cleanup once per day is the
+recommended default. A host should verify export and legal-hold requirements
+before enabling activity-event retention.
 
 ## Implementation Boundary
 
 The controller integration delegates request traffic to
-`LesliAudit::RequestAnalytics`. Each aggregate or journal write is isolated and
-reported through `Rails.error`, so an analytics failure does not alter the
-application response. The `enable_analytics` and `enable_journals` settings are
-evaluated independently.
+`LesliAudit::RequestAnalytics`. It normalizes the user-agent, stores a durable
+inbox row in `lesli_audit_user_journals`, and enqueues
+`LesliAudit::RequestAnalyticsJob`. The raw user-agent is never persisted.
 
-Request analytics remains synchronous until its delivery mechanism has a
-durable idempotency key. Moving counter increments directly to a retryable job
-would risk counting the same request more than once.
+The job locks the inbox row and writes account, user, and device aggregates in
+the same transaction as `processed_at`. A failure rolls back every increment;
+a retry sees either the complete unprocessed event or the processed marker.
+When journals are disabled, the processor scrubs user, session, request, and
+agent dimensions after aggregation, retaining only the minimum event identity
+needed for deduplication. `enable_analytics` and `enable_journals` are evaluated
+independently.
 
-Activity auditing must use a separate `ActivityAudit` entry point. It may share
-event normalization and account resolution with request analytics, but it must
-not share failure or retention behavior.
+If enqueueing fails, the durable row remains pending and Rails error reporting
+receives the failure. Operators can enqueue pending rows again with:
+
+```shell
+bin/rails lesli_audit:analytics:retry_pending
+```
+
+Activity auditing uses `LesliAudit::ActivityAudit`, a deliberately small entry
+point that accepts only allowlisted event fields. It resolves the engine account,
+normalizes identifiers, snapshots the actor UID, and persists through `create!`.
+It does not rescue persistence errors: callers must invoke it inside the same
+database transaction as the business change when both must succeed together.
+
+`Lesli::Account#log` and `Lesli::User#log` delegate to this entry point when the
+optional Audit engine is installed. With `enable_logs: false`, both calls are
+intentional no-ops. Persisted account and user activity events are read-only;
+an event outcome is represented by a new event, never by editing the original.
+A core account's normal soft deletion keeps its audit history. A deliberate
+hard deletion cascades through database foreign keys to the Audit account and
+its data, without requiring the core model to own engine lifecycle callbacks.
 
 Until the first production deployment, schema hardening may be consolidated in
 the existing `v1.0` migrations so a fresh installation starts from the target
