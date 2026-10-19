@@ -30,7 +30,7 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-class CreateLesliAuditUserLogs < ActiveRecord::Migration[6.0]
+class CreateLesliAuditUserLogs < ActiveRecord::Migration[8.1]
     def change
         create_table :lesli_audit_user_logs do |t|
             t.string :engine
@@ -48,7 +48,7 @@ class CreateLesliAuditUserLogs < ActiveRecord::Migration[6.0]
             t.timestamps
         end
 
-        add_reference(:lesli_audit_user_logs, :user, foreign_key: { to_table: :lesli_users }) 
-        add_reference(:lesli_audit_user_logs, :account, foreign_key: { to_table: :lesli_audit_accounts })
+        add_reference(:lesli_audit_user_logs, :user, null: true, foreign_key: { to_table: :lesli_users, on_delete: :nullify })
+        add_reference(:lesli_audit_user_logs, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
     end
 end

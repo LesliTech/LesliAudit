@@ -1,1 +1,1 @@
-<%= navigation_for_folder("engines", "audit", "about", order:["installation", "translations", "dashboards", "database"]) %>
+<%= navigation_for_folder("engines", "audit", "about", order:["installation", "architecture", "database", "frontend", "translations", "dashboards"]) %>

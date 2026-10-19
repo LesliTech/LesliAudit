@@ -68,7 +68,7 @@ current_user = Lesli::User.first
                     :agent_platform => platform,
                     :agent_browser => browser,
                     :agent_device => device,
-                    :created_at => date,
+                    :date => date,
                 )
             end
         end

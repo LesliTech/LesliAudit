@@ -33,14 +33,16 @@ Building a better future, one line of code at a time.
 class CreateLesliAuditAccountDevices < ActiveRecord::Migration[8.1]
     def change
         create_table :lesli_audit_account_devices do |t|
-            t.string  :agent_platform
-            t.string  :agent_browser
-            t.string  :agent_device
-            t.integer :agent_count
-            t.date    :created_at
+            t.string :agent_platform, null: false
+            t.string :agent_browser, null: false
+            t.string :agent_device, null: false
+            t.bigint :agent_count, null: false, default: 0
+            t.date :date, null: false
+            t.timestamps null: false
         end
 
-        add_reference(:lesli_audit_account_devices, :account, foreign_key: { to_table: :lesli_audit_accounts })
-        add_index(:lesli_audit_account_devices, %i[agent_platform agent_browser agent_device created_at account_id], unique: true, name: "lesli_audit_devices_index")
+        add_reference(:lesli_audit_account_devices, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_check_constraint(:lesli_audit_account_devices, "agent_count >= 0", name: "lesli_audit_account_devices_agent_count_nonnegative")
+        add_index(:lesli_audit_account_devices, %i[account_id date agent_platform agent_browser agent_device], unique: true, name: "lesli_audit_devices_index")
     end
 end

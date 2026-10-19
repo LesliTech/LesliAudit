@@ -1,5 +1,5 @@
 module LesliAudit
     class AccountDevice < ApplicationRecord
-        belongs_to :account, class_name: 'Lesli::Account'
+        belongs_to :account
     end
 end

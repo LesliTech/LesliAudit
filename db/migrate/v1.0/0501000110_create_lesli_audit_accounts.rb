@@ -30,8 +30,13 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-class CreateLesliAuditAccounts < ActiveRecord::Migration[6.0]
+class CreateLesliAuditAccounts < ActiveRecord::Migration[8.1]
     def change
         create_table_lesli_shared_account_10(:lesli_audit)
+
+        remove_index :lesli_audit_accounts, :account_id
+        add_index :lesli_audit_accounts, :account_id,
+            unique: true,
+            name: "index_lesli_audit_accounts_on_account_id"
     end
 end

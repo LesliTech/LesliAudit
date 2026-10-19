@@ -55,13 +55,13 @@ module LesliAudit
                 # only the users of the account
                 usrs = current_user.account.users
 
-                group_by = "DATE_TRUNC('month', created_at)" if group == 'month'
-                group_by = "DATE_TRUNC('week', created_at)" if group == 'week'
-                group_by = "DATE_TRUNC('day', created_at)" if group == 'day'
+                group_by = "DATE_TRUNC('month', date)" if group == 'month'
+                group_by = "DATE_TRUNC('week', date)" if group == 'week'
+                group_by = "DATE_TRUNC('day', date)" if group == 'day'
 
                 # compatibility for SQLite
                 if ActiveRecord::Base.connection.adapter_name == "SQLite"
-                    group_by = "strftime('%Y-%m-%d', created_at)"
+                    group_by = "strftime('%Y-%m-%d', date)"
                 end
 
                 requests = current_user.account.audit.account_requests.group(group_by)
@@ -138,9 +138,9 @@ module LesliAudit
             end
             #Rails.cache.fetch(cache_key_for_account(__method__), expires_in: 4.hour) do 
                 # current_user.account.audit.account_devices
-                # .group(:agent_browser, :created_at)
+                # .group(:agent_browser, :date)
                 # .select(
-                #     'created_at as xaxiskey',
+                #     'date as xaxiskey',
                 #     'agent_browser as dataname',
                 #     'sum(agent_count) as yaxiskey'
                 # ).as_json
@@ -219,11 +219,11 @@ module LesliAudit
 
             # filter by time
             unless params[:bytime].blank? && params[:bytime] != 'all'
-                requests = requests.where(created_at: (Time.now.beginning_of_day)..) if params[:bytime] == 'day'
-                requests = requests.where(created_at: (Time.now.beginning_of_day - 7.day)..) if params[:bytime] == 'week'
-                requests = requests.where(created_at: (Time.now.beginning_of_day - 30.day)..) if params[:bytime] == 'month'
-                requests = requests.where(created_at: (Time.now.beginning_of_day - 6.month)..) if params[:bytime] == 'sixmonth'
-                requests = requests.where(created_at: (Time.now.beginning_of_day - 1.year)..) if params[:bytime] == 'year'
+                requests = requests.where(date: Date.current..) if params[:bytime] == 'day'
+                requests = requests.where(date: (Date.current - 7.days)..) if params[:bytime] == 'week'
+                requests = requests.where(date: (Date.current - 30.days)..) if params[:bytime] == 'month'
+                requests = requests.where(date: (Date.current - 6.months)..) if params[:bytime] == 'sixmonth'
+                requests = requests.where(date: (Date.current - 1.year)..) if params[:bytime] == 'year'
             end
 
             # filter by request format

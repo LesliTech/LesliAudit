@@ -30,16 +30,17 @@ Building a better future, one line of code at a time.
 // ·
 =end
 
-class CreateLesliAuditUserJournals < ActiveRecord::Migration[6.0]
+class CreateLesliAuditUserJournals < ActiveRecord::Migration[8.1]
     def change
         create_table :lesli_audit_user_journals do |t|
-            t.string  :request_controller
-            t.string  :request_action
-            t.date    :date, index: true
-            t.bigint  :session_id
-            t.timestamps
+            t.string :request_controller, null: false
+            t.string :request_action, null: false
+            t.date :date, null: false
+            t.bigint :session_id
+            t.timestamps null: false
         end
-        add_reference(:lesli_audit_user_journals, :user, foreign_key: { to_table: :lesli_users })
-        add_reference(:lesli_audit_user_journals, :account, foreign_key: { to_table: :lesli_audit_accounts })
+        add_reference(:lesli_audit_user_journals, :user, null: false, foreign_key: { to_table: :lesli_users })
+        add_reference(:lesli_audit_user_journals, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_index(:lesli_audit_user_journals, %i[account_id date], name: "index_lesli_audit_user_journals_on_account_and_date")
     end
 end

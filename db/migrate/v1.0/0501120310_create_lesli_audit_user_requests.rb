@@ -30,18 +30,20 @@ Building a better future, one line of code at a time.
 // ·
 =end
 
-class CreateLesliAuditUserRequests < ActiveRecord::Migration[6.0]
+class CreateLesliAuditUserRequests < ActiveRecord::Migration[8.1]
     def change
         create_table :lesli_audit_user_requests do |t|
-            t.string  :request_controller
-            t.string  :request_action
-            t.integer :request_count
-            t.date    :date, index: true
-            t.bigint  :session_id
-            t.timestamps
+            t.string :request_controller, null: false
+            t.string :request_action, null: false
+            t.bigint :request_count, null: false, default: 0
+            t.date :date, null: false
+            t.bigint :session_id
+            t.timestamps null: false
         end
-        add_reference(:lesli_audit_user_requests, :user, foreign_key: { to_table: :lesli_users })
-        add_reference(:lesli_audit_user_requests, :account, foreign_key: { to_table: :lesli_audit_accounts })
-        add_index(:lesli_audit_user_requests, %i[request_controller request_action date user_id session_id], unique: true, name: "lesli_audit_user_requests_index")
+        add_reference(:lesli_audit_user_requests, :user, null: false, foreign_key: { to_table: :lesli_users })
+        add_reference(:lesli_audit_user_requests, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_check_constraint(:lesli_audit_user_requests, "request_count >= 0", name: "lesli_audit_user_requests_request_count_nonnegative")
+        add_index(:lesli_audit_user_requests, %i[account_id user_id session_id date request_controller request_action], unique: true, name: "lesli_audit_user_requests_index")
+        add_index(:lesli_audit_user_requests, %i[account_id date], name: "index_lesli_audit_user_requests_on_account_and_date")
     end
 end

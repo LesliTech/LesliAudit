@@ -2,7 +2,7 @@
 
 Lesli
 
-Copyright (c) 2023, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 Lesli · Ruby on Rails SaaS Development Framework.
 
-Made with ♥ by https://www.lesli.tech
+Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -63,14 +63,16 @@ module LesliAudit
                     request_controller: controller_path,
                     request_action: action_name,
                     request_count: 1,
-                    created_at: Date2.new.date.to_s
+                    date: Date2.new.date.to_s
                 },
                 
                 # group of columns to consider a request as unique
-                unique_by: %i[request_controller request_action created_at account_id],
+                unique_by: :lesli_audit_account_requests_index,
 
                 # if request id is not unique, increase the counter for this configuration
-                on_duplicate: Arel.sql("request_count = lesli_audit_account_requests.request_count + 1")
+                on_duplicate: Arel.sql(
+                    "request_count = lesli_audit_account_requests.request_count + 1, updated_at = #{LesliDate::Compatibility.db_now}"
+                )
             )
         end
 
@@ -93,7 +95,7 @@ module LesliAudit
                 },
                         
                 # group of columns to consider a request as unique
-                unique_by: %i[request_controller request_action date user_id session_id],
+                unique_by: :lesli_audit_user_requests_index,
 
                 # if request id is not unique
                 #   - increase the counter for this configuration
@@ -122,7 +124,7 @@ module LesliAudit
             # Try to save a unique record for this request configuration
             current_user.account.audit.account_devices.upsert(
                 {
-                    :created_at => Date2.new.date.to_s,
+                    :date => Date2.new.date.to_s,
                     :agent_platform => user_agent&.dig(:platform) || "unknown",
                     :agent_browser => user_agent&.dig(:browser) || "unknown",
                     :agent_device => user_agent&.dig(:device) || "unknown",
@@ -130,13 +132,13 @@ module LesliAudit
                 },
 
                 # group of columns to consider a request as unique
-                unique_by: %i[agent_platform agent_browser agent_device created_at account_id],
+                unique_by: :lesli_audit_devices_index,
 
                 # if request id is not unique
                 #   - increase the counter for this configuration
                 #   - update the datetime of the last request
                 on_duplicate: Arel.sql(
-                    'agent_count = lesli_audit_account_devices.agent_count + 1'
+                    "agent_count = lesli_audit_account_devices.agent_count + 1, updated_at = #{LesliDate::Compatibility.db_now}"
                 )
             )
         end

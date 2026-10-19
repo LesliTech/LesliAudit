@@ -1,6 +1,6 @@
 module LesliAudit
     class AccountLog < ApplicationRecord
-        belongs_to :account, optional: true
+        belongs_to :account
         belongs_to :user, class_name: "Lesli::User", optional: true
         
         enum :operation, { 

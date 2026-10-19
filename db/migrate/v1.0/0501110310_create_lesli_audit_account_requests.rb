@@ -30,15 +30,17 @@ Building a better future, one line of code at a time.
 // ·
 =end
 
-class CreateLesliAuditAccountRequests < ActiveRecord::Migration[6.0]
+class CreateLesliAuditAccountRequests < ActiveRecord::Migration[8.1]
     def change
         create_table :lesli_audit_account_requests do |t|
-            t.string    :request_controller
-            t.string    :request_action
-            t.integer   :request_count
-            t.date      :created_at
+            t.string :request_controller, null: false
+            t.string :request_action, null: false
+            t.bigint :request_count, null: false, default: 0
+            t.date :date, null: false
+            t.timestamps null: false
         end
-        add_reference(:lesli_audit_account_requests, :account, foreign_key: { to_table: :lesli_audit_accounts })
-        add_index(:lesli_audit_account_requests, %i[request_controller request_action created_at account_id], unique: true, name: "lesli_audit_account_requests_index")
+        add_reference(:lesli_audit_account_requests, :account, null: false, foreign_key: { to_table: :lesli_audit_accounts })
+        add_check_constraint(:lesli_audit_account_requests, "request_count >= 0", name: "lesli_audit_account_requests_request_count_nonnegative")
+        add_index(:lesli_audit_account_requests, %i[account_id date request_controller request_action], unique: true, name: "lesli_audit_account_requests_index")
     end
 end

@@ -47,7 +47,7 @@ It records account activity and provides administrators with searchable operatio
 
 - Account activity and audit logs
 - Request and navigation history
-- Visitor and authenticated-user analytics
+- Request, device, and authenticated-user analytics
 - Device and user-agent information
 - Detailed views for investigating recorded activity
 
@@ -143,6 +143,7 @@ bin/rails test
 
 - [Lesli website](https://www.lesli.dev/)
 - [Documentation](https://www.lesli.dev/engines/audit)
+- [Architecture and data policy](./docs/about/architecture.md)
 - [Frontend development](./docs/about/frontend.md)
 - [Release notes](https://github.com/LesliTech/LesliAudit/releases)
 - [Issue tracker](https://github.com/LesliTech/LesliAudit/issues)

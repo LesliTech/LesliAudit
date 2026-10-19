@@ -58,7 +58,7 @@ session = current_user.sessions.first
         ).find_or_create_by(
             :request_controller => controller,
             :request_action => "show",
-            :created_at => date,
+            :date => date,
         )
 
         current_user.account.audit.user_requests.create_with(
@@ -66,7 +66,7 @@ session = current_user.sessions.first
         ).find_or_create_by(
             :request_controller => controller,
             :request_action => "show",
-            :created_at => date,
+            :date => date,
             :session => session,
             :user => current_user
         )
