@@ -6,10 +6,10 @@ LesliAudit uses collection code `05` and engine code `01`. Its migrations live u
 | --- | --- | --- |
 | `05.01.00.01.10` | `lesli_audit_accounts` | Engine state for a Lesli account |
 | `05.01.11.01.10` | `lesli_audit_account_logs` | Account-level activity records |
-| `05.01.11.02.10` | `lesli_audit_account_devices` | Aggregated browser, platform, and device observations |
+| `05.01.11.02.10` | `lesli_audit_account_devices` | Aggregated browser, platform, and device observations from successful logins |
 | `05.01.11.03.10` | `lesli_audit_account_requests` | Account request counts by controller and action |
 | `05.01.12.01.10` | `lesli_audit_user_logs` | User-specific activity records |
-| `05.01.12.02.10` | `lesli_audit_user_journals` | Durable request inbox and retained user journal data |
+| `05.01.12.02.10` | `lesli_audit_user_journals` | Individual user request journals |
 | `05.01.12.03.10` | `lesli_audit_user_requests` | User request analytics |
 
 ## Choosing the Correct Record
@@ -22,8 +22,8 @@ The similarly named tables do not contain interchangeable data:
 | `UserLog` / `lesli_audit_user_logs` | One explicitly emitted user activity event | A user's business or security history | Yes |
 | `AccountRequest` / `lesli_audit_account_requests` | One counter per tenant, date, controller, and action | Traffic totals and controller trends | No |
 | `UserRequest` / `lesli_audit_user_requests` | One counter per tenant, user, optional session, date, controller, and action | Per-user request totals | No |
-| `UserJournal` / `lesli_audit_user_journals` | One normalized row per captured HTTP request | Durable analytics delivery and, when enabled, detailed user timing/history | No |
-| `AccountDevice` / `lesli_audit_account_devices` | One counter per tenant, date, platform, browser, and device category | Request distribution by normalized agent category | No |
+| `UserJournal` / `lesli_audit_user_journals` | One normalized row per captured HTTP request | Detailed user timing and request history | No |
+| `AccountDevice` / `lesli_audit_account_devices` | One counter per tenant, date, platform, browser, and device category | Successful-login distribution by normalized agent category | No |
 
 ### User requests versus user journals
 
@@ -32,13 +32,11 @@ The similarly named tables do not contain interchangeable data:
 not preserve the time of every individual request and must not be used to prove
 that a business operation occurred.
 
-`UserJournal` is an **individual request event** and the durable inbox for the
-analytics pipeline. Its tenant-scoped `event_uid` deduplicates capture,
-`processed_at` records successful aggregation, and `created_at` identifies when
-the request was captured. When `enable_journals` is true, normalized request,
-user, session, and agent dimensions remain available for operational history
-and working-hours reports. When it is false, those dimensions are scrubbed
-after processing and only the minimum deduplication lifecycle data remains.
+`UserJournal` is an **individual request event**. Its tenant-scoped `event_uid`
+identifies the captured event, `created_at` records when it was stored, and
+`processed_at` marks the journal lifecycle state used by retention. When
+`enable_journals` is true, normalized request, user, and session dimensions are
+available for operational history and working-hours reports.
 
 In short:
 
@@ -72,11 +70,14 @@ identify these constraints by index name so column order can continue to
 support account-scoped access. Session identifiers remain nullable opaque
 references and do not create a database dependency on LesliShield.
 
-Request inbox rows use a tenant-scoped unique `event_uid`. Normalized request
-and device dimensions are processed asynchronously, and `processed_at` makes
-job retries idempotent. Pending rows are excluded from retention cleanup. When
-journals are disabled, successfully processed rows are scrubbed down to their
-event identity and lifecycle fields.
+Journal rows use a tenant-scoped unique `event_uid`. Request counters and
+journals are written synchronously by `LesliAudit::LoggerInterface`; no
+background analytics job is required. Rows without `processed_at` are excluded
+from retention cleanup.
+
+Device dimensions follow a separate path. `log_devices` parses and aggregates
+the user agent only after a successful login; ordinary request logging never
+increments `AccountDevice`.
 
 Account and user activity logs require an `operation`, use text for their
 human-readable description, and index account plus creation time for tenant
@@ -97,12 +98,6 @@ Run configured retention cleanup manually with:
 
 ```shell
 bin/rails lesli_audit:retention:cleanup
-```
-
-Re-enqueue request events left pending by a queue outage with:
-
-```shell
-bin/rails lesli_audit:analytics:retry_pending
 ```
 
 The retention operation is available to host schedulers through

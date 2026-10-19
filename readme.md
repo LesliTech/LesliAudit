@@ -48,15 +48,14 @@ It records account activity and provides administrators with searchable operatio
 - Account activity and audit logs
 - Request and navigation history
 - Request, device, and authenticated-user analytics
-- Idempotent background processing with a durable request inbox
+- Direct account and authenticated-user request counters
 - Configurable batched data retention
 - Normalized browser, platform, and device categories
 - Detailed views for investigating recorded activity
 
 Activity logs are explicit append-only business or security events. They are
 separate from request analytics: user requests are grouped counters, while
-user journals are individual normalized HTTP request events and the durable
-analytics inbox.
+user journals are individual normalized HTTP request events.
 
 <br />
 

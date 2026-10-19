@@ -32,14 +32,12 @@ Prepare migrations and initialize existing accounts:
 bin/rails lesli:db:prepare
 ```
 
-LesliAudit uses `device_detector` to classify request agents. No additional initializer is required for the default integration.
-Request analytics is delivered through Active Job. Configure a persistent queue
-adapter in production and schedule `LesliAudit::RetentionCleanupJob` once per
-day. After a queue outage, pending request events can be recovered with:
-
-```shell
-bin/rails lesli_audit:analytics:retry_pending
-```
+LesliAudit uses `device_detector` to classify the user agent for successful
+logins. Ordinary request logging does not capture device information. No
+additional initializer is required for the default integration.
+Request counters and journals are written synchronously. Schedule
+`LesliAudit::RetentionCleanupJob` once per day after selecting the appropriate
+retention periods for the host application.
 
 Review the [configuration reference](/engines/audit/about/configuration) before
 enabling production retention. LesliShield and LesliDashboard are optional;

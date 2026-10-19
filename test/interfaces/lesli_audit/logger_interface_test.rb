@@ -2,8 +2,6 @@ require "test_helper"
 
 module LesliAudit
     class LoggerInterfaceTest < ActiveSupport::TestCase
-        include ActiveJob::TestHelper
-
         ControllerContext = Struct.new(:current_user, :request, :session) do
             include LesliAudit::LoggerInterface
 
@@ -20,27 +18,43 @@ module LesliAudit
 
         setup do
             audit_account
-            clear_enqueued_jobs
         end
 
-        test "captures request context through the controller interface" do
-            controller = ControllerContext.new(
+        test "logs request counters without logging a device" do
+            with_audit_config(enable_analytics: true, enable_journals: false) do
+                controller_context.log_requests
+            end
+
+            assert_equal 1, LesliAudit::AccountRequest.sum(:request_count)
+            assert_equal 1, LesliAudit::UserRequest.sum(:request_count)
+            assert_equal 0, LesliAudit::AccountDevice.count
+        end
+
+        test "logs a device only when explicitly requested by the login flow" do
+            original_timestamp = 2.days.ago
+
+            with_audit_config(enable_analytics: true, enable_journals: false) do
+                controller_context.log_requests
+                assert_equal 0, LesliAudit::AccountDevice.count
+
+                controller_context.log_devices
+                LesliAudit::AccountDevice.first.update_column(:updated_at, original_timestamp)
+                controller_context.log_devices
+            end
+
+            device = LesliAudit::AccountDevice.sole
+            assert_equal 2, device.agent_count
+            assert_operator device.updated_at, :>, original_timestamp
+        end
+
+        private
+
+        def controller_context
+            @controller_context ||= ControllerContext.new(
                 core_user,
                 RequestContext.new("request-interface", "Test Browser"),
                 { user_session_id: "session-interface" }
             )
-
-            with_audit_config(enable_analytics: true, enable_journals: true) do
-                assert_enqueued_with(job: LesliAudit::RequestAnalyticsJob) do
-                    assert controller.log_requests
-                end
-            end
-
-            journal = LesliAudit::UserJournal.find_by!(event_uid: "request-interface")
-            assert_equal "lesli_audit/reports", journal.request_controller
-            assert_equal "index", journal.request_action
-            assert_equal "session-interface", journal.session_id
-            assert_equal core_user, journal.user
         end
     end
 end

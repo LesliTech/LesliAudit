@@ -29,18 +29,129 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 =end
+
 module LesliAudit
     module LoggerInterface
+        def get_user_agent
+            LesliAudit::UserAgentParser.parse(request.user_agent)
+        end
+
         def log_requests
-            LesliAudit::RequestAnalytics.capture(
-                user: current_user,
-                controller: controller_path,
-                action: action_name,
-                event_uid: request.request_id,
-                session_id: session[:user_session_id],
-                user_agent: request.user_agent
+            return unless Lesli.config.audit.dig(:enable_analytics)
+            return unless current_user
+            log_account_requests
+            log_user_requests
+            log_user_journal
+        end
+
+        def log_devices
+            return unless Lesli.config.audit.dig(:enable_analytics)
+            return unless current_user
+
+            user_agent = get_user_agent()
+
+            # Try to save a unique record for this request configuration
+            current_user.account.audit.account_devices.upsert(
+                {
+                    date: Date2.new.date.to_s,
+                    :agent_platform => user_agent&.dig(:platform) || "unknown",
+                    :agent_browser => user_agent&.dig(:browser) || "unknown",
+                    :agent_device => user_agent&.dig(:device) || "unknown",
+                    :agent_count => 1
+                },
+
+                # group of columns to consider a request as unique
+                unique_by: :lesli_audit_devices_index,
+
+                # if request id is not unique
+                #   - increase the counter for this configuration
+                #   - update the datetime of the last request
+                on_duplicate: Arel.sql(
+                    "agent_count = lesli_audit_account_devices.agent_count + 1, " \
+                    "updated_at = CURRENT_TIMESTAMP"
+                )
             )
         end
 
+        private 
+
+        def log_account_requests
+
+            # Try to save a unique record for this request configuration
+            current_user.account.audit.account_requests.upsert(
+                {
+                    request_controller: controller_path,
+                    request_action: action_name,
+                    request_count: 1,
+                    date: Date2.new.date.to_s
+                },
+
+                # group of columns to consider a request as unique
+                unique_by: :lesli_audit_account_requests_index,
+
+                # if request id is not unique, increase the counter for this configuration
+                on_duplicate: Arel.sql(
+                    "request_count = lesli_audit_account_requests.request_count + 1, " \
+                    "updated_at = CURRENT_TIMESTAMP"
+                )
+            )
+        end
+
+        # Track all user activity
+        # this is disabled by default in the settings file
+        def log_user_requests
+            return unless session[:user_session_id]
+
+            # Try to save a unique record for this request configuration
+            current_user.account.audit.user_requests.upsert(
+                {
+                    request_controller: controller_path,
+                    request_action: action_name,
+                    session_id: session[:user_session_id],
+                    user_id: current_user.id,
+                    date: Date2.new.date.to_s,
+                    request_count: 1
+                },
+
+                # group of columns to consider a request as unique
+                unique_by: :lesli_audit_user_requests_index,
+
+                # if request id is not unique
+                #   - increase the counter for this configuration
+                #   - update the datetime of the last request
+                on_duplicate: Arel.sql(
+                    "request_count = lesli_audit_user_requests.request_count + 1, " \
+                    "updated_at = CURRENT_TIMESTAMP"
+                )
+            )
+        end
+
+        def log_user_journal
+            return unless Lesli.config.audit.dig(:enable_journals)
+            current_user.account.audit.user_journals.create({
+                request_controller: controller_path,
+                request_action: action_name,
+                session_id: session[:user_session_id],
+                user_id: current_user.id,
+                date: Date2.new.date.to_s,
+                processed_at: Time.current
+            })
+        end
+
+        # Track specific account activity
+        # this is disabled by default in the settings file
+        def log_account_activity(system_module, system_process, title = nil, payload = nil, description = nil)
+            # return unless Rails.application.config.lesli.dig(:security, :enable_analytics)
+
+            # account = Account.first
+
+            # account.activities.create({
+            #     system_module:,
+            #     system_process:,
+            #     description:,
+            #     payload:,
+            #     title:
+            # })
+        end
     end
 end

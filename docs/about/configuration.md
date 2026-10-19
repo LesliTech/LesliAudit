@@ -23,10 +23,10 @@ end
 | Setting | Type | Default | Behavior |
 | --- | --- | --- | --- |
 | `enable_logs` | Boolean | `true` | Enables explicit account and user activity events |
-| `enable_journals` | Boolean | `true` | Retains processed request events as user journal history |
-| `enable_analytics` | Boolean | `true` | Builds account, user, browser, platform, and device aggregates |
+| `enable_journals` | Boolean | `true` | Records individual requests as user journal history |
+| `enable_analytics` | Boolean | `true` | Builds account/user request aggregates and successful-login device aggregates |
 | `journal_retention_days` | Positive integer or `nil` | `90` | Retention period for processed, retained journals |
-| `analytics_retention_days` | Positive integer or `nil` | `400` | Retention period for aggregate analytics and scrubbed deduplication rows |
+| `analytics_retention_days` | Positive integer or `nil` | `400` | Retention period for aggregate analytics and transient journals |
 | `audit_retention_days` | Positive integer or `nil` | `nil` | Retention period for append-only activity events |
 
 `nil` disables automatic cleanup for that data class. Invalid retention values
@@ -39,26 +39,20 @@ The analytics and journal switches are independent:
 
 | Analytics | Journals | Result |
 | --- | --- | --- |
-| Enabled | Enabled | Build aggregates and retain the normalized request journal |
-| Enabled | Disabled | Build aggregates, then scrub the inbox row down to its deduplication identity |
-| Disabled | Enabled | Retain the request journal without updating aggregate counters |
+| Enabled | Enabled | Update request aggregates and record the individual request journal |
+| Enabled | Disabled | Update request aggregates without creating a journal |
+| Disabled | Enabled | Record the individual request journal without updating aggregate counters |
 | Disabled | Disabled | Do not capture a request event |
 
 Explicit activity events are controlled only by `enable_logs`; the analytics
 switches do not affect them.
 
-## Active Job
-
-Request analytics is processed by `LesliAudit::RequestAnalyticsJob`. Development
-may use the host application's synchronous adapter, but production must use a
-persistent Active Job backend so accepted inbox rows are processed after web
-process restarts. The job retries processing failures ten times with increasing
-delays.
+## Retention Cleanup Job
 
 Schedule `LesliAudit::RetentionCleanupJob` once per day after choosing retention
 periods. LesliAudit intentionally does not select a scheduler or queue because
 those are host-application concerns. See [Tasks](/engines/audit/about/tasks) for
-manual cleanup and queue-recovery commands.
+the equivalent manual cleanup command.
 
 ## Optional Engines
 

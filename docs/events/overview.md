@@ -22,8 +22,9 @@ These events are stored in `lesli_audit_user_logs` or
 HTTP observations, and logs are explicit auditable operations.
 
 Use activity events when the application must retain evidence of an operation.
-Use request analytics for traffic charts, browser distribution, and operational
-timing. See [Emitting Events](/engines/audit/events/emitting) for the integration
+Use request analytics for traffic charts and operational timing. Browser,
+platform, and device distribution comes from successful-login observations
+recorded separately by the authentication flow. See [Emitting Events](/engines/audit/events/emitting) for the integration
 API and [Architecture and Data Policy](/engines/audit/about/architecture) for
 reliability and retention rules.
 
