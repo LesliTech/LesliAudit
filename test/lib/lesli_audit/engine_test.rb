@@ -15,13 +15,12 @@ module LesliAudit
             end
         end
 
-        test "installs its associations on core models" do
-            assert_operator Lesli::Account, :<, LesliAudit::AccountAssociations
-            assert_operator Lesli::User, :<, LesliAudit::UserAssociations
+        test "core models expose the associations backed by LesliAudit" do
             assert_equal "LesliAudit::Account", Lesli::Account.reflect_on_association(:audit).class_name
             assert_equal "LesliAudit::UserJournal", Lesli::User.reflect_on_association(:journals).class_name
             assert_equal "LesliAudit::UserRequest", Lesli::User.reflect_on_association(:requests).class_name
             assert_equal "LesliAudit::UserLog", Lesli::User.reflect_on_association(:logs).class_name
+            assert_equal "LesliAudit::AccountLog", Lesli::User.reflect_on_association(:account_logs).class_name
         end
     end
 end

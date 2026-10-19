@@ -1,17 +1,6 @@
 module LesliAudit
     class Engine < ::Rails::Engine
         isolate_namespace LesliAudit
-
-        config.to_prepare do
-            unless Lesli::Account < LesliAudit::AccountAssociations
-                Lesli::Account.include(LesliAudit::AccountAssociations)
-            end
-
-            unless Lesli::User < LesliAudit::UserAssociations
-                Lesli::User.include(LesliAudit::UserAssociations)
-            end
-        end
-
         initializer :lesli_admin do |app|
 
             # register assets manifest
