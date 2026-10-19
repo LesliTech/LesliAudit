@@ -25,7 +25,7 @@ module LesliAudit
       @account = Account.new(account_params)
 
       if @account.save
-        redirect_to @account, notice: "Account was successfully created."
+        redirect_to({ action: :show, id: @account.id }, notice: "Account was successfully created.")
       else
         render :new, status: :unprocessable_entity
       end
@@ -34,7 +34,11 @@ module LesliAudit
     # PATCH/PUT /accounts/1
     def update
       if @account.update(account_params)
-        redirect_to @account, notice: "Account was successfully updated.", status: :see_other
+        redirect_to(
+          { action: :show, id: @account.id },
+          notice: "Account was successfully updated.",
+          status: :see_other
+        )
       else
         render :edit, status: :unprocessable_entity
       end
@@ -43,7 +47,7 @@ module LesliAudit
     # DELETE /accounts/1
     def destroy
       @account.destroy
-      redirect_to accounts_url, notice: "Account was successfully destroyed.", status: :see_other
+      redirect_to({ action: :index }, notice: "Account was successfully destroyed.", status: :see_other)
     end
 
     private

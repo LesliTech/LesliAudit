@@ -158,6 +158,21 @@ module LesliAudit
         # Executes all derived writes and the processed marker atomically. A
         # duplicate job blocks on the row lock and then observes processed_at.
         class Processor
+            ACCOUNT_REQUEST_INCREMENT = Arel.sql(
+                "request_count = lesli_audit_account_requests.request_count + 1, " \
+                "updated_at = CURRENT_TIMESTAMP"
+            ).freeze
+
+            USER_REQUEST_INCREMENT = Arel.sql(
+                "request_count = lesli_audit_user_requests.request_count + 1, " \
+                "updated_at = CURRENT_TIMESTAMP"
+            ).freeze
+
+            DEVICE_REQUEST_INCREMENT = Arel.sql(
+                "agent_count = lesli_audit_account_devices.agent_count + 1, " \
+                "updated_at = CURRENT_TIMESTAMP"
+            ).freeze
+
             def initialize(journal)
                 @journal = journal
             end
@@ -187,7 +202,7 @@ module LesliAudit
                 journal.account.account_requests.upsert(
                     request_dimensions.merge(request_count: 1),
                     unique_by: :lesli_audit_account_requests_index,
-                    on_duplicate: increment_counter(:lesli_audit_account_requests, :request_count)
+                    on_duplicate: ACCOUNT_REQUEST_INCREMENT
                 )
             end
 
@@ -199,7 +214,7 @@ module LesliAudit
                         request_count: 1
                     ),
                     unique_by: :lesli_audit_user_requests_index,
-                    on_duplicate: increment_counter(:lesli_audit_user_requests, :request_count)
+                    on_duplicate: USER_REQUEST_INCREMENT
                 )
             end
 
@@ -213,7 +228,7 @@ module LesliAudit
                         agent_count: 1
                     },
                     unique_by: :lesli_audit_devices_index,
-                    on_duplicate: increment_counter(:lesli_audit_account_devices, :agent_count)
+                    on_duplicate: DEVICE_REQUEST_INCREMENT
                 )
             end
 
@@ -223,12 +238,6 @@ module LesliAudit
                     request_action: journal.request_action,
                     date: journal.date
                 }
-            end
-
-            def increment_counter(table, counter)
-                Arel.sql(
-                    "#{counter} = #{table}.#{counter} + 1, updated_at = #{LesliDate::Compatibility.db_now}"
-                )
             end
 
             def finish_event
