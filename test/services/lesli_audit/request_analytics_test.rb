@@ -34,6 +34,19 @@ module LesliAudit
             end
         end
 
+        test "increments aggregates for distinct events with the same dimensions" do
+            with_audit_config(enable_analytics: true, enable_journals: true) do
+                perform_enqueued_jobs do
+                    capture(event_uid: "request-first")
+                    capture(event_uid: "request-second")
+                end
+
+                assert_equal 2, LesliAudit::AccountRequest.sum(:request_count)
+                assert_equal 2, LesliAudit::UserRequest.sum(:request_count)
+                assert_equal 2, LesliAudit::AccountDevice.sum(:agent_count)
+            end
+        end
+
         test "scrubs individual request dimensions when journals are disabled" do
             with_audit_config(enable_analytics: true, enable_journals: false) do
                 perform_enqueued_jobs { capture(event_uid: "request-transient") }
