@@ -4,6 +4,8 @@ module LesliAudit
             class_name: "Lesli::Account",
             inverse_of: :audit
 
+        validates :account_id, uniqueness: true
+
         has_many :dashboards
 
         has_many :account_logs,
