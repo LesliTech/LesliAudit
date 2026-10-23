@@ -27,7 +27,43 @@ module LesliAudit
 
             assert_equal 1, LesliAudit::AccountRequest.sum(:request_count)
             assert_equal 1, LesliAudit::UserRequest.sum(:request_count)
+            assert_equal 0, LesliAudit::UserJournal.count
             assert_equal 0, LesliAudit::AccountDevice.count
+        end
+
+        test "logs an individual journal when analytics and journals are enabled" do
+            with_audit_config(enable_analytics: true, enable_journals: true) do
+                assert_difference -> { LesliAudit::UserJournal.count }, 1 do
+                    assert_difference -> { LesliAudit::AccountRequest.sum(:request_count) }, 1 do
+                        assert_difference -> { LesliAudit::UserRequest.sum(:request_count) }, 1 do
+                            controller_context.log_requests
+                        end
+                    end
+                end
+            end
+
+            journal = LesliAudit::UserJournal.order(:id).last
+
+            assert_equal "request-interface", journal.event_uid
+            assert_equal "lesli_audit/reports", journal.request_controller
+            assert_equal "index", journal.request_action
+            assert_equal "session-interface", journal.session_id
+            assert_equal core_user, journal.user
+            assert_equal audit_account, journal.account
+            assert_equal Date2.new.get.to_date, journal.date
+            assert journal.retain?
+        end
+
+        test "the analytics switch disables request counters and journals" do
+            with_audit_config(enable_analytics: false, enable_journals: true) do
+                assert_no_difference -> { LesliAudit::AccountRequest.count } do
+                    assert_no_difference -> { LesliAudit::UserRequest.count } do
+                        assert_no_difference -> { LesliAudit::UserJournal.count } do
+                            controller_context.log_requests
+                        end
+                    end
+                end
+            end
         end
 
         test "logs a device only when explicitly requested by the login flow" do

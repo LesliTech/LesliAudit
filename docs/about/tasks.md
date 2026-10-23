@@ -21,9 +21,9 @@ bin/rails lesli_audit:retention:cleanup
 | External input | None |
 | Repeatability | Idempotent for the same cutoff and database state |
 
-Cleanup removes only processed journals; rows without `processed_at` are
-preserved. Dates exactly on the cutoff are retained. A retention value of `nil`
-skips its data class. The equivalent job entry point for a host scheduler is
+Cleanup removes journals older than their configured retention period. Dates
+exactly on the cutoff are retained. A retention value of `nil` skips its data
+class. The equivalent job entry point for a host scheduler is
 `LesliAudit::RetentionCleanupJob`.
 
 See [Configuration](/engines/audit/about/configuration) for defaults and

@@ -12,8 +12,6 @@ module LesliAudit
         validates :event_uid, presence: true
         validates :request_controller, :request_action, presence: true, if: :retain?
 
-        scope :pending, -> { where(processed_at: nil) }
-        scope :processed, -> { where.not(processed_at: nil) }
         scope :retained, -> { where(retain: true) }
         scope :transient, -> { where(retain: false) }
     end

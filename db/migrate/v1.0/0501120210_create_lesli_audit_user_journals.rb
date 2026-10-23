@@ -41,9 +41,7 @@ class CreateLesliAuditUserJournals < ActiveRecord::Migration[8.1]
             t.string :agent_platform
             t.string :agent_browser
             t.string :agent_device
-            t.boolean :analytics_enabled, null: false, default: true
             t.boolean :retain, null: false, default: true
-            t.datetime :processed_at
             t.timestamps null: false
         end
         add_reference(:lesli_audit_user_journals, :user, null: true, foreign_key: { to_table: :lesli_users, on_delete: :nullify })
@@ -51,6 +49,5 @@ class CreateLesliAuditUserJournals < ActiveRecord::Migration[8.1]
         add_index(:lesli_audit_user_journals, %i[account_id date], name: "index_lesli_audit_user_journals_on_account_and_date")
         add_index(:lesli_audit_user_journals, %i[account_id event_uid], unique: true, name: "lesli_audit_user_journals_event_index")
         add_index(:lesli_audit_user_journals, :date, name: "index_lesli_audit_user_journals_on_date")
-        add_index(:lesli_audit_user_journals, :processed_at, name: "index_lesli_audit_user_journals_on_processed_at")
     end
 end

@@ -33,10 +33,10 @@ not preserve the time of every individual request and must not be used to prove
 that a business operation occurred.
 
 `UserJournal` is an **individual request event**. Its tenant-scoped `event_uid`
-identifies the captured event, `created_at` records when it was stored, and
-`processed_at` marks the journal lifecycle state used by retention. When
-`enable_journals` is true, normalized request, user, and session dimensions are
-available for operational history and working-hours reports.
+identifies the captured event, `date` stores its reporting and retention day,
+and `created_at` records the exact time it was stored. When `enable_journals`
+is true, normalized request, user, and session dimensions are available for
+operational history and working-hours reports.
 
 In short:
 
@@ -72,8 +72,7 @@ references and do not create a database dependency on LesliShield.
 
 Journal rows use a tenant-scoped unique `event_uid`. Request counters and
 journals are written synchronously by `LesliAudit::LoggerInterface`; no
-background analytics job is required. Rows without `processed_at` are excluded
-from retention cleanup.
+background analytics job or processing lifecycle is required.
 
 Device dimensions follow a separate path. `log_devices` parses and aggregates
 the user agent only after a successful login; ordinary request logging never

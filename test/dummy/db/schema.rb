@@ -123,16 +123,13 @@ ActiveRecord::Schema[8.1].define(version: 501120310) do
         t.string "agent_platform"
         t.string "agent_browser"
         t.string "agent_device"
-        t.boolean "analytics_enabled", default: true, null: false
         t.boolean "retain", default: true, null: false
-        t.datetime "processed_at"
         t.timestamps null: false
         t.integer "user_id"
         t.integer "account_id", null: false
         t.index ["account_id", "date"], name: "index_lesli_audit_user_journals_on_account_and_date"
         t.index ["account_id", "event_uid"], name: "lesli_audit_user_journals_event_index", unique: true
         t.index ["date"], name: "index_lesli_audit_user_journals_on_date"
-        t.index ["processed_at"], name: "index_lesli_audit_user_journals_on_processed_at"
     end
 
     create_table "lesli_audit_user_requests", force: :cascade do |t|

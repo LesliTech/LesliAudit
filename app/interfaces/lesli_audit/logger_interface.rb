@@ -39,6 +39,7 @@ module LesliAudit
         def log_requests
             return unless Lesli.config.audit.dig(:enable_analytics)
             return unless current_user
+
             log_account_requests
             log_user_requests
             log_user_journal
@@ -128,14 +129,14 @@ module LesliAudit
 
         def log_user_journal
             return unless Lesli.config.audit.dig(:enable_journals)
-            current_user.account.audit.user_journals.create({
+            current_user.account.audit.user_journals.create!(
+                event_uid: request.request_id,
                 request_controller: controller_path,
                 request_action: action_name,
                 session_id: session[:user_session_id],
                 user_id: current_user.id,
-                date: Date2.new.date.to_s,
-                processed_at: Time.current
-            })
+                date: Date2.new.date.to_s
+            )
         end
 
         # Track specific account activity

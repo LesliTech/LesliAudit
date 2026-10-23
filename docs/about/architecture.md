@@ -25,7 +25,7 @@ timing but are not permanent audit evidence.
 Request capture can produce two different representations:
 
 1. `UserJournal` stores one individual event for the captured request when
-   journal capture is enabled.
+   both analytics and journal capture are enabled.
 2. `UserRequest` and `AccountRequest` store grouped counters. A matching event
    increments `request_count` instead of preserving another request timestamp.
 
@@ -145,9 +145,9 @@ period.
 `LesliAudit::RetentionCleanup` removes expired records using bounded primary-key
 batches. Date-based analytics delete rows whose `date` is older than their
 cutoff; activity events use `created_at`. Rows exactly on the cutoff are kept.
-Unprocessed journals are never deleted. Retained journals use the journal
-period, while transient journals use the analytics period. The operation is
-idempotent and reports the number deleted from every table.
+Retained journals use the journal period, while transient journals use the
+analytics period. The operation is idempotent and reports the number deleted
+from every table.
 
 The engine exposes `LesliAudit::RetentionCleanupJob` for the host scheduler and
 the following manual task:
@@ -164,10 +164,11 @@ before enabling activity-event retention.
 ## Implementation Boundary
 
 The controller integration delegates request traffic directly to
-`LesliAudit::LoggerInterface#log_requests`. When analytics is enabled, it
-upserts the account request counter and, when a session is available, the user
-request counter. When journals are enabled, it creates an individual request
-journal. `enable_analytics` and `enable_journals` are evaluated independently.
+`LesliAudit::LoggerInterface#log_requests`. `enable_analytics` is the master
+switch: when enabled, the logger upserts the account request counter and, when
+a session is available, the user request counter. It also creates an individual
+request journal when `enable_journals` is enabled. Disabling analytics stops
+all request counters, journals, and successful-login device aggregates.
 
 Device aggregation is deliberately outside this request pipeline.
 `LesliAudit::LoggerInterface#log_devices` is called by LesliShield only after a

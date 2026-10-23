@@ -23,9 +23,9 @@ end
 | Setting | Type | Default | Behavior |
 | --- | --- | --- | --- |
 | `enable_logs` | Boolean | `true` | Enables explicit account and user activity events |
-| `enable_journals` | Boolean | `true` | Records individual requests as user journal history |
-| `enable_analytics` | Boolean | `true` | Builds account/user request aggregates and successful-login device aggregates |
-| `journal_retention_days` | Positive integer or `nil` | `90` | Retention period for processed, retained journals |
+| `enable_journals` | Boolean | `true` | Records individual requests as user journal history while analytics is enabled |
+| `enable_analytics` | Boolean | `true` | Master switch for request counters, journals, and successful-login device aggregates |
+| `journal_retention_days` | Positive integer or `nil` | `90` | Retention period for retained journals |
 | `analytics_retention_days` | Positive integer or `nil` | `400` | Retention period for aggregate analytics and transient journals |
 | `audit_retention_days` | Positive integer or `nil` | `nil` | Retention period for append-only activity events |
 
@@ -35,13 +35,14 @@ the host application has defined its legal-hold, export, and deletion policy.
 
 ## Analytics and Journal Modes
 
-The analytics and journal switches are independent:
+`enable_analytics` is the master switch. `enable_journals` controls whether
+individual request details are retained while analytics is enabled:
 
 | Analytics | Journals | Result |
 | --- | --- | --- |
 | Enabled | Enabled | Update request aggregates and record the individual request journal |
 | Enabled | Disabled | Update request aggregates without creating a journal |
-| Disabled | Enabled | Record the individual request journal without updating aggregate counters |
+| Disabled | Enabled | Do not capture request analytics or journals |
 | Disabled | Disabled | Do not capture a request event |
 
 Explicit activity events are controlled only by `enable_logs`; the analytics

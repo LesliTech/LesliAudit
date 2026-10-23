@@ -86,12 +86,12 @@ module LesliAudit
 
         def cleanup_journals(deleted)
             retained_count = delete_with_cutoff(
-                LesliAudit::UserJournal.retained.processed,
+                LesliAudit::UserJournal.retained,
                 :date,
                 date_cutoff(:journal_retention_days)
             )
             transient_count = delete_with_cutoff(
-                LesliAudit::UserJournal.transient.processed,
+                LesliAudit::UserJournal.transient,
                 :date,
                 date_cutoff(:analytics_retention_days)
             )

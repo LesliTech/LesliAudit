@@ -5,11 +5,10 @@ module LesliAudit
         TODAY = Date.new(2026, 10, 18)
         NOW = Time.zone.local(2026, 10, 18, 12, 0, 0)
 
-        test "deletes expired rows while preserving cutoffs and pending journals" do
-            retained_old = create_journal("retained-old", date: TODAY - 11, retain: true, processed: true)
-            retained_cutoff = create_journal("retained-cutoff", date: TODAY - 10, retain: true, processed: true)
-            transient_old = create_journal("transient-old", date: TODAY - 21, retain: false, processed: true)
-            pending_old = create_journal("pending-old", date: TODAY - 100, retain: true, processed: false)
+        test "deletes expired rows while preserving cutoffs" do
+            retained_old = create_journal("retained-old", date: TODAY - 11, retain: true)
+            retained_cutoff = create_journal("retained-cutoff", date: TODAY - 10, retain: true)
+            transient_old = create_journal("transient-old", date: TODAY - 21, retain: false)
 
             request_old = audit_account.account_requests.create!(
                 request_controller: "reports",
@@ -53,7 +52,6 @@ module LesliAudit
             assert_not LesliAudit::UserJournal.exists?(retained_old.id)
             assert_not LesliAudit::UserJournal.exists?(transient_old.id)
             assert LesliAudit::UserJournal.exists?(retained_cutoff.id)
-            assert LesliAudit::UserJournal.exists?(pending_old.id)
             assert_not LesliAudit::AccountRequest.exists?(request_old.id)
             assert LesliAudit::AccountRequest.exists?(request_cutoff.id)
             assert_not LesliAudit::UserLog.exists?(log_old.id)
@@ -98,15 +96,13 @@ module LesliAudit
 
         private
 
-        def create_journal(event_uid, date:, retain:, processed:)
+        def create_journal(event_uid, date:, retain:)
             audit_account.user_journals.create!(
                 event_uid: event_uid,
                 request_controller: ("reports" if retain),
                 request_action: ("index" if retain),
                 date: date,
                 retain: retain,
-                analytics_enabled: true,
-                processed_at: (NOW if processed),
                 user: (core_user if retain)
             )
         end

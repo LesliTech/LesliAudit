@@ -150,7 +150,7 @@ module LesliAudit
 
             user_journals = current_user.account.users
             .joins(:journals)
-            .merge(LesliAudit::UserJournal.retained.processed)
+            .merge(LesliAudit::UserJournal.retained)
 
             user_journals = user_journals.select(
                 "lesli_users.id as user_id",
