@@ -1,10 +1,7 @@
 module LesliAudit
     class Engine < ::Rails::Engine
         isolate_namespace LesliAudit
-        initializer :lesli_admin do |app|
-
-            # register assets manifest
-            config.assets.precompile += %w[lesli_audit_manifest.js]
+        initializer :lesli_audit do |app|
 
             app.config.assets.paths << root.join("app", "javascript").to_s
 

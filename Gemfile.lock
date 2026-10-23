@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lesli_audit (1.1.1)
+    lesli_audit (1.1.2)
       device_detector (~> 1.1.3)
       lesli (~> 5.1.0)
 
@@ -394,7 +394,7 @@ CHECKSUMS
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lesli (5.1.12) sha256=b29a091539c418c966970c5855d33b835f5e746e62226465729f7dd198a0a688
   lesli_assets (1.1.4) sha256=28663a4fd6a1f1f413ee2bff3b6df3743fbdcc2366c92a6418a5523c69032889
-  lesli_audit (1.1.1)
+  lesli_audit (1.1.2)
   lesli_date (1.1.0) sha256=b53efc47dbc5ce29882ce585acfa62a30e56f94268e353e4ec5cfce9f9cea9e1
   lesli_system (1.1.0) sha256=6064fd7b7272b3d66a4fed17e70e2a6ed6e33b8902dc80ea29e9df2396d785eb
   lesli_testing (1.4.0) sha256=5555fbcce1e2b3593902a959068d9766859f0963577fb6616ffe8f1cfcf6d409

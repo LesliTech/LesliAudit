@@ -9,9 +9,9 @@ Tailwind CSS handles engine-specific presentation.
 The editable entrypoint and its generated Rails asset are separate:
 
 ```text
-source/tailwind/application.tailwind.css
+source/tailwind/application.css
         ↓ build
-app/assets/stylesheets/lesli_audit/application.tailwind.css
+app/assets/stylesheets/lesli_audit/application.css
 ```
 
 Edit the file under `source/tailwind`; do not edit the compiled stylesheet by
@@ -47,7 +47,7 @@ make watch.tailwind
 ```
 
 The builder discovers LesliAudit's entrypoint and writes the compiled output to
-`app/assets/stylesheets/lesli_audit/application.tailwind.css`.
+`app/assets/stylesheets/lesli_audit/application.css`.
 
 ## View Conventions
 
