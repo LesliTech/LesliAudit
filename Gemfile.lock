@@ -104,7 +104,6 @@ GEM
       railties (>= 7.0)
       responders
       warden (~> 1.2.3)
-    docile (1.4.1)
     drb (2.2.3)
     erb (6.0.7)
     erubi (1.13.1)
@@ -147,12 +146,11 @@ GEM
     lesli_assets (1.1.4)
     lesli_date (1.1.0)
     lesli_system (1.1.0)
-    lesli_testing (1.4.0)
+    lesli_testing (1.4.2)
       minitest (~> 6.0.0)
-      simplecov (~> 0.22.0)
-      simplecov-cobertura (~> 3.1.0)
+      simplecov (~> 1.3.2)
+      simplecov-cobertura (~> 4.0.0)
       simplecov-console (~> 0.9.0)
-      simplecov-html (~> 0.13.2)
       termline (~> 1.1.0)
     lesli_view (1.1.4)
       lexxy (~> 0.9.9.beta)
@@ -294,24 +292,19 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    simplecov (0.22.0)
-      docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-cobertura (3.1.2)
+    simplecov (1.3.2)
+    simplecov-cobertura (4.0.0)
       rexml
-      simplecov (~> 0.19)
+      simplecov (~> 1.0)
     simplecov-console (0.9.5)
       ansi
       simplecov
       terminal-table
-    simplecov-html (0.13.2)
-    simplecov_json_formatter (0.1.4)
     sqlite3 (2.9.6-x86_64-darwin)
     sqlite3 (2.9.6-x86_64-linux-gnu)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
-    termline (1.1.2)
+    termline (1.1.3)
     thor (1.5.0)
     timeout (0.6.1)
     tsort (0.2.0)
@@ -378,7 +371,6 @@ CHECKSUMS
   date (3.6.0) sha256=18ac945c4e24ebd93534f8eab8c2fd8c5604b3e977105b3798d62a1e8d27b580
   device_detector (1.1.3) sha256=c5fe3fe42cab2e8aa01f193b2074b8bb1510373ce47127206f28c7dea75a9c79
   devise (5.0.4) sha256=d605f2b85854e74e56ee789e2d398702bc2d06e6bcd894717a670a3199c74cc1
-  docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
   erb (6.0.7) sha256=c5ca6dc25b0ef974a44dc8f59fe847577122483b1968a38dec305c60bf91ee92
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
@@ -397,7 +389,7 @@ CHECKSUMS
   lesli_audit (1.1.2)
   lesli_date (1.1.0) sha256=b53efc47dbc5ce29882ce585acfa62a30e56f94268e353e4ec5cfce9f9cea9e1
   lesli_system (1.1.0) sha256=6064fd7b7272b3d66a4fed17e70e2a6ed6e33b8902dc80ea29e9df2396d785eb
-  lesli_testing (1.4.0) sha256=5555fbcce1e2b3593902a959068d9766859f0963577fb6616ffe8f1cfcf6d409
+  lesli_testing (1.4.2) sha256=961f439a50a8a7174cbf58e51bf83dd4dc41c438d57afa7a976378c7577a66a6
   lesli_view (1.1.4) sha256=5ea9f4182d0adc1652b6b855529db088f8f6f02a3417ae678f790c4afe0f5ce7
   lexxy (0.9.33) sha256=bb2e183d17878369c32f44848fa42f094ec05f89b3b01894985b3a8343924cc0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
@@ -447,15 +439,13 @@ CHECKSUMS
   rubocop-rails-omakase (1.1.0) sha256=2af73ac8ee5852de2919abbd2618af9c15c19b512c4cfc1f9a5d3b6ef009109d
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
-  simplecov (0.22.0) sha256=fe2622c7834ff23b98066bb0a854284b2729a569ac659f82621fc22ef36213a5
-  simplecov-cobertura (3.1.2) sha256=d000b11aef138f964fc3863aae065b7607c5cfde7fe02be66d82bd2971474dca
+  simplecov (1.3.2) sha256=2a22ec1759f1b8db60881a2e038758956fc69ef93ed669be0bde0678de6d0e85
+  simplecov-cobertura (4.0.0) sha256=e4fb3159b1ecea545b44f5452a8611305323e78ad23eae8aed35924d072e01ea
   simplecov-console (0.9.5) sha256=b1108bcfff5f210143e2b8301698c367b01586f20d25a73e95475a5df6fc6ff6
-  simplecov-html (0.13.2) sha256=bd0b8e54e7c2d7685927e8d6286466359b6f16b18cb0df47b508e8d73c777246
-  simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
   sqlite3 (2.9.6-x86_64-darwin) sha256=b5842fea77781c14da03fa7bc0feb82db03a69e135affcb6f5399cbd2797a5f3
   sqlite3 (2.9.6-x86_64-linux-gnu) sha256=613188ce02f614126ddbc38c5e217ccffd6306d0dcd9adca9764547aa890a634
   terminal-table (4.0.0) sha256=f504793203f8251b2ea7c7068333053f0beeea26093ec9962e62ea79f94301d2
-  termline (1.1.2) sha256=9bbde4c50ce96af1a80ce6c02aa1220a826d7806974ae61b62b2dc91a2cc3776
+  termline (1.1.3) sha256=0290ed3de2e1944bb977f0bbf56edbff6cadb93673b0742209a890792112b280
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
