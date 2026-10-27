@@ -1,9 +1,9 @@
 require "test_helper"
 
 module LesliAudit
-    class VisitorAnalyticsTest < ActiveSupport::TestCase
+    class TrafficTest < ActiveSupport::TestCase
         test "rollup maps a provider key directly to an engine-independent resource" do
-            rollup = audit_account.visitor_rollups.create!(
+            rollup = audit_account.traffic_rollups.create!(
                 provider: " Cloudflare ",
                 provider_key: " /ldonis ",
                 resource_type: " Profile ",
@@ -31,9 +31,9 @@ module LesliAudit
                 visits: 7,
                 synced_at: Time.current
             }
-            audit_account.visitor_rollups.create!(attributes)
+            audit_account.traffic_rollups.create!(attributes)
 
-            duplicate = audit_account.visitor_rollups.new(attributes)
+            duplicate = audit_account.traffic_rollups.new(attributes)
 
             assert_not duplicate.valid?
             assert_includes duplicate.errors[:provider_key], "has already been taken"
@@ -43,18 +43,18 @@ module LesliAudit
             old_path = create_rollup(provider_key: "/ldonis", date: Date.new(2026, 10, 25))
             new_path = create_rollup(provider_key: "/luisdonis", date: Date.new(2026, 10, 26))
 
-            history = audit_account.visitor_rollups.where(
+            history = audit_account.traffic_rollups.where(
                 resource_type: "Profile",
                 resource_id: 27
             ).order(:date)
 
-            assert_equal [old_path, new_path], history.to_a
+            assert_equal [ old_path, new_path ], history.to_a
         end
 
         test "breakdown accepts only normalized supported dimensions" do
             rollup = create_rollup
-            breakdown = audit_account.visitor_breakdowns.new(
-                visitor_rollup: rollup,
+            breakdown = audit_account.traffic_breakdowns.new(
+                traffic_rollup: rollup,
                 dimension: " Campaign ",
                 value: "launch",
                 page_views: 2,
@@ -70,8 +70,8 @@ module LesliAudit
             other_account = LesliAudit::Account.find_or_create_by!(account: secondary_core_account) do |account|
                 account.name = secondary_core_account.name
             end
-            breakdown = other_account.visitor_breakdowns.new(
-                visitor_rollup: rollup,
+            breakdown = other_account.traffic_breakdowns.new(
+                traffic_rollup: rollup,
                 dimension: "country",
                 value: "GT",
                 page_views: 2,
@@ -79,13 +79,13 @@ module LesliAudit
             )
 
             assert_not breakdown.valid?
-            assert_includes breakdown.errors[:visitor_rollup], "must belong to the same account"
+            assert_includes breakdown.errors[:traffic_rollup], "must belong to the same account"
         end
 
         private
 
         def create_rollup(provider_key: "/ldonis", date: Date.new(2026, 10, 26))
-            audit_account.visitor_rollups.create!(
+            audit_account.traffic_rollups.create!(
                 provider: "cloudflare",
                 provider_key:,
                 resource_type: "Profile",

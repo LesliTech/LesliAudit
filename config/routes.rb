@@ -27,33 +27,15 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 
 LesliAudit::Engine.routes.draw do
-
     Lesli::Router.mount_lesli_engine_routes(self)
 
-    # Users:
-    #   Registrations   users grouped by creation date
-    #   Working hours   first and last request of the day
-    #   Activities      changes on users information
-    #   Roles           total users by role
-    #   Logs            relevant actions of users
-    resources :users, only: [:index] 
-
-    # Analytics:
-    #   Requests by date
-    #   Trends by date
-    #   Most active users
-    #   Most active controllers
-    resources :analytics, only: [:index]
-
-    get "public-analytics", to: "public_analytics#index", as: :public_analytics
-
-    resources :logs, only: [:index, :show]
-
-    resources :requests, only: [:index]
-
-    resources :devices, only: [:index]
+    resources :users, only: [ :index ]
+    resources :analytics, only: [ :index ]
+    resources :traffic, only: [ :index ]
+    resources :requests, only: [ :index ]
+    resources :logs, only: [ :index, :show ]
 end

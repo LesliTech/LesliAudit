@@ -32,11 +32,11 @@ module LesliAudit
             inverse_of: :account,
             dependent: :delete_all
 
-        has_many :visitor_rollups,
+        has_many :traffic_rollups,
             inverse_of: :account,
             dependent: :delete_all
 
-        has_many :visitor_breakdowns,
+        has_many :traffic_breakdowns,
             inverse_of: :account,
             dependent: :delete_all
     end

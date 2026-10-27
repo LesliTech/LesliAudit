@@ -1,4 +1,4 @@
-# Public Visitor Analytics
+# Traffic
 
 Public pages may be served by a CDN without reaching the Rails application.
 LesliAudit therefore does not count public views from a controller callback.
@@ -6,11 +6,11 @@ An external provider collects traffic, and the host imports daily aggregates.
 
 ## Data Model
 
-`VisitorRollup` maps a provider-owned key directly to an opaque resource owned
+`TrafficRollup` maps a provider-owned key directly to an opaque resource owned
 by the host and stores one day of totals:
 
 ```ruby
-rollup = LesliAudit::VisitorRollupImporter.call(
+rollup = LesliAudit::TrafficRollupImporter.call(
   account: audit_account,
   provider: "cloudflare",
   provider_key: "/ldonis",
@@ -31,17 +31,21 @@ the type and identifier opaque avoids a runtime dependency on the host model.
 If a public path changes, later rows contain the new `provider_key`; both paths
 remain queryable through the same `resource_type` and `resource_id`.
 
-`VisitorBreakdown` stores optional `country`, `device`, `browser`,
+The Traffic report also groups this key across the selected period to show the
+10 paths with the most visits. The provider remains part of the grouping, so
+identical keys reported by different providers are never combined.
+
+`TrafficBreakdown` stores optional `country`, `device`, `browser`,
 `operating_system`, and `referrer` dimensions for the same day.
 
 ## Database Column Dictionary
 
-### `lesli_audit_visitor_rollups`
+### `lesli_audit_traffic_rollups`
 
 | Column | Type | Meaning |
 | --- | --- | --- |
 | `id` | Primary key | Internal identifier of the daily snapshot. It has no meaning in the analytics provider. |
-| `account_id` | Foreign key | Audit tenant that owns the analytics. Every query must remain scoped to this account. Hard deletion of the Audit account cascades to its visitor data. |
+| `account_id` | Foreign key | Audit tenant that owns the traffic. Every query must remain scoped to this account. Hard deletion of the Audit account cascades to its traffic data. |
 | `provider` | String | Normalized name of the collector or analytics provider, for example `cloudflare`. This is an identifier, not a credential. |
 | `provider_key` | String | Provider-side key used to locate the public resource. For web analytics this can be a path such as `/ldonis`; another provider may use a hostname or opaque key. |
 | `resource_type` | String | Opaque host-owned resource type, for example `Profile`, `Business`, or `Event`. LesliAudit does not constantize it or define a polymorphic association. |
@@ -59,21 +63,21 @@ index over `account_id`, `resource_type`, `resource_id`, and `date` supports
 history queries even when the public path changes. The standalone date index
 supports retention cleanup.
 
-### `lesli_audit_visitor_breakdowns`
+### `lesli_audit_traffic_breakdowns`
 
 | Column | Type | Meaning |
 | --- | --- | --- |
 | `id` | Primary key | Internal identifier of the dimension value. |
 | `account_id` | Foreign key | Audit tenant that owns the row. It is repeated intentionally for direct tenant-scoped queries; model validation requires it to match the rollup account. |
-| `visitor_rollup_id` | Foreign key | Daily rollup to which this dimension value belongs. Deleting the rollup cascades to its breakdowns. |
+| `traffic_rollup_id` | Foreign key | Daily rollup to which this dimension value belongs. Deleting the rollup cascades to its breakdowns. |
 | `dimension` | String | Normalized classification name. Supported values are `country`, `device`, `browser`, `operating_system`, and `referrer`. |
-| `value` | String | Provider value within the dimension, such as `GT`, `mobile`, `Safari`, or `direct`. It is display and grouping data, not a visitor identifier. |
+| `value` | String | Provider value within the dimension, such as `GT`, `mobile`, `Safari`, or `direct`. It is display and grouping data, not a person identifier. |
 | `page_views` | Big integer | Nonnegative page-view count attributed to this dimension value. |
 | `visits` | Big integer | Nonnegative visit count attributed to this dimension value. |
 | `created_at` | Date-time | Time at which LesliAudit first created the dimension row. |
 | `updated_at` | Date-time | Time at which the latest import refreshed the dimension row. |
 
-The unique index over `account_id`, `visitor_rollup_id`, `dimension`, and
+The unique index over `account_id`, `traffic_rollup_id`, `dimension`, and
 `value` prevents duplicate values within the same breakdown. Counts for one
 dimension commonly add up to the parent rollup, but the database does not
 enforce that equality because providers may sample data, suppress small

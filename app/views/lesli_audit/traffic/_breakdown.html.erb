@@ -5,8 +5,8 @@
         <%= render(LesliView::Elements::Table.new(
             columns: [
                 { label: title, align: :left },
-                { label: t("lesli_audit.public_analytics.page_views", default: "Page views"), align: :center },
-                { label: t("lesli_audit.public_analytics.visits", default: "Visits"), align: :center }
+                { label: t("lesli_audit.traffic.page_views", default: "Page views"), align: :center },
+                { label: t("lesli_audit.traffic.visits", default: "Visits"), align: :center }
             ],
             class_name: "!min-w-0",
             compact: true,
@@ -34,7 +34,7 @@
         <% end %>
     <% else %>
         <p class="text-sm text-slate-500">
-            <%= t("lesli_audit.public_analytics.no_breakdown", default: "No breakdown data is available for this period.") %>
+            <%= t("lesli_audit.traffic.no_breakdown", default: "No breakdown data is available for this period.") %>
         </p>
     <% end %>
 </article>

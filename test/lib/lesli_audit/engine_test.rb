@@ -10,15 +10,40 @@ module LesliAudit
         test "defines the supported interface routes" do
             route_names = LesliAudit::Engine.routes.routes.filter_map(&:name)
 
-            %w[users analytics public_analytics logs log requests].each do |route_name|
+            %w[users analytics traffic_index requests logs log].each do |route_name|
                 assert_includes route_names, route_name
             end
 
-            refute_includes route_names, "visitors"
             assert_equal "/audit/analytics", LesliAudit::Engine.routes.url_helpers.analytics_path
+            assert_equal "/audit/traffic", LesliAudit::Engine.routes.url_helpers.traffic_index_path
 
             analytics_route = LesliAudit::Engine.routes.routes.find { |route| route.name == "analytics" }
             assert_equal "lesli_audit/analytics", analytics_route.defaults[:controller]
+
+            traffic_route = LesliAudit::Engine.routes.routes.find { |route| route.name == "traffic_index" }
+            assert_equal "lesli_audit/traffic", traffic_route.defaults[:controller]
+        end
+
+        test "navigation keeps the definitive resource order" do
+            navigation = LesliAudit::Engine.root
+                .join("app/views/lesli_audit/partials/_navigation.html.erb")
+                .read
+
+            helpers = %w[users_path analytics_path traffic_index_path requests_path logs_path]
+            positions = helpers.map { |helper| navigation.index("lesli_audit.#{helper}") }
+
+            assert positions.all?
+            assert_equal positions.sort, positions
+        end
+
+        test "navigation labels contain one word in every locale" do
+            %i[en es fr it pt].each do |locale|
+                %i[users analytics traffic requests logs].each do |resource|
+                    label = I18n.t("lesli_audit.#{resource}.navigation", locale:)
+
+                    assert_no_match(/\s/, label)
+                end
+            end
         end
 
         test "core models expose the associations backed by LesliAudit" do
@@ -30,4 +55,3 @@ module LesliAudit
         end
     end
 end
-

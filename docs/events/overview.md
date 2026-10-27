@@ -1,7 +1,7 @@
 # Activity Events
 
 Activity events describe explicit business or security operations. They are
-different from request analytics: a request counter measures traffic, while an
+different from request analytics: a request counter measures request volume, while an
 activity event records an operation whose meaning is known by the calling code.
 
 Typical events include:
@@ -27,11 +27,11 @@ A record identifier can never be used to read an event from another account.
 
 These events are stored in `lesli_audit_user_logs` or
 `lesli_audit_account_logs`. They are not stored in `user_requests` or
-`user_journals`: requests are traffic data, journals are individual normalized
+`user_journals`: requests are usage data, journals are individual normalized
 HTTP observations, and logs are explicit auditable operations.
 
 Use activity events when the application must retain evidence of an operation.
-Use request analytics for traffic charts and operational timing. Browser,
+Use request analytics for request-volume charts and operational timing. Browser,
 platform, and device distribution comes from successful-login observations
 recorded separately by the authentication flow. See [Emitting Events](/engines/audit/events/emitting) for the integration
 API and [Architecture and Data Policy](/engines/audit/about/architecture) for

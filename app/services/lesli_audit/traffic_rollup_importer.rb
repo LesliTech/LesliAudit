@@ -4,7 +4,7 @@ module LesliAudit
     # Counts are replaced rather than incremented so a provider synchronization
     # can safely repeat after partial data has settled. Breakdown rows omitted
     # from a later snapshot are removed within the same transaction.
-    class VisitorRollupImporter
+    class TrafficRollupImporter
         class ResourceConflict < StandardError; end
 
         def self.call(account:, provider:, provider_key:, resource_type:, resource_id:,
@@ -41,7 +41,7 @@ module LesliAudit
             raise ArgumentError, "account must be a persisted LesliAudit::Account" unless valid_account?
 
             account.transaction do
-                rollup = account.visitor_rollups.find_or_initialize_by(
+                rollup = account.traffic_rollups.find_or_initialize_by(
                     provider:,
                     provider_key:,
                     date:
@@ -114,7 +114,7 @@ module LesliAudit
                 raise ArgumentError, "each breakdown must include dimension, value, page_views, and visits"
             end
 
-            keys = rows.map { |row| [row[:dimension], row[:value]] }
+            keys = rows.map { |row| [ row[:dimension], row[:value] ] }
             raise ArgumentError, "breakdowns must be unique by dimension and value" if keys.uniq.length != keys.length
 
             rows
@@ -129,7 +129,7 @@ module LesliAudit
 
         def replace_breakdowns(rollup)
             kept_ids = breakdowns.map do |attributes|
-                breakdown = rollup.visitor_breakdowns.find_or_initialize_by(
+                breakdown = rollup.traffic_breakdowns.find_or_initialize_by(
                     account:,
                     dimension: attributes[:dimension],
                     value: attributes[:value]
@@ -142,7 +142,7 @@ module LesliAudit
                 breakdown.id
             end
 
-            stale = rollup.visitor_breakdowns
+            stale = rollup.traffic_breakdowns
             stale = stale.where.not(id: kept_ids) if kept_ids.any?
             stale.delete_all
         end

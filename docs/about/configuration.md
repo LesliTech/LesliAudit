@@ -11,8 +11,8 @@ Lesli.configure do |config|
     enable_logs: true,
     enable_journals: true,
     enable_analytics: true,
-    journal_retention_days: 90,
     analytics_retention_days: 400,
+    traffic_retention_days: 400,
     audit_retention_days: nil
   )
 end
@@ -25,8 +25,8 @@ end
 | `enable_logs` | Boolean | `true` | Enables explicit account and user activity events |
 | `enable_journals` | Boolean | `true` | Records individual requests as user journal history while analytics is enabled |
 | `enable_analytics` | Boolean | `true` | Master switch for request counters, journals, and successful-login device aggregates |
-| `journal_retention_days` | Positive integer or `nil` | `90` | Retention period for retained journals |
-| `analytics_retention_days` | Positive integer or `nil` | `400` | Retention period for aggregate analytics and transient journals |
+| `analytics_retention_days` | Positive integer or `nil` | `400` | Retention period for authenticated request counters, journals, and successful-login device aggregates |
+| `traffic_retention_days` | Positive integer or `nil` | `400` | Retention period for provider-imported traffic rollups and their breakdowns |
 | `audit_retention_days` | Positive integer or `nil` | `nil` | Retention period for append-only activity events |
 
 `nil` disables automatic cleanup for that data class. Invalid retention values
@@ -46,7 +46,17 @@ individual request details are retained while analytics is enabled:
 | Disabled | Disabled | Do not capture a request event |
 
 Explicit activity events are controlled only by `enable_logs`; the analytics
-switches do not affect them.
+switches do not affect them. Traffic has no capture switch because providers
+write through an explicit importer rather than an automatic request callback.
+
+## Retention Domains
+
+The three retention settings follow the report concepts directly:
+
+- `analytics_retention_days` applies to Analytics and Requests data, including
+  both retained and transient journals;
+- `traffic_retention_days` applies only to Traffic provider snapshots;
+- `audit_retention_days` applies only to the append-only events shown in Logs.
 
 ## Retention Cleanup Job
 

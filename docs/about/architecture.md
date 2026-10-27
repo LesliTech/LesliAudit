@@ -10,9 +10,9 @@ LesliAudit owns three related but distinct domains:
 
 | Domain | Purpose | Examples | Write behavior |
 | --- | --- | --- | --- |
-| Authenticated analytics | Measure how authenticated users use the application without reconstructing individual business actions | Requests by controller, daily user activity, successful-login agent distribution | Synchronous aggregate counters and optional journals |
-| Public visitor analytics | Import provider-owned traffic totals for public resources that may be served outside Rails | Profile page views, visits, country and device distributions | Idempotent replacement of daily aggregate snapshots |
-| Activity audit | Preserve explicit business and security events | Record created, permission changed, session revoked, account initialized | Durable, append-only, and written synchronously with the audited operation |
+| Analytics | Measure how authenticated users use the application without reconstructing individual business actions | Requests by controller, daily user activity, successful-login agent distribution | Synchronous aggregate counters and optional journals |
+| Traffic | Import provider-owned traffic totals for resources that may be served outside Rails | Profile page views, visits, country and device distributions | Idempotent replacement of daily aggregate snapshots |
+| Audit | Preserve explicit business and security events | Record created, permission changed, session revoked, account initialized | Durable, append-only, and written synchronously with the audited operation |
 
 Request analytics must not be presented as an audit trail. Activity audit must
 not be populated automatically from every controller request; the business
@@ -21,9 +21,23 @@ operation that understands the event must emit it explicitly.
 User journals belong to request analytics. They provide detailed operational
 timing but are not permanent audit evidence.
 
-Public visitor analytics is not captured by the authenticated controller
+Traffic is not captured by the authenticated controller
 callback. A CDN or browser telemetry provider observes the traffic, and the
-host imports aggregate snapshots through `LesliAudit::VisitorRollupImporter`.
+host imports aggregate snapshots through `LesliAudit::TrafficRollupImporter`.
+
+## Navigation and Authorization
+
+The authenticated interface uses this fixed order: **Users · Analytics ·
+Traffic · Requests · Logs**. Each item is one word and maps directly to a
+standard Rails resource: `users#index`, `analytics#index`, `traffic#index`,
+`requests#index`, and `logs#index`. Log detail uses `logs#show`.
+
+LesliShield grants access through those controller resources and role
+permissions. LesliAudit does not maintain a second navigation authorization
+system. Each navigation item uses its resource helper, so the shared
+`navigation_item` helper marks only the current route as active. Because Rails
+treats `traffic` as uncountable, its index helper is `traffic_index_path`; the
+public URL remains `/audit/traffic`. No legacy route aliases are retained.
 
 ## Storage Semantics
 
@@ -38,8 +52,8 @@ Request capture can produce two different representations:
 category, not a count of distinct physical devices or people. It is written
 only when the authentication flow explicitly calls `log_devices`.
 
-`VisitorRollup` maps a provider key such as `/ldonis` directly to an opaque
-host-owned resource identity and stores one daily total. `VisitorBreakdown`
+`TrafficRollup` maps a provider key such as `/ldonis` directly to an opaque
+host-owned resource identity and stores one daily total. `TrafficBreakdown`
 stores optional country, device, browser, operating-system, or referrer
 distributions. Imports replace the complete snapshot for a day; they never
 increment an existing provider total.
@@ -67,7 +81,7 @@ must be written in the same transaction boundary as the business change. If
 the audit event cannot be persisted, that change must not commit. This avoids
 reporting a successful operation without its required audit evidence.
 
-Public visitor analytics is eventually consistent. Provider collection and
+Traffic is eventually consistent. Provider collection and
 host scheduling remain outside the engine, and repeating the same import is
 safe. A provider outage must not affect delivery of the public resource.
 
@@ -93,20 +107,20 @@ host application to use another authentication provider.
 
 ## Traffic Semantics
 
-The account-device counters measure **successful logins**, not unique visitors
-or unique devices. Reports and interface labels must describe login agent
-distribution instead of request or visitor counts.
+The account-device counters measure **successful logins**, not unique people or
+unique devices. Reports and interface labels must describe login agent
+distribution instead of anonymous traffic counts.
 
 The `/analytics` route reports authenticated application usage. A future
 unique-session metric must use a separate table
 or aggregation key; it must not reinterpret historical request counters as
-visitors.
+people.
 
 No persistent browser fingerprint is part of the default design. A future
-unique-visitor feature requires a separate privacy review and an explicit
+unique-person feature requires a separate privacy review and an explicit
 retention policy.
 
-Public visitor rollups intentionally retain the provider concepts
+Traffic rollups intentionally retain the provider concepts
 `page_views` and `visits`. A visit is not presented as a unique person unless
 the selected provider supplies a metric with that explicit contract.
 
@@ -116,9 +130,8 @@ Retention is based on the data's purpose:
 
 | Data | Default retention | Reason |
 | --- | --- | --- |
-| User journals | 90 days | High-volume diagnostic detail |
-| Daily request, user, and successful-login device aggregates | 400 days | Supports current-year and year-over-year reporting |
-| Public visitor rollups and breakdowns | 400 days | Supports profile trends without retaining individual visitor events |
+| Authenticated requests, journals, and successful-login device aggregates | 400 days | Supports current-year and year-over-year reporting under one Analytics policy |
+| Traffic rollups and breakdowns | 400 days | Supports resource trends without retaining individual request events |
 | Activity audit events | No automatic deletion | Deletion depends on the host application's legal and compliance policy |
 
 The host application may shorten these periods. Increasing them should be an
@@ -137,9 +150,9 @@ successful-login device aggregate stores normalized platform, browser, and
 device categories. Neither path stores raw user-agent strings, request bodies,
 credentials, authorization headers, cookies, or IP addresses by default.
 
-Public visitor analytics stores only provider aggregates. It does not store
+Traffic stores only provider aggregates. It does not store
 raw IP addresses, user-agent strings, cookies, browser fingerprints, or an
-event row for each anonymous visitor.
+event row for each anonymous request.
 
 Activity-event metadata uses an allowlist. Secrets, authentication tokens, and
 unfiltered request parameters must never be written. Subject identifiers and
@@ -157,8 +170,8 @@ Lesli.configure do |config|
     enable_logs: true,
     enable_journals: true,
     enable_analytics: true,
-    journal_retention_days: 90,
     analytics_retention_days: 400,
+    traffic_retention_days: 400,
     audit_retention_days: nil
   )
 end
@@ -175,9 +188,9 @@ period.
 `LesliAudit::RetentionCleanup` removes expired records using bounded primary-key
 batches. Date-based analytics delete rows whose `date` is older than their
 cutoff; activity events use `created_at`. Rows exactly on the cutoff are kept.
-Retained journals use the journal period, while transient journals use the
-analytics period. The operation is idempotent and reports the number deleted
-from every table.
+All authenticated analytics, including retained and transient journals, use
+the analytics period. Imported snapshots use the traffic period. The operation
+is idempotent and reports the number deleted from every table.
 
 The engine exposes `LesliAudit::RetentionCleanupJob` for the host scheduler and
 the following manual task:
@@ -193,7 +206,7 @@ before enabling activity-event retention.
 
 ## Implementation Boundary
 
-The controller integration delegates request traffic directly to
+The controller integration delegates authenticated request capture directly to
 `LesliAudit::LoggerInterface#log_requests`. `enable_analytics` is the master
 switch: when enabled, the logger upserts the account request counter and, when
 a session is available, the user request counter. It also creates an individual
@@ -218,10 +231,10 @@ A core account's normal soft deletion keeps its audit history. A deliberate
 hard deletion cascades through database foreign keys to the Audit account and
 its data, without requiring the core model to own engine lifecycle callbacks.
 
-Public visitor providers are host integrations. The engine does not embed a
+Traffic providers are host integrations. The engine does not embed a
 Cloudflare account, API token, scheduler, or network client. A host adapter
 queries its provider and passes a complete daily snapshot to
-`LesliAudit::VisitorRollupImporter`. Provider credentials must remain in the
+`LesliAudit::TrafficRollupImporter`. Provider credentials must remain in the
 host's encrypted credentials or secret manager and must never be passed to a
 public page.
 

@@ -1,10 +1,11 @@
 module LesliAudit
-    class PublicAnalyticsController < ApplicationController
+    class TrafficController < ApplicationController
         def index
-            service = PublicAnalyticsService.new(current_user, analytics_query)
+            service = TrafficService.new(current_user, traffic_query)
 
             @summary = service.summary
             @traffic = service.traffic
+            @paths = service.paths
             @resources = service.resources
             @countries = service.breakdown(:country)
             @devices = service.breakdown(:device)
@@ -13,7 +14,7 @@ module LesliAudit
 
         private
 
-        def analytics_query
+        def traffic_query
             params
                 .permit(:bytime, :resource_type, :resource_id)
                 .to_h

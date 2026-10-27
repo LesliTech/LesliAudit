@@ -19,7 +19,8 @@ module LesliAudit
 
             dashboard = LesliAudit::UserService.new(demo_users.where(deleted_at: nil).first, {}).dashboard
             assert dashboard.fetch(:registrations).any? { |month| month.fetch("yaxiskey").positive? }
-            assert_equal 280, dashboard.fetch(:working_hours).length
+            assert_equal LesliAudit::UserService::ACTIVITY_LIMIT,
+                dashboard.fetch(:working_hours).length
 
             load seed
 

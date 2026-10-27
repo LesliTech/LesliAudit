@@ -1,0 +1,10 @@
+---
+title: "LesliAudit Traffic"
+description: "Present provider-imported page views, visits, resources, and traffic dimensions."
+---
+
+<!--
+This file is a replica of the main documentation file for this section.
+-->
+
+<%= partial("overview") %>

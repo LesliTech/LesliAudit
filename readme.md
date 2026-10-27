@@ -48,6 +48,7 @@ It records account activity and provides administrators with searchable operatio
 - Account activity and audit logs
 - Request and navigation history
 - Request, device, and authenticated-user analytics
+- Provider-imported traffic for resources served outside Rails
 - Direct account and authenticated-user request counters
 - Configurable batched data retention
 - Normalized browser, platform, and device categories
@@ -56,6 +57,11 @@ It records account activity and provides administrators with searchable operatio
 Activity logs are explicit append-only business or security events. They are
 separate from request analytics: user requests are grouped counters, while
 user journals are individual normalized HTTP request events.
+
+The interface uses five single-word reports in a fixed order: **Users**,
+**Analytics**, **Traffic**, **Requests**, and **Logs**. Analytics measures
+authenticated application use. Traffic presents aggregate resource visits
+imported from an external provider.
 
 <br />
 
@@ -153,6 +159,7 @@ bin/rails test
 - [Architecture and data policy](./docs/about/architecture.md)
 - [Configuration](./docs/about/configuration.md)
 - [Request analytics](./docs/analytics/overview.md)
+- [Provider traffic](./docs/traffic/overview.md)
 - [Activity events](./docs/events/overview.md)
 - [Operational tasks](./docs/about/tasks.md)
 - [Database](./docs/about/database.md)

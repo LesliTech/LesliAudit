@@ -11,8 +11,8 @@ LesliAudit uses collection code `05` and engine code `01`. Its migrations live u
 | `05.01.12.01.10` | `lesli_audit_user_logs` | User-specific activity records |
 | `05.01.12.02.10` | `lesli_audit_user_journals` | Individual user request journals |
 | `05.01.12.03.10` | `lesli_audit_user_requests` | User request analytics |
-| `05.01.13.01.10` | `lesli_audit_visitor_rollups` | Daily page-view and visit snapshots imported from a provider |
-| `05.01.13.02.10` | `lesli_audit_visitor_breakdowns` | Optional dimensions belonging to a daily visitor rollup |
+| `05.01.13.01.10` | `lesli_audit_traffic_rollups` | Daily page-view and visit snapshots imported from a provider |
+| `05.01.13.02.10` | `lesli_audit_traffic_breakdowns` | Optional dimensions belonging to a daily traffic rollup |
 
 ## Choosing the Correct Record
 
@@ -22,12 +22,12 @@ The similarly named tables do not contain interchangeable data:
 | --- | --- | --- | --- |
 | `AccountLog` / `lesli_audit_account_logs` | One explicitly emitted tenant-level business or security event | Account lifecycle and operations whose actor may be a user | Yes |
 | `UserLog` / `lesli_audit_user_logs` | One explicitly emitted user activity event | A user's business or security history | Yes |
-| `AccountRequest` / `lesli_audit_account_requests` | One counter per tenant, date, controller, and action | Traffic totals and controller trends | No |
+| `AccountRequest` / `lesli_audit_account_requests` | One counter per tenant, date, controller, and action | Authenticated request totals and controller trends | No |
 | `UserRequest` / `lesli_audit_user_requests` | One counter per tenant, user, optional session, date, controller, and action | Per-user request totals | No |
 | `UserJournal` / `lesli_audit_user_journals` | One normalized row per captured HTTP request | Detailed user timing and request history | No |
 | `AccountDevice` / `lesli_audit_account_devices` | One counter per tenant, date, platform, browser, and device category | Successful-login distribution by normalized agent category | No |
-| `VisitorRollup` / `lesli_audit_visitor_rollups` | One provider snapshot per tenant, provider key, and date | Public page views and visits attributed to a host resource | No |
-| `VisitorBreakdown` / `lesli_audit_visitor_breakdowns` | One value within a rollup dimension | Country, device, browser, operating-system, and referrer distributions | No |
+| `TrafficRollup` / `lesli_audit_traffic_rollups` | One provider snapshot per tenant, provider key, and date | Public page views and visits attributed to a host resource | No |
+| `TrafficBreakdown` / `lesli_audit_traffic_breakdowns` | One value within a rollup dimension | Country, device, browser, operating-system, and referrer distributions | No |
 
 ### Account requests, user requests, and user journals
 
@@ -99,16 +99,16 @@ Device dimensions follow a separate path. `log_devices` parses and aggregates
 the user agent only after a successful login; ordinary request logging never
 increments `AccountDevice`.
 
-Public visitor analytics follows another path. A `VisitorRollup` stores the
+Traffic follows another path. A `TrafficRollup` stores the
 provider, provider key, opaque host resource identity, and daily totals in the
 same row. This keeps the proof of concept to two tables while preserving the
-path that produced every day's data. `VisitorRollupImporter` replaces one
+path that produced every day's data. `TrafficRollupImporter` replaces one
 complete daily snapshot inside a transaction and removes breakdown values
 omitted from the replacement. The unique provider-key-and-date index makes
 retries idempotent.
 
-See [Public Visitor Analytics](/engines/audit/analytics/visitor-analytics#database-column-dictionary)
-for the complete column-by-column contract of both visitor analytics tables.
+See [Traffic](/engines/audit/traffic/overview#database-column-dictionary) for
+the complete column-by-column contract of both traffic tables.
 
 Account and user activity logs require an `operation`, use text for their
 human-readable description, and index account plus creation time for tenant
@@ -132,12 +132,12 @@ bin/rails lesli_audit:retention:cleanup
 ```
 
 The retention operation is available to host schedulers through
-`LesliAudit::RetentionCleanupJob`. Cleanup uses the `date` indexes for journals
-and analytics and the `created_at` indexes for activity histories, deleting in
-bounded batches. The same `audit_retention_days` cutoff applies to both account
-and user logs; both activity histories are skipped while it is `nil`. Hard
-deletion of the Audit account permanently removes both collections through
-their account-scoped cascade rules.
+`LesliAudit::RetentionCleanupJob`. Cleanup uses `analytics_retention_days` for
+authenticated counters, journals, and login-device aggregates;
+`traffic_retention_days` for imported rollups; and `audit_retention_days` for
+account and user logs. Cleanup runs in bounded batches. A `nil` setting skips
+that domain. Hard deletion of the Audit account permanently removes every
+account-scoped collection through its cascade rules.
 
 Audit data can grow quickly. New queries should remain account-scoped and be supported by indexes matching their filters and grouping columns.
 

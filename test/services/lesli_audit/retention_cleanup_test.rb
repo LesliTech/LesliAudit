@@ -6,8 +6,8 @@ module LesliAudit
         NOW = Time.zone.local(2026, 10, 18, 12, 0, 0)
 
         test "deletes expired rows while preserving cutoffs" do
-            retained_old = create_journal("retained-old", date: TODAY - 11, retain: true)
-            retained_cutoff = create_journal("retained-cutoff", date: TODAY - 10, retain: true)
+            retained_old = create_journal("retained-old", date: TODAY - 21, retain: true)
+            retained_cutoff = create_journal("retained-cutoff", date: TODAY - 20, retain: true)
             transient_old = create_journal("transient-old", date: TODAY - 21, retain: false)
 
             request_old = audit_account.account_requests.create!(
@@ -22,29 +22,29 @@ module LesliAudit
                 request_count: 1,
                 date: TODAY - 20
             )
-            rollup_old = audit_account.visitor_rollups.create!(
+            rollup_old = audit_account.traffic_rollups.create!(
                 provider: "cloudflare",
                 provider_key: "/retention-test",
                 resource_type: "Profile",
                 resource_id: 27,
-                date: TODAY - 21,
+                date: TODAY - 31,
                 page_views: 10,
                 visits: 7,
                 synced_at: NOW
             )
-            rollup_old.visitor_breakdowns.create!(
+            rollup_old.traffic_breakdowns.create!(
                 account: audit_account,
                 dimension: "country",
                 value: "GT",
                 page_views: 10,
                 visits: 7
             )
-            rollup_cutoff = audit_account.visitor_rollups.create!(
+            rollup_cutoff = audit_account.traffic_rollups.create!(
                 provider: "cloudflare",
                 provider_key: "/retention-test",
                 resource_type: "Profile",
                 resource_id: 27,
-                date: TODAY - 20,
+                date: TODAY - 30,
                 page_views: 5,
                 visits: 4,
                 synced_at: NOW
@@ -71,8 +71,8 @@ module LesliAudit
             )
 
             with_audit_config(
-                journal_retention_days: 10,
                 analytics_retention_days: 20,
+                traffic_retention_days: 30,
                 audit_retention_days: 30
             ) do
                 deleted = LesliAudit::RetentionCleanup.call(
@@ -83,7 +83,7 @@ module LesliAudit
 
                 assert_equal 2, deleted[LesliAudit::UserJournal.table_name]
                 assert_equal 1, deleted[LesliAudit::AccountRequest.table_name]
-                assert_equal 1, deleted[LesliAudit::VisitorRollup.table_name]
+                assert_equal 1, deleted[LesliAudit::TrafficRollup.table_name]
                 assert_equal 1, deleted[LesliAudit::AccountLog.table_name]
                 assert_equal 1, deleted[LesliAudit::UserLog.table_name]
             end
@@ -93,9 +93,9 @@ module LesliAudit
             assert LesliAudit::UserJournal.exists?(retained_cutoff.id)
             assert_not LesliAudit::AccountRequest.exists?(request_old.id)
             assert LesliAudit::AccountRequest.exists?(request_cutoff.id)
-            assert_not LesliAudit::VisitorRollup.exists?(rollup_old.id)
-            assert LesliAudit::VisitorRollup.exists?(rollup_cutoff.id)
-            assert_equal 0, LesliAudit::VisitorBreakdown.where(visitor_rollup_id: rollup_old.id).count
+            assert_not LesliAudit::TrafficRollup.exists?(rollup_old.id)
+            assert LesliAudit::TrafficRollup.exists?(rollup_cutoff.id)
+            assert_equal 0, LesliAudit::TrafficBreakdown.where(traffic_rollup_id: rollup_old.id).count
             assert_not LesliAudit::UserLog.exists?(log_old.id)
             assert LesliAudit::UserLog.exists?(log_cutoff.id)
             assert_not LesliAudit::AccountLog.exists?(account_log_old.id)
@@ -115,8 +115,8 @@ module LesliAudit
             )
 
             with_audit_config(
-                journal_retention_days: nil,
                 analytics_retention_days: nil,
+                traffic_retention_days: nil,
                 audit_retention_days: nil
             ) do
                 deleted = LesliAudit::RetentionCleanup.call(today: TODAY, now: NOW)
@@ -135,6 +135,14 @@ module LesliAudit
                 end
 
                 assert_equal "analytics_retention_days must be a positive integer or nil", error.message
+            end
+
+            with_audit_config(traffic_retention_days: 0) do
+                error = assert_raises(ArgumentError) do
+                    LesliAudit::RetentionCleanup.call(today: TODAY, now: NOW)
+                end
+
+                assert_equal "traffic_retention_days must be a positive integer or nil", error.message
             end
 
             error = assert_raises(ArgumentError) do

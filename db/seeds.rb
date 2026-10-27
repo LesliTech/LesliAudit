@@ -27,16 +27,16 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 
 Termline.info("Loading seeds for: LesliAudit #{LesliAudit::VERSION} (#{LesliAudit::BUILD})")
 
 
 # · load specific environment seeds
-if Rails.env.development? || Lesli.config.demo 
+if Rails.env.development? || Lesli.config.demo
     load LesliAudit::Engine.root.join("db", "seed", "requests.rb")
     load LesliAudit::Engine.root.join("db", "seed", "devices.rb")
-    load LesliAudit::Engine.root.join("db", "seed", "visitor_analytics.rb")
+    load LesliAudit::Engine.root.join("db", "seed", "traffic.rb")
     load LesliAudit::Engine.root.join("db", "seed", "users.rb")
 end

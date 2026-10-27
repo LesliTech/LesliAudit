@@ -17,7 +17,7 @@ The report intentionally contains only person-centered information:
 ## Boundaries with Other Reports
 
 Users does not show request totals, controllers, browsers, devices, or
-operating systems. Account-wide traffic belongs to **Analytics**, and the
+operating systems. Account-wide authenticated usage belongs to **Analytics**, and the
 filterable per-user endpoint report belongs to **Requests**.
 
 The working-hours table does not list journals or count requests. It reduces

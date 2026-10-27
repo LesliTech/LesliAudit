@@ -8,22 +8,57 @@ audit_account = core_account.audit || LesliAudit::Account.create!(
     name: core_account.name
 )
 
-resources = [{
+resources = [ {
     resource_type: "Profile",
     resource_id: 1_001,
     provider_key: "/demo/sofia",
     baseline: 92
+}, {
+    resource_type: "Profile",
+    resource_id: 1_002,
+    provider_key: "/demo/mateo",
+    baseline: 78
+}, {
+    resource_type: "Profile",
+    resource_id: 1_003,
+    provider_key: "/demo/valentina",
+    baseline: 72
+}, {
+    resource_type: "Profile",
+    resource_id: 1_004,
+    provider_key: "/demo/santiago",
+    baseline: 68
 }, {
     resource_type: "Business",
     resource_id: 2_001,
     provider_key: "/demo/cafe",
     baseline: 64
 }, {
+    resource_type: "Business",
+    resource_id: 2_002,
+    provider_key: "/demo/studio",
+    baseline: 56
+}, {
+    resource_type: "Business",
+    resource_id: 2_003,
+    provider_key: "/demo/bakery",
+    baseline: 52
+}, {
     resource_type: "Event",
     resource_id: 3_001,
     provider_key: "/demo/festival",
     baseline: 38
-}].freeze
+}, {
+    resource_type: "Event",
+    resource_id: 3_002,
+    provider_key: "/demo/conference",
+    baseline: 44
+}, {
+    resource_type: "Event",
+    resource_id: 3_003,
+    provider_key: "/demo/workshop",
+    baseline: 34
+} ].freeze
 
 split = lambda do |total, weights|
     remaining = total
@@ -41,12 +76,12 @@ resources.each_with_index do |resource, resource_index|
         page_views = resource[:baseline] + weekday_lift + trend
         visits = (page_views * 0.72).round
 
-        country_views = split.call(page_views, [0.72, 0.18, 0.10])
-        country_visits = split.call(visits, [0.72, 0.18, 0.10])
-        device_views = split.call(page_views, [0.68, 0.27, 0.05])
-        device_visits = split.call(visits, [0.68, 0.27, 0.05])
-        referrer_views = split.call(page_views, [0.42, 0.31, 0.17, 0.10])
-        referrer_visits = split.call(visits, [0.42, 0.31, 0.17, 0.10])
+        country_views = split.call(page_views, [ 0.72, 0.18, 0.10 ])
+        country_visits = split.call(visits, [ 0.72, 0.18, 0.10 ])
+        device_views = split.call(page_views, [ 0.68, 0.27, 0.05 ])
+        device_visits = split.call(visits, [ 0.68, 0.27, 0.05 ])
+        referrer_views = split.call(page_views, [ 0.42, 0.31, 0.17, 0.10 ])
+        referrer_visits = split.call(visits, [ 0.42, 0.31, 0.17, 0.10 ])
 
         breakdowns = []
         %w[GT US MX].each_with_index do |value, index|
@@ -74,7 +109,7 @@ resources.each_with_index do |resource, resource_index|
             }
         end
 
-        LesliAudit::VisitorRollupImporter.call(
+        LesliAudit::TrafficRollupImporter.call(
             account: audit_account,
             provider: "cloudflare",
             provider_key: resource[:provider_key],

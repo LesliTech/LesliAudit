@@ -24,6 +24,10 @@ The shipped locale files contain the current interface vocabulary. Add every
 new key to each supported locale, replace the corresponding hard-coded text,
 and preserve interpolation variables between languages.
 
+Navigation labels remain single words and use this fixed conceptual order:
+Users, Analytics, Traffic, Requests, and Logs. Translate the words naturally,
+but do not merge concepts or replace Traffic with an Analytics label.
+
 When LesliBabel is installed, synchronize the local files with:
 
 ```shell

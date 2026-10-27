@@ -42,8 +42,12 @@ module LesliAudit
         ANALYTICS_MODELS = [
             LesliAudit::AccountDevice,
             LesliAudit::AccountRequest,
-            LesliAudit::UserRequest,
-            LesliAudit::VisitorRollup
+            LesliAudit::UserJournal,
+            LesliAudit::UserRequest
+        ].freeze
+
+        TRAFFIC_MODELS = [
+            LesliAudit::TrafficRollup
         ].freeze
 
         ACTIVITY_MODELS = [
@@ -64,12 +68,17 @@ module LesliAudit
         def call
             deleted = {}
 
-            cleanup_journals(deleted)
             cleanup_group(
                 deleted,
                 ANALYTICS_MODELS,
                 column: :date,
                 cutoff: date_cutoff(:analytics_retention_days)
+            )
+            cleanup_group(
+                deleted,
+                TRAFFIC_MODELS,
+                column: :date,
+                cutoff: date_cutoff(:traffic_retention_days)
             )
             cleanup_group(
                 deleted,
@@ -84,21 +93,6 @@ module LesliAudit
         private
 
         attr_reader :batch_size, :now, :today
-
-        def cleanup_journals(deleted)
-            retained_count = delete_with_cutoff(
-                LesliAudit::UserJournal.retained,
-                :date,
-                date_cutoff(:journal_retention_days)
-            )
-            transient_count = delete_with_cutoff(
-                LesliAudit::UserJournal.transient,
-                :date,
-                date_cutoff(:analytics_retention_days)
-            )
-
-            deleted[LesliAudit::UserJournal.table_name] = retained_count + transient_count
-        end
 
         def cleanup_group(deleted, models, column:, cutoff:)
             models.each do |model|

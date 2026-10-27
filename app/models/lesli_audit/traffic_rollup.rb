@@ -1,11 +1,11 @@
 module LesliAudit
-    class VisitorRollup < ApplicationRecord
+    class TrafficRollup < ApplicationRecord
         belongs_to :account,
             class_name: "LesliAudit::Account",
-            inverse_of: :visitor_rollups
+            inverse_of: :traffic_rollups
 
-        has_many :visitor_breakdowns,
-            inverse_of: :visitor_rollup,
+        has_many :traffic_breakdowns,
+            inverse_of: :traffic_rollup,
             dependent: :delete_all
 
         before_validation :normalize_identifiers

@@ -4,7 +4,7 @@ LesliAudit Analytics describes how authenticated users use the application.
 It combines request counters with the browser, operating-system, and device
 categories observed after successful authentication. These reports are
 operational analytics; they are not an audit trail and do not measure anonymous
-website traffic.
+website visits.
 
 Authenticated controllers inheriting from `Lesli::ApplicationLesliController`
 send the current user, controller, action, and optional session to
@@ -27,7 +27,7 @@ Device capture is intentionally separate. The authentication flow calls
 
 | Record | Meaning | Typical question |
 | --- | --- | --- |
-| `AccountRequest` | Grouped counter by account, date, controller, and action | How much authenticated traffic reached each application endpoint? |
+| `AccountRequest` | Grouped counter by account, date, controller, and action | How many authenticated requests reached each application endpoint? |
 | `UserRequest` | Grouped counter by user, optional session, date, controller, and action | How many matching requests did this user make? |
 | `UserJournal` | One normalized record for an individual captured request | When did this user's individual requests occur? |
 | `UserLog` | Explicit append-only business or security event | Which auditable operation did this user perform? |
@@ -73,7 +73,7 @@ Device and browser figures count successful logins by normalized agent
 category. They are not unique people or physical devices. Device capture is
 invoked explicitly by the authentication flow and never by `log_requests`.
 
-The Users report deliberately excludes these account traffic and login-agent
+The Users report deliberately excludes these account request trends and login-agent
 distributions. See [Users](/engines/audit/users/overview) for its person-centered
 scope and retained-journal working-hours semantics.
 
@@ -92,6 +92,6 @@ See [Configuration](/engines/audit/about/configuration) for capture modes,
 semantics, and [Architecture and Data Policy](/engines/audit/about/architecture)
 for privacy and retention guarantees.
 
-Public resources served from a CDN use a separate provider-import workflow.
-See [Public Visitor Analytics](/engines/audit/analytics/visitor-analytics).
+Resources served from a CDN use the separate provider-import workflow described
+in [Traffic](/engines/audit/traffic/overview).
 

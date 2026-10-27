@@ -1,8 +1,8 @@
 require "test_helper"
 
 module LesliAudit
-    class PublicAnalyticsServiceTest < ActiveSupport::TestCase
-        test "summarizes and groups public analytics for the current account" do
+    class TrafficServiceTest < ActiveSupport::TestCase
+        test "summarizes and groups provider traffic for the current account" do
             import_snapshot(
                 resource_id: 27,
                 provider_key: "/ldonis",
@@ -22,13 +22,41 @@ module LesliAudit
                 visits: 25
             )
 
-            service = LesliAudit::PublicAnalyticsService.new(core_user, bytime: "all")
+            service = LesliAudit::TrafficService.new(core_user, bytime: "all")
 
             assert_equal({ page_views: 140, visits: 95, resources: 2, sources: 2 }, service.summary)
             assert_equal 140, service.traffic.first["yaxiskey"]
+            assert_equal "/ldonis", service.paths.first["path"]
+            assert_equal 70, service.paths.first["visits"]
             assert_equal 2, service.resources.length
             assert_equal "GT", service.breakdown(:country).first[:value]
             assert_equal 80, service.breakdown(:country).first[:page_views]
+        end
+
+        test "returns the ten paths with the most visits" do
+            (1..11).each do |number|
+                import_snapshot(
+                    resource_id: number,
+                    provider_key: "/demo/#{number}",
+                    date: Date.current,
+                    page_views: number + 10,
+                    visits: number
+                )
+            end
+            import_snapshot(
+                resource_id: 11,
+                provider_key: "/demo/11",
+                date: Date.yesterday,
+                page_views: 20,
+                visits: 20
+            )
+
+            paths = LesliAudit::TrafficService.new(core_user, bytime: "all").paths
+
+            assert_equal 10, paths.length
+            assert_equal "/demo/11", paths.first["path"]
+            assert_equal 31, paths.first["visits"]
+            assert_not_includes paths.pluck("path"), "/demo/1"
         end
 
         test "defaults to thirty days and supports a generic resource filter" do
@@ -54,7 +82,7 @@ module LesliAudit
                 visits: 80
             )
 
-            service = LesliAudit::PublicAnalyticsService.new(
+            service = LesliAudit::TrafficService.new(
                 core_user,
                 resource_type: "Profile",
                 resource_id: "27"
@@ -65,7 +93,7 @@ module LesliAudit
             assert_equal 1, service.summary[:resources]
         end
 
-        test "does not expose another account analytics" do
+        test "does not expose another account traffic" do
             import_snapshot(
                 resource_id: 27,
                 provider_key: "/ldonis",
@@ -77,7 +105,7 @@ module LesliAudit
             other_audit = LesliAudit::Account.find_or_create_by!(account: secondary_core_account) do |account|
                 account.name = secondary_core_account.name
             end
-            LesliAudit::VisitorRollupImporter.call(
+            LesliAudit::TrafficRollupImporter.call(
                 account: other_audit,
                 provider: "cloudflare",
                 provider_key: "/other",
@@ -88,7 +116,7 @@ module LesliAudit
                 visits: 400
             )
 
-            service = LesliAudit::PublicAnalyticsService.new(core_user, bytime: "all")
+            service = LesliAudit::TrafficService.new(core_user, bytime: "all")
 
             assert_equal 10, service.summary[:page_views]
             assert_equal 7, service.summary[:visits]
@@ -97,7 +125,7 @@ module LesliAudit
         private
 
         def import_snapshot(resource_id:, provider_key:, date:, page_views:, visits:, breakdowns: [])
-            LesliAudit::VisitorRollupImporter.call(
+            LesliAudit::TrafficRollupImporter.call(
                 account: audit_account,
                 provider: "cloudflare",
                 provider_key:,

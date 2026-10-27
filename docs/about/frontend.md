@@ -26,7 +26,7 @@ covered by an `@source` rule. The current page-specific sources are:
 @source "../../app/views/lesli_audit/analytics/index.html.erb";
 @source "../../app/views/lesli_audit/requests/index.html.erb";
 @source "../../app/views/lesli_audit/logs/**/*.html.erb";
-@source "../../app/views/lesli_audit/public_analytics/**/*.html.erb";
+@source "../../app/views/lesli_audit/traffic/**/*.html.erb";
 ```
 
 Add another source when migrating or creating a view that contains utilities.

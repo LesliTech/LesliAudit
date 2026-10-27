@@ -147,7 +147,7 @@ ActiveRecord::Schema[8.1].define(version: 501130210) do
         t.check_constraint "request_count >= 0", name: "lesli_audit_user_requests_request_count_nonnegative"
     end
 
-    create_table "lesli_audit_visitor_rollups", force: :cascade do |t|
+    create_table "lesli_audit_traffic_rollups", force: :cascade do |t|
         t.string "provider", null: false
         t.string "provider_key", null: false
         t.string "resource_type", null: false
@@ -158,26 +158,26 @@ ActiveRecord::Schema[8.1].define(version: 501130210) do
         t.datetime "synced_at", null: false
         t.timestamps null: false
         t.integer "account_id", null: false
-        t.index ["account_id", "provider", "provider_key", "date"], name: "index_lesli_audit_visitor_rollups_on_provider_key_and_date", unique: true
-        t.index ["account_id", "resource_type", "resource_id", "date"], name: "index_lesli_audit_visitor_rollups_on_resource_and_date"
-        t.index ["date"], name: "index_lesli_audit_visitor_rollups_on_date"
-        t.check_constraint "page_views >= 0", name: "lesli_audit_visitor_rollups_page_views_nonnegative"
-        t.check_constraint "resource_id > 0", name: "lesli_audit_visitor_rollups_resource_id_positive"
-        t.check_constraint "visits >= 0", name: "lesli_audit_visitor_rollups_visits_nonnegative"
+        t.index ["account_id", "provider", "provider_key", "date"], name: "index_lesli_audit_traffic_rollups_on_provider_key_and_date", unique: true
+        t.index ["account_id", "resource_type", "resource_id", "date"], name: "index_lesli_audit_traffic_rollups_on_resource_and_date"
+        t.index ["date"], name: "index_lesli_audit_traffic_rollups_on_date"
+        t.check_constraint "page_views >= 0", name: "lesli_audit_traffic_rollups_page_views_nonnegative"
+        t.check_constraint "resource_id > 0", name: "lesli_audit_traffic_rollups_resource_id_positive"
+        t.check_constraint "visits >= 0", name: "lesli_audit_traffic_rollups_visits_nonnegative"
     end
 
-    create_table "lesli_audit_visitor_breakdowns", force: :cascade do |t|
+    create_table "lesli_audit_traffic_breakdowns", force: :cascade do |t|
         t.string "dimension", null: false
         t.string "value", null: false
         t.bigint "page_views", default: 0, null: false
         t.bigint "visits", default: 0, null: false
         t.timestamps null: false
         t.integer "account_id", null: false
-        t.integer "visitor_rollup_id", null: false
-        t.index ["account_id", "visitor_rollup_id", "dimension", "value"], name: "index_lesli_audit_visitor_breakdowns_on_dimension", unique: true
-        t.index ["visitor_rollup_id"], name: "index_lesli_audit_visitor_breakdowns_on_visitor_rollup_id"
-        t.check_constraint "page_views >= 0", name: "lesli_audit_visitor_breakdowns_page_views_nonnegative"
-        t.check_constraint "visits >= 0", name: "lesli_audit_visitor_breakdowns_visits_nonnegative"
+        t.integer "traffic_rollup_id", null: false
+        t.index ["account_id", "traffic_rollup_id", "dimension", "value"], name: "index_lesli_audit_traffic_breakdowns_on_dimension", unique: true
+        t.index ["traffic_rollup_id"], name: "index_lesli_audit_traffic_breakdowns_on_traffic_rollup_id"
+        t.check_constraint "page_views >= 0", name: "lesli_audit_traffic_breakdowns_page_views_nonnegative"
+        t.check_constraint "visits >= 0", name: "lesli_audit_traffic_breakdowns_visits_nonnegative"
     end
 
     add_foreign_key "lesli_users", "lesli_accounts", column: "account_id"
@@ -192,8 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 501130210) do
     add_foreign_key "lesli_audit_user_journals", "lesli_users", column: "user_id", on_delete: :nullify
     add_foreign_key "lesli_audit_user_requests", "lesli_audit_accounts", column: "account_id", on_delete: :cascade
     add_foreign_key "lesli_audit_user_requests", "lesli_users", column: "user_id", on_delete: :cascade
-    add_foreign_key "lesli_audit_visitor_rollups", "lesli_audit_accounts", column: "account_id", on_delete: :cascade
-    add_foreign_key "lesli_audit_visitor_breakdowns", "lesli_audit_accounts", column: "account_id", on_delete: :cascade
-    add_foreign_key "lesli_audit_visitor_breakdowns", "lesli_audit_visitor_rollups", column: "visitor_rollup_id", on_delete: :cascade
+    add_foreign_key "lesli_audit_traffic_rollups", "lesli_audit_accounts", column: "account_id", on_delete: :cascade
+    add_foreign_key "lesli_audit_traffic_breakdowns", "lesli_audit_accounts", column: "account_id", on_delete: :cascade
+    add_foreign_key "lesli_audit_traffic_breakdowns", "lesli_audit_traffic_rollups", column: "traffic_rollup_id", on_delete: :cascade
 end
-

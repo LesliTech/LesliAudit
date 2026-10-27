@@ -1,5 +1,5 @@
 module LesliAudit
-    class PublicAnalyticsService < Lesli::ApplicationLesliService
+    class TrafficService < Lesli::ApplicationLesliService
         LIMIT = 10
 
         def summary
@@ -54,12 +54,33 @@ module LesliAudit
                 end
         end
 
+        def paths
+            # Keep the provider in the group so equal keys from different
+            # analytics providers are never combined into one path.
+            rollups
+                .group(:provider, :provider_key)
+                .order(Arel.sql("SUM(visits) DESC"))
+                .limit(LIMIT)
+                .pluck(
+                    :provider,
+                    :provider_key,
+                    Arel.sql("SUM(visits)")
+                )
+                .map do |provider, path, visits|
+                    {
+                        "provider" => provider,
+                        "path" => path,
+                        "visits" => visits.to_i
+                    }
+                end
+        end
+
         def breakdown(dimension)
             dimension = dimension.to_s
-            return [] unless account && VisitorBreakdown::DIMENSIONS.include?(dimension)
+            return [] unless account && TrafficBreakdown::DIMENSIONS.include?(dimension)
 
-            records = account.visitor_breakdowns
-                .where(visitor_rollup_id: rollups.select(:id), dimension:)
+            records = account.traffic_breakdowns
+                .where(traffic_rollup_id: rollups.select(:id), dimension:)
                 .group(:value)
                 .order(Arel.sql("SUM(page_views) DESC"))
                 .limit(LIMIT)
@@ -89,7 +110,7 @@ module LesliAudit
 
         def rollups
             @rollups ||= begin
-                relation = account ? account.visitor_rollups : VisitorRollup.none
+                relation = account ? account.traffic_rollups : TrafficRollup.none
                 relation = apply_time_filter(relation)
                 relation = relation.where(resource_type: query[:resource_type].to_s.strip) if query[:resource_type].present?
                 relation = relation.where(resource_id: resource_id_filter) if resource_id_filter
