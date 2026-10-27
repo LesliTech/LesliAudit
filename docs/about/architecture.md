@@ -6,11 +6,12 @@ reliability, retention, and storage rules.
 
 ## Data Domains
 
-LesliAudit owns two related but distinct domains:
+LesliAudit owns three related but distinct domains:
 
 | Domain | Purpose | Examples | Write behavior |
 | --- | --- | --- | --- |
 | Request analytics | Measure application traffic without reconstructing individual business actions | Requests by controller, daily user activity, successful-login agent distribution | Synchronous aggregate counters and optional journals |
+| Public visitor analytics | Import provider-owned traffic totals for public resources that may be served outside Rails | Profile page views, visits, country and device distributions | Idempotent replacement of daily aggregate snapshots |
 | Activity audit | Preserve explicit business and security events | Record created, permission changed, session revoked, account initialized | Durable, append-only, and written synchronously with the audited operation |
 
 Request analytics must not be presented as an audit trail. Activity audit must
@@ -19,6 +20,10 @@ operation that understands the event must emit it explicitly.
 
 User journals belong to request analytics. They provide detailed operational
 timing but are not permanent audit evidence.
+
+Public visitor analytics is not captured by the authenticated controller
+callback. A CDN or browser telemetry provider observes the traffic, and the
+host imports aggregate snapshots through `LesliAudit::VisitorRollupImporter`.
 
 ## Storage Semantics
 
@@ -32,6 +37,12 @@ Request capture can produce two different representations:
 `AccountDevice` is a grouped successful-login counter by normalized agent
 category, not a count of distinct physical devices or people. It is written
 only when the authentication flow explicitly calls `log_devices`.
+
+`VisitorRollup` maps a provider key such as `/ldonis` directly to an opaque
+host-owned resource identity and stores one daily total. `VisitorBreakdown`
+stores optional country, device, browser, operating-system, or referrer
+distributions. Imports replace the complete snapshot for a day; they never
+increment an existing provider total.
 
 `UserLog` and `AccountLog` are separate append-only activity records created
 only when application code explicitly emits a meaningful operation. They are
@@ -49,6 +60,10 @@ Activity audit is **fail-closed** for operations declared auditable. The event
 must be written in the same transaction boundary as the business change. If
 the audit event cannot be persisted, that change must not commit. This avoids
 reporting a successful operation without its required audit evidence.
+
+Public visitor analytics is eventually consistent. Provider collection and
+host scheduling remain outside the engine, and repeating the same import is
+safe. A provider outage must not affect delivery of the public resource.
 
 The generic request callback is therefore an analytics integration point, not
 an activity-audit integration point.
@@ -85,6 +100,10 @@ No persistent browser fingerprint is part of the default design. A future
 unique-visitor feature requires a separate privacy review and an explicit
 retention policy.
 
+Public visitor rollups intentionally retain the provider concepts
+`page_views` and `visits`. A visit is not presented as a unique person unless
+the selected provider supplies a metric with that explicit contract.
+
 ## Retention Defaults
 
 Retention is based on the data's purpose:
@@ -93,6 +112,7 @@ Retention is based on the data's purpose:
 | --- | --- | --- |
 | User journals | 90 days | High-volume diagnostic detail |
 | Daily request, user, and successful-login device aggregates | 400 days | Supports current-year and year-over-year reporting |
+| Public visitor rollups and breakdowns | 400 days | Supports profile trends without retaining individual visitor events |
 | Activity audit events | No automatic deletion | Deletion depends on the host application's legal and compliance policy |
 
 The host application may shorten these periods. Increasing them should be an
@@ -110,6 +130,10 @@ Request analytics stores normalized controller and action dimensions. The
 successful-login device aggregate stores normalized platform, browser, and
 device categories. Neither path stores raw user-agent strings, request bodies,
 credentials, authorization headers, cookies, or IP addresses by default.
+
+Public visitor analytics stores only provider aggregates. It does not store
+raw IP addresses, user-agent strings, cookies, browser fingerprints, or an
+event row for each anonymous visitor.
 
 Activity-event metadata uses an allowlist. Secrets, authentication tokens, and
 unfiltered request parameters must never be written. Subject identifiers and
@@ -187,6 +211,13 @@ an event outcome is represented by a new event, never by editing the original.
 A core account's normal soft deletion keeps its audit history. A deliberate
 hard deletion cascades through database foreign keys to the Audit account and
 its data, without requiring the core model to own engine lifecycle callbacks.
+
+Public visitor providers are host integrations. The engine does not embed a
+Cloudflare account, API token, scheduler, or network client. A host adapter
+queries its provider and passes a complete daily snapshot to
+`LesliAudit::VisitorRollupImporter`. Provider credentials must remain in the
+host's encrypted credentials or secret manager and must never be passed to a
+public page.
 
 Until the first production deployment, schema hardening may be consolidated in
 the existing `v1.0` migrations so a fresh installation starts from the target

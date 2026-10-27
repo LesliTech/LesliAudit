@@ -56,3 +56,6 @@ See [Configuration](/engines/audit/about/configuration) for capture modes,
 semantics, and [Architecture and Data Policy](/engines/audit/about/architecture)
 for privacy and retention guarantees.
 
+Public resources served from a CDN use a separate provider-import workflow.
+See [Public Visitor Analytics](/engines/audit/analytics/visitor-analytics).
+

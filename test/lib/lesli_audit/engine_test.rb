@@ -10,7 +10,7 @@ module LesliAudit
         test "defines the supported interface routes" do
             route_names = LesliAudit::Engine.routes.routes.filter_map(&:name)
 
-            %w[users analytics visitors logs log requests].each do |route_name|
+            %w[users analytics visitors public_analytics logs log requests].each do |route_name|
                 assert_includes route_names, route_name
             end
         end

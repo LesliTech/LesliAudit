@@ -11,6 +11,8 @@ LesliAudit uses collection code `05` and engine code `01`. Its migrations live u
 | `05.01.12.01.10` | `lesli_audit_user_logs` | User-specific activity records |
 | `05.01.12.02.10` | `lesli_audit_user_journals` | Individual user request journals |
 | `05.01.12.03.10` | `lesli_audit_user_requests` | User request analytics |
+| `05.01.13.01.10` | `lesli_audit_visitor_rollups` | Daily page-view and visit snapshots imported from a provider |
+| `05.01.13.02.10` | `lesli_audit_visitor_breakdowns` | Optional dimensions belonging to a daily visitor rollup |
 
 ## Choosing the Correct Record
 
@@ -24,6 +26,8 @@ The similarly named tables do not contain interchangeable data:
 | `UserRequest` / `lesli_audit_user_requests` | One counter per tenant, user, optional session, date, controller, and action | Per-user request totals | No |
 | `UserJournal` / `lesli_audit_user_journals` | One normalized row per captured HTTP request | Detailed user timing and request history | No |
 | `AccountDevice` / `lesli_audit_account_devices` | One counter per tenant, date, platform, browser, and device category | Successful-login distribution by normalized agent category | No |
+| `VisitorRollup` / `lesli_audit_visitor_rollups` | One provider snapshot per tenant, provider key, and date | Public page views and visits attributed to a host resource | No |
+| `VisitorBreakdown` / `lesli_audit_visitor_breakdowns` | One value within a rollup dimension | Country, device, browser, operating-system, and referrer distributions | No |
 
 ### User requests versus user journals
 
@@ -77,6 +81,17 @@ background analytics job or processing lifecycle is required.
 Device dimensions follow a separate path. `log_devices` parses and aggregates
 the user agent only after a successful login; ordinary request logging never
 increments `AccountDevice`.
+
+Public visitor analytics follows another path. A `VisitorRollup` stores the
+provider, provider key, opaque host resource identity, and daily totals in the
+same row. This keeps the proof of concept to two tables while preserving the
+path that produced every day's data. `VisitorRollupImporter` replaces one
+complete daily snapshot inside a transaction and removes breakdown values
+omitted from the replacement. The unique provider-key-and-date index makes
+retries idempotent.
+
+See [Public Visitor Analytics](/engines/audit/analytics/visitor-analytics#database-column-dictionary)
+for the complete column-by-column contract of both visitor analytics tables.
 
 Account and user activity logs require an `operation`, use text for their
 human-readable description, and index account plus creation time for tenant

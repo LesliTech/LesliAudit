@@ -34,5 +34,6 @@ Building a better future, one line of code at a time.
 
 <%= navigation_item(lesli_audit.users_path, 'Users', 'ri-team-line'); %>
 <%= navigation_item(lesli_audit.analytics_path, 'Traffic', 'ri-line-chart-fill'); %>
+<%= navigation_item(lesli_audit.public_analytics_path, I18n.t("lesli_audit.public_analytics.navigation", default: "Public analytics"), 'ri-global-line'); %>
 <%= navigation_item(lesli_audit.requests_path, 'Requests', 'ri-arrow-left-right-fill'); %>
 <%= navigation_item(lesli_audit.logs_path, 'Logs', 'ri-history-line'); %>

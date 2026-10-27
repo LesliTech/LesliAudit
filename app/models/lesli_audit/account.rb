@@ -31,5 +31,13 @@ module LesliAudit
         has_many :user_requests,
             inverse_of: :account,
             dependent: :delete_all
+
+        has_many :visitor_rollups,
+            inverse_of: :account,
+            dependent: :delete_all
+
+        has_many :visitor_breakdowns,
+            inverse_of: :account,
+            dependent: :delete_all
     end
 end

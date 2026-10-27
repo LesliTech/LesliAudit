@@ -1,0 +1,114 @@
+<%= render(LesliView::Layout::Container.new("audit-public-analytics")) do %>
+    <%= render(LesliView::Components::Header.new(
+        t("lesli_audit.public_analytics.title", default: "Public analytics")
+    )) %>
+
+    <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label="Analytics filters">
+        <%= form_with url: lesli_audit.public_analytics_path, method: :get, local: true,
+            class: "grid grid-cols-1 items-end gap-4 md:grid-cols-4" do |form| %>
+            <div>
+                <%= form.label :bytime,
+                    t("lesli_audit.public_analytics.period", default: "Period"),
+                    class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+                <%= form.select :bytime,
+                    options_for_select([
+                        [t("lesli_audit.public_analytics.periods.day", default: "Today"), "day"],
+                        [t("lesli_audit.public_analytics.periods.week", default: "Last 7 days"), "week"],
+                        [t("lesli_audit.public_analytics.periods.month", default: "Last 30 days"), "month"],
+                        [t("lesli_audit.public_analytics.periods.sixmonth", default: "Last 6 months"), "sixmonth"],
+                        [t("lesli_audit.public_analytics.periods.year", default: "Last year"), "year"],
+                        [t("lesli_audit.public_analytics.periods.all", default: "All time"), "all"]
+                    ], params[:bytime].presence || "month"),
+                    {},
+                    class: "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800" %>
+            </div>
+
+            <div>
+                <%= form.label :resource_type,
+                    t("lesli_audit.public_analytics.resource_type", default: "Resource type"),
+                    class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+                <%= form.text_field :resource_type,
+                    value: params[:resource_type],
+                    placeholder: "Profile",
+                    class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800" %>
+            </div>
+
+            <div>
+                <%= form.label :resource_id,
+                    t("lesli_audit.public_analytics.resource_id", default: "Resource ID"),
+                    class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+                <%= form.number_field :resource_id,
+                    value: params[:resource_id],
+                    min: 1,
+                    class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800" %>
+            </div>
+
+            <%= form.submit t("lesli_audit.public_analytics.apply", default: "Apply filters"),
+                class: "inline-flex cursor-pointer justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
+        <% end %>
+    </section>
+
+    <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Public traffic overview">
+        <% [
+            [t("lesli_audit.public_analytics.page_views", default: "Page views"), @summary[:page_views]],
+            [t("lesli_audit.public_analytics.visits", default: "Visits"), @summary[:visits]],
+            [t("lesli_audit.public_analytics.resources", default: "Resources"), @summary[:resources]],
+            [t("lesli_audit.public_analytics.sources", default: "Sources"), @summary[:sources]]
+        ].each do |label, value| %>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-sm font-medium text-slate-500"><%= label %></h2>
+                <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+                    <%= number_with_delimiter(value) %>
+                </p>
+            </article>
+        <% end %>
+    </section>
+
+    <% if @traffic.any? %>
+        <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <%= render(LesliView::Charts::Line.new(
+                database_to_dataset: @traffic,
+                title: t("lesli_audit.public_analytics.page_views", default: "Page views")
+            )) %>
+        </section>
+    <% else %>
+        <section class="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
+            <span class="ri-line-chart-line text-3xl text-slate-400" aria-hidden="true"></span>
+            <h2 class="mt-3 text-base font-semibold text-slate-900">
+                <%= t("lesli_audit.public_analytics.empty_title", default: "No public analytics yet") %>
+            </h2>
+            <p class="mx-auto mt-1 max-w-xl text-sm text-slate-500">
+                <%= t("lesli_audit.public_analytics.empty_description", default: "Import the first provider snapshot to start showing public resource traffic.") %>
+            </p>
+        </section>
+    <% end %>
+
+    <section class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3" aria-label="Public traffic breakdown">
+        <%= render "breakdown",
+            title: t("lesli_audit.public_analytics.countries", default: "Countries"),
+            records: @countries %>
+        <%= render "breakdown",
+            title: t("lesli_audit.public_analytics.devices", default: "Devices"),
+            records: @devices %>
+        <%= render "breakdown",
+            title: t("lesli_audit.public_analytics.referrers", default: "Referrers"),
+            records: @referrers %>
+    </section>
+
+    <section class="mt-6 pb-8" aria-label="Top public resources">
+        <%= render(LesliView::Elements::Table.new(
+            columns: [{
+                label: t("lesli_audit.public_analytics.resource", default: "Resource"),
+                field: "resource"
+            }, {
+                label: t("lesli_audit.public_analytics.page_views", default: "Page views"),
+                field: "page_views"
+            }, {
+                label: t("lesli_audit.public_analytics.visits", default: "Visits"),
+                field: "visits"
+            }],
+            records: @resources,
+            caption: t("lesli_audit.public_analytics.top_resources", default: "Top public resources")
+        )) %>
+    </section>
+<% end %>

@@ -1,2 +1,29 @@
 ---
-:es: {}
+es:
+  lesli_audit:
+    public_analytics:
+      navigation: "Analítica pública"
+      title: "Analítica pública"
+      period: "Período"
+      resource_type: "Tipo de recurso"
+      resource_id: "ID del recurso"
+      resource: "Recurso"
+      apply: "Aplicar filtros"
+      page_views: "Vistas"
+      visits: "Visitas"
+      resources: "Recursos"
+      sources: "Fuentes"
+      countries: "Países"
+      devices: "Dispositivos"
+      referrers: "Referentes"
+      top_resources: "Recursos públicos principales"
+      no_breakdown: "No hay datos de desglose disponibles para este período."
+      empty_title: "Todavía no hay analítica pública"
+      empty_description: "Importa la primera captura del proveedor para comenzar a mostrar el tráfico de recursos públicos."
+      periods:
+        day: "Hoy"
+        week: "Últimos 7 días"
+        month: "Últimos 30 días"
+        sixmonth: "Últimos 6 meses"
+        year: "Último año"
+        all: "Todo el tiempo"

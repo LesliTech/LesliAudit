@@ -22,6 +22,33 @@ module LesliAudit
                 request_count: 1,
                 date: TODAY - 20
             )
+            rollup_old = audit_account.visitor_rollups.create!(
+                provider: "cloudflare",
+                provider_key: "/retention-test",
+                resource_type: "Profile",
+                resource_id: 27,
+                date: TODAY - 21,
+                page_views: 10,
+                visits: 7,
+                synced_at: NOW
+            )
+            rollup_old.visitor_breakdowns.create!(
+                account: audit_account,
+                dimension: "country",
+                value: "GT",
+                page_views: 10,
+                visits: 7
+            )
+            rollup_cutoff = audit_account.visitor_rollups.create!(
+                provider: "cloudflare",
+                provider_key: "/retention-test",
+                resource_type: "Profile",
+                resource_id: 27,
+                date: TODAY - 20,
+                page_views: 5,
+                visits: 4,
+                synced_at: NOW
+            )
             log_old = audit_account.user_logs.create!(
                 user: core_user,
                 operation: "old_event",
@@ -46,6 +73,7 @@ module LesliAudit
 
                 assert_equal 2, deleted[LesliAudit::UserJournal.table_name]
                 assert_equal 1, deleted[LesliAudit::AccountRequest.table_name]
+                assert_equal 1, deleted[LesliAudit::VisitorRollup.table_name]
                 assert_equal 1, deleted[LesliAudit::UserLog.table_name]
             end
 
@@ -54,6 +82,9 @@ module LesliAudit
             assert LesliAudit::UserJournal.exists?(retained_cutoff.id)
             assert_not LesliAudit::AccountRequest.exists?(request_old.id)
             assert LesliAudit::AccountRequest.exists?(request_cutoff.id)
+            assert_not LesliAudit::VisitorRollup.exists?(rollup_old.id)
+            assert LesliAudit::VisitorRollup.exists?(rollup_cutoff.id)
+            assert_equal 0, LesliAudit::VisitorBreakdown.where(visitor_rollup_id: rollup_old.id).count
             assert_not LesliAudit::UserLog.exists?(log_old.id)
             assert LesliAudit::UserLog.exists?(log_cutoff.id)
         end

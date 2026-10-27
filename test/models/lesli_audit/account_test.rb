@@ -17,7 +17,9 @@ module LesliAudit
                 account_requests: LesliAudit::AccountRequest,
                 user_logs: LesliAudit::UserLog,
                 user_journals: LesliAudit::UserJournal,
-                user_requests: LesliAudit::UserRequest
+                user_requests: LesliAudit::UserRequest,
+                visitor_rollups: LesliAudit::VisitorRollup,
+                visitor_breakdowns: LesliAudit::VisitorBreakdown
             }
 
             expected.each do |association, model|

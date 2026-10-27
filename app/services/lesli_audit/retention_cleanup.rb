@@ -42,7 +42,8 @@ module LesliAudit
         ANALYTICS_MODELS = [
             LesliAudit::AccountDevice,
             LesliAudit::AccountRequest,
-            LesliAudit::UserRequest
+            LesliAudit::UserRequest,
+            LesliAudit::VisitorRollup
         ].freeze
 
         ACTIVITY_MODELS = [

@@ -1,2 +1,29 @@
 ---
-:en: {}
+en:
+  lesli_audit:
+    public_analytics:
+      navigation: "Public analytics"
+      title: "Public analytics"
+      period: "Period"
+      resource_type: "Resource type"
+      resource_id: "Resource ID"
+      resource: "Resource"
+      apply: "Apply filters"
+      page_views: "Page views"
+      visits: "Visits"
+      resources: "Resources"
+      sources: "Sources"
+      countries: "Countries"
+      devices: "Devices"
+      referrers: "Referrers"
+      top_resources: "Top public resources"
+      no_breakdown: "No breakdown data is available for this period."
+      empty_title: "No public analytics yet"
+      empty_description: "Import the first provider snapshot to start showing public resource traffic."
+      periods:
+        day: "Today"
+        week: "Last 7 days"
+        month: "Last 30 days"
+        sixmonth: "Last 6 months"
+        year: "Last year"
+        all: "All time"
