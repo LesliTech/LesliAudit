@@ -4,7 +4,9 @@ module LesliAudit
 
         # GET /logs
         def index
-            @logs = respond_with_pagination(LesliAudit::LogService.new(current_user, query).index)
+            @log_kind = log_service.kind
+            @available_log_kinds = log_service.available_kinds
+            @logs = respond_with_pagination(log_service.index)
         end
 
         # GET /logs/:id
@@ -14,7 +16,15 @@ module LesliAudit
         private
 
         def set_log
-            @log = current_user.logs.find(params[:id])
+            @log_kind = log_service.kind
+            @log = log_service.find(params[:id])
+        end
+
+        def log_service
+            @log_service ||= LesliAudit::LogService.new(
+                current_user,
+                query.merge(kind: params[:kind])
+            )
         end
     end
 end

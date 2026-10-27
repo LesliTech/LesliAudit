@@ -60,6 +60,12 @@ Neither request table replaces `UserLog`. A controller request can finish
 without representing a business change, while one business operation may also
 emit multiple outcome events.
 
+The `/audit/logs` report queries only `UserLog` or `AccountLog`. LesliShield
+controls access to the controller through role permissions. Every role with
+that permission may select either collection and see its account-wide history.
+Both list and detail queries begin from the current Audit account, so granting
+access to Logs never weakens tenant isolation.
+
 The `/audit/requests` report always queries `UserRequest` through the current
 Audit account. Owners and administrators can review all users in that account;
 other roles granted access to the report remain limited to their own rows.
@@ -128,8 +134,10 @@ bin/rails lesli_audit:retention:cleanup
 The retention operation is available to host schedulers through
 `LesliAudit::RetentionCleanupJob`. Cleanup uses the `date` indexes for journals
 and analytics and the `created_at` indexes for activity histories, deleting in
-bounded batches. Activity histories are skipped while
-`audit_retention_days` is `nil`.
+bounded batches. The same `audit_retention_days` cutoff applies to both account
+and user logs; both activity histories are skipped while it is `nil`. Hard
+deletion of the Audit account permanently removes both collections through
+their account-scoped cascade rules.
 
 Audit data can grow quickly. New queries should remain account-scoped and be supported by indexes matching their filters and grouping columns.
 

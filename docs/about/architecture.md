@@ -50,6 +50,12 @@ the only records in this engine intended as audit evidence. See
 [Database](/engines/audit/about/database#choosing-the-correct-record) for the
 complete table-by-table comparison.
 
+The Logs interface preserves that distinction. `UserLog` is a user history;
+`AccountLog` is a tenant history. LesliShield role permissions decide whether
+the Logs controller is available. An authorized role can inspect both histories
+for its account, and every list and detail query remains anchored to that
+current Audit account.
+
 ## Reliability
 
 Request analytics is written synchronously by the controller callback. Database

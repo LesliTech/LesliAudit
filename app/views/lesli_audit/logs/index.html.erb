@@ -1,23 +1,92 @@
 <%= render(LesliView::Layout::Container.new("audit-logs")) do %>
-    <%= render(LesliView::Components::Header.new("User logs")) %>
-    <%= render LesliView::Components::Toolbar.new() %>
-    <%= render(LesliView::Elements::Table.new(
-        columns: [{
-            label: "Module",
-            field: "engine"
-        },{
-            label:"Action",
-            field:"action"
-        },{
-            label:"Operation",
-            field:"operation"
-        },{
-            label:"Description",
-            field:"description"
-        },{
-            label:"Date",
-            field:"created_at"
-        }],
-        records: @logs[:records]
+    <%= render(LesliView::Components::Header.new(
+        t("lesli_audit.logs.title", default: "Logs"),
+        t("lesli_audit.logs.subtitle", default: "Read-only business and security events")
     )) %>
+
+    <%= render(LesliView::Components::Toolbar.new(
+        t("lesli_audit.logs.search_placeholder", default: "Search by operation, actor, source, or subject"),
+        url: lesli_audit.logs_path
+    )) do |toolbar| %>
+        <% toolbar.with_filters do %>
+            <%= label_tag :kind, t("lesli_audit.logs.event_type", default: "Event type"), class: "sr-only" %>
+            <%= select_tag :kind, options_for_select(
+                @available_log_kinds.map do |kind|
+                    [t("lesli_audit.logs.kinds.#{kind}", default: kind.humanize), kind]
+                end,
+                @log_kind
+            ), class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+
+            <%= label_tag :orderBy, t("lesli_audit.logs.sort_by", default: "Sort by"), class: "sr-only" %>
+            <%= select_tag :orderBy, options_for_select([
+                [t("lesli_audit.logs.fields.created_at", default: "Date"), "created_at"],
+                [t("lesli_audit.logs.fields.operation", default: "Operation"), "operation"],
+                [t("lesli_audit.logs.fields.source", default: "Source"), "source"],
+                [t("lesli_audit.logs.fields.actor_uid", default: "Actor"), "actor_uid"]
+            ], params[:orderBy].presence || "created_at"),
+                class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+
+            <%= label_tag :order, t("lesli_audit.logs.direction", default: "Direction"), class: "sr-only" %>
+            <%= select_tag :order, options_for_select([
+                [t("lesli_audit.logs.descending", default: "Descending"), "desc"],
+                [t("lesli_audit.logs.ascending", default: "Ascending"), "asc"]
+            ], params[:order].presence || "desc"),
+                class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+
+            <%= label_tag :perPage, t("lesli_audit.logs.per_page", default: "Results per page"), class: "sr-only" %>
+            <%= select_tag :perPage, options_for_select([12, 25, 50, 100], params[:perPage].presence || 12),
+                class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+        <% end %>
+    <% end %>
+
+    <%= render(LesliView::Elements::Table.new(
+        columns: [
+            {
+                label: t("lesli_audit.logs.fields.operation", default: "Operation"),
+                field: "operation"
+            }, {
+                label: t("lesli_audit.logs.fields.actor_uid", default: "Actor"),
+                field: "actor_uid"
+            }, {
+                label: t("lesli_audit.logs.fields.source", default: "Source"),
+                field: "source"
+            }, {
+                label: t("lesli_audit.logs.fields.description", default: "Description"),
+                field: "description"
+            }, {
+                label: t("lesli_audit.logs.fields.created_at", default: "Date"),
+                field: "created_at"
+            }
+        ],
+        records: @logs[:records],
+        link: ->(log) { lesli_audit.log_path(log, kind: @log_kind) },
+        caption: t("lesli_audit.logs.captions.#{@log_kind}", default: "Audit events"),
+        empty: t("lesli_audit.logs.empty", default: "No audit events found")
+    )) %>
+
+    <% pagination = @logs.fetch(:pagination) %>
+    <% if pagination[:total].positive? %>
+        <nav class="mt-4 flex items-center justify-between gap-4" aria-label="<%= t("lesli_audit.logs.pagination", default: "Logs pagination") %>">
+            <div>
+                <% if pagination[:page] > 1 %>
+                    <%= link_to t("lesli_audit.logs.previous", default: "Previous"),
+                        lesli_audit.logs_path(request.query_parameters.merge(page: pagination[:page] - 1)),
+                        class: "text-sm font-medium text-sky-700 hover:text-sky-900" %>
+                <% end %>
+            </div>
+
+            <p class="text-sm text-slate-600">
+                <%= t("lesli_audit.logs.page", default: "Page %{page} of %{pages}",
+                    page: pagination[:page], pages: pagination[:pages]) %>
+            </p>
+
+            <div>
+                <% if pagination[:page] < pagination[:pages] %>
+                    <%= link_to t("lesli_audit.logs.next", default: "Next"),
+                        lesli_audit.logs_path(request.query_parameters.merge(page: pagination[:page] + 1)),
+                        class: "text-sm font-medium text-sky-700 hover:text-sky-900" %>
+                <% end %>
+            </div>
+        </nav>
+    <% end %>
 <% end %>

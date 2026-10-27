@@ -59,6 +59,16 @@ module LesliAudit
                 operation: "cutoff_event",
                 created_at: NOW - 30.days
             )
+            account_log_old = audit_account.account_logs.create!(
+                user: core_user,
+                operation: "old_account_event",
+                created_at: NOW - 31.days
+            )
+            account_log_cutoff = audit_account.account_logs.create!(
+                user: core_user,
+                operation: "account_cutoff_event",
+                created_at: NOW - 30.days
+            )
 
             with_audit_config(
                 journal_retention_days: 10,
@@ -74,6 +84,7 @@ module LesliAudit
                 assert_equal 2, deleted[LesliAudit::UserJournal.table_name]
                 assert_equal 1, deleted[LesliAudit::AccountRequest.table_name]
                 assert_equal 1, deleted[LesliAudit::VisitorRollup.table_name]
+                assert_equal 1, deleted[LesliAudit::AccountLog.table_name]
                 assert_equal 1, deleted[LesliAudit::UserLog.table_name]
             end
 
@@ -87,12 +98,19 @@ module LesliAudit
             assert_equal 0, LesliAudit::VisitorBreakdown.where(visitor_rollup_id: rollup_old.id).count
             assert_not LesliAudit::UserLog.exists?(log_old.id)
             assert LesliAudit::UserLog.exists?(log_cutoff.id)
+            assert_not LesliAudit::AccountLog.exists?(account_log_old.id)
+            assert LesliAudit::AccountLog.exists?(account_log_cutoff.id)
         end
 
         test "nil retention skips that data class" do
             event = audit_account.user_logs.create!(
                 user: core_user,
                 operation: "preserved",
+                created_at: NOW - 10.years
+            )
+            account_event = audit_account.account_logs.create!(
+                user: core_user,
+                operation: "account_preserved",
                 created_at: NOW - 10.years
             )
 
@@ -107,6 +125,7 @@ module LesliAudit
             end
 
             assert LesliAudit::UserLog.exists?(event.id)
+            assert LesliAudit::AccountLog.exists?(account_event.id)
         end
 
         test "rejects invalid retention and batch settings" do
@@ -139,4 +158,3 @@ module LesliAudit
         end
     end
 end
-

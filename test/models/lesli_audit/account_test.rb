@@ -30,6 +30,21 @@ module LesliAudit
                 assert_equal :delete_all, reflection.options[:dependent]
             end
         end
+
+        test "hard deletion removes both account and user activity events" do
+            account_log = audit_account.account_logs.create!(
+                user: core_user,
+                operation: "account_initialized"
+            )
+            user_log = audit_account.user_logs.create!(
+                user: core_user,
+                operation: "profile_updated"
+            )
+
+            audit_account.destroy!
+
+            assert_not LesliAudit::AccountLog.exists?(account_log.id)
+            assert_not LesliAudit::UserLog.exists?(user_log.id)
+        end
     end
 end
-
