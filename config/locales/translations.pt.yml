@@ -1,2 +1,19 @@
 ---
-:pt: {}
+pt:
+  lesli_audit:
+    analytics:
+      navigation: "Análises"
+      title: "Análises"
+      overview: "Resumo do uso autenticado"
+      controllers: "Controladores"
+      requests: "Requisições"
+      browsers: "Navegadores"
+      operating_systems: "Sistemas operacionais"
+      devices: "Dispositivos"
+      logins: "Acessos"
+      login_breakdown: "Distribuição de acessos bem-sucedidos"
+      logins_by_browser: "Acessos bem-sucedidos por navegador"
+      logins_by_operating_system: "Acessos bem-sucedidos por sistema operacional"
+      logins_by_device: "Acessos bem-sucedidos por dispositivo"
+      top_controllers: "Principais controladores"
+      requests_by_controller: "Requisições por controlador"

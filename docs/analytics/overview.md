@@ -1,10 +1,16 @@
-# Request Analytics
+# Analytics
 
-LesliAudit captures traffic from authenticated controllers inheriting from
-`Lesli::ApplicationLesliController`. Its `after_action` callback sends the
-current user, controller, action, and optional session to
-`LesliAudit::LoggerInterface#log_requests`. Request data is written
-synchronously and remains scoped to the current account.
+LesliAudit Analytics describes how authenticated users use the application.
+It combines request counters with the browser, operating-system, and device
+categories observed after successful authentication. These reports are
+operational analytics; they are not an audit trail and do not measure anonymous
+website traffic.
+
+Authenticated controllers inheriting from `Lesli::ApplicationLesliController`
+send the current user, controller, action, and optional session to
+`LesliAudit::LoggerInterface#log_requests` through an `after_action` callback.
+Request data is written synchronously and remains scoped to the current
+account.
 
 ## Request Capture
 
@@ -42,14 +48,23 @@ With the engine mounted at `/audit`, the current interface exposes:
 
 | Route | Data source | Scope |
 | --- | --- | --- |
-| `/audit/analytics` | `AccountRequest` and `AccountDevice` aggregates | Current tenant |
+| `/audit/analytics` | Authenticated request and successful-login agent aggregates | Current tenant |
 | `/audit/users` | Core users and retained `UserJournal` rows | Current tenant |
 | `/audit/requests` | `UserRequest` aggregates | Current user |
-| `/audit/visitors` | Compatibility alias for `/audit/analytics` | Current tenant |
 
 Device and browser figures count successful logins by normalized agent
 category. They are not unique people or physical devices. Device capture is
 invoked explicitly by the authentication flow and never by `log_requests`.
+
+## Production Cache
+
+The complete Analytics dashboard is cached for one hour in production. Cache
+keys include the Audit account, selected period, and current date, so cached
+data cannot cross tenant boundaries or carry a daily report across midnight.
+
+Caching is disabled in development, test, and every environment other than
+production. Those environments always execute the Analytics queries directly
+against the database.
 
 See [Configuration](/engines/audit/about/configuration) for capture modes,
 [Database](/engines/audit/about/database#choosing-the-correct-record) for table

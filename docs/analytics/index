@@ -1,6 +1,6 @@
 ---
-title: "LesliAudit Request Analytics"
-description: "Understand request capture, aggregate counters, durable user journals, reports, and analytics recovery."
+title: "LesliAudit Analytics"
+description: "Understand authenticated application usage, request counters, successful-login agent categories, and user journals."
 ---
 
 <!--

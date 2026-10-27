@@ -1,6 +1,22 @@
 ---
 en:
   lesli_audit:
+    analytics:
+      navigation: "Analytics"
+      title: "Analytics"
+      overview: "Authenticated usage overview"
+      controllers: "Controllers"
+      requests: "Requests"
+      browsers: "Browsers"
+      operating_systems: "Operating systems"
+      devices: "Devices"
+      logins: "Logins"
+      login_breakdown: "Successful login breakdown"
+      logins_by_browser: "Successful logins by browser"
+      logins_by_operating_system: "Successful logins by operating system"
+      logins_by_device: "Successful logins by device"
+      top_controllers: "Top controllers"
+      requests_by_controller: "Requests by controller"
     public_analytics:
       navigation: "Public analytics"
       title: "Public analytics"

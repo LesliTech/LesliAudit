@@ -1,26 +1,32 @@
 
 <%
-traffic = @traffic.reverse
-top_days = traffic.last(3)
+request_trend = @request_trend.reverse
+top_days = request_trend.last(3)
 %>
 
 <%= render(LesliView::Layout::Container.new("audit-analytics")) do %>
-    <%= render(LesliView::Components::Header.new("Analytics")) %>
+    <%= render(LesliView::Components::Header.new(
+        t("lesli_audit.analytics.title", default: "Analytics")
+    )) %>
 
     <section
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
-        aria-label="Traffic overview">
+        aria-label="<%= t("lesli_audit.analytics.overview", default: "Authenticated usage overview") %>">
         <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-sm font-medium text-slate-500">Controllers</h2>
+            <h2 class="text-sm font-medium text-slate-500">
+                <%= t("lesli_audit.analytics.controllers", default: "Controllers") %>
+            </h2>
             <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
-                <%= @visits[:controllers] %>
+                <%= @summary[:controllers] %>
             </p>
         </article>
 
         <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-sm font-medium text-slate-500">Requests</h2>
+            <h2 class="text-sm font-medium text-slate-500">
+                <%= t("lesli_audit.analytics.requests", default: "Requests") %>
+            </h2>
             <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
-                <%= @visits[:requests] %>
+                <%= @summary[:requests] %>
             </p>
         </article>
 
@@ -36,21 +42,23 @@ top_days = traffic.last(3)
 
     <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <%= render(LesliView::Charts::Line.new(
-            database_to_dataset: traffic,
-            title: "Requests"
+            database_to_dataset: request_trend,
+            title: t("lesli_audit.analytics.requests", default: "Requests")
         )) %>
     </section>
 
-    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3" aria-label="Request traffic breakdown">
+    <section
+        class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3"
+        aria-label="<%= t("lesli_audit.analytics.login_breakdown", default: "Successful login breakdown") %>">
         <article class="min-w-0">
             <%= render(LesliView::Elements::Table.new(
                 columns: [
-                    { label: "Browsers", align: :left },
-                    { label: "Requests", align: :center }
+                    { label: t("lesli_audit.analytics.browsers", default: "Browsers"), align: :left },
+                    { label: t("lesli_audit.analytics.logins", default: "Logins"), align: :center }
                 ],
                 class_name: "!min-w-0",
                 compact: true,
-                caption: "Requests by browser"
+                caption: t("lesli_audit.analytics.logins_by_browser", default: "Successful logins by browser")
             )) do |table| %>
                 <% @browsers.each do |browser| %>
                     <% percentage = browser[:percentage].to_i.clamp(0, 100) %>
@@ -80,15 +88,15 @@ top_days = traffic.last(3)
         <article class="min-w-0">
             <%= render(LesliView::Elements::Table.new(
                 columns: [
-                    { label: "OS", align: :left },
-                    { label: "Requests", align: :center }
+                    { label: t("lesli_audit.analytics.operating_systems", default: "OS"), align: :left },
+                    { label: t("lesli_audit.analytics.logins", default: "Logins"), align: :center }
                 ],
                 class_name: "!min-w-0",
                 compact: true,
-                caption: "Requests by operating system"
+                caption: t("lesli_audit.analytics.logins_by_operating_system", default: "Successful logins by operating system")
             )) do |table| %>
-                <% @os.each do |device| %>
-                    <% percentage = device[:percentage].to_i.clamp(0, 100) %>
+                <% @operating_systems.each do |operating_system| %>
+                    <% percentage = operating_system[:percentage].to_i.clamp(0, 100) %>
                     <% table.with_row do |row| %>
                         <% row.with_cell(class_name: "!p-0") do %>
                             <div class="relative isolate overflow-hidden px-3 py-2.5">
@@ -98,14 +106,14 @@ top_days = traffic.last(3)
                                     aria-hidden="true"></span>
                                 <span class="flex items-center gap-2 text-slate-700">
                                     <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
-                                        <span class="ri-<%= device[:icon].downcase %> text-lg leading-none" aria-hidden="true"></span>
+                                        <span class="ri-<%= operating_system[:icon].downcase %> text-lg leading-none" aria-hidden="true"></span>
                                     </span>
-                                    <span class="truncate"><%= device[:device] %></span>
+                                    <span class="truncate"><%= operating_system[:operating_system] %></span>
                                 </span>
                             </div>
                         <% end %>
                         <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
-                            <%= device[:count] %>
+                            <%= operating_system[:count] %>
                         <% end %>
                     <% end %>
                 <% end %>
@@ -115,12 +123,12 @@ top_days = traffic.last(3)
         <article class="min-w-0">
             <%= render(LesliView::Elements::Table.new(
                 columns: [
-                    { label: "Device", align: :left },
-                    { label: "Requests", align: :center }
+                    { label: t("lesli_audit.analytics.devices", default: "Devices"), align: :left },
+                    { label: t("lesli_audit.analytics.logins", default: "Logins"), align: :center }
                 ],
                 class_name: "!min-w-0",
                 compact: true,
-                caption: "Requests by device"
+                caption: t("lesli_audit.analytics.logins_by_device", default: "Successful logins by device")
             )) do |table| %>
                 <% @devices.each do |device| %>
                     <% percentage = device[:percentage].to_i.clamp(0, 100) %>
@@ -148,17 +156,19 @@ top_days = traffic.last(3)
         </article>
     </section>
 
-    <section class="mt-6 pb-8" aria-label="Top controllers">
+    <section
+        class="mt-6 pb-8"
+        aria-label="<%= t("lesli_audit.analytics.top_controllers", default: "Top controllers") %>">
         <%= render(LesliView::Elements::Table.new(
             columns: [{
-                label: "Top controllers",
+                label: t("lesli_audit.analytics.top_controllers", default: "Top controllers"),
                 field: "request_controller"
             }, {
-                label: "Requests",
+                label: t("lesli_audit.analytics.requests", default: "Requests"),
                 field: "requests"
             }],
-            records: @requests,
-            caption: "Requests by controller"
+            records: @top_controllers,
+            caption: t("lesli_audit.analytics.requests_by_controller", default: "Requests by controller")
         )) %>
     </section>
 <% end %>

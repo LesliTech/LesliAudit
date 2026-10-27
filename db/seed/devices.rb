@@ -45,7 +45,8 @@ current_user = Lesli::User.first
 # controllers to seed
 [
     "Mac", 
-    "Windows"
+    "Windows",
+    "Linux"
 ].each do |platform|
 
     [

@@ -10,7 +10,7 @@ LesliAudit owns three related but distinct domains:
 
 | Domain | Purpose | Examples | Write behavior |
 | --- | --- | --- | --- |
-| Request analytics | Measure application traffic without reconstructing individual business actions | Requests by controller, daily user activity, successful-login agent distribution | Synchronous aggregate counters and optional journals |
+| Authenticated analytics | Measure how authenticated users use the application without reconstructing individual business actions | Requests by controller, daily user activity, successful-login agent distribution | Synchronous aggregate counters and optional journals |
 | Public visitor analytics | Import provider-owned traffic totals for public resources that may be served outside Rails | Profile page views, visits, country and device distributions | Idempotent replacement of daily aggregate snapshots |
 | Activity audit | Preserve explicit business and security events | Record created, permission changed, session revoked, account initialized | Durable, append-only, and written synchronously with the audited operation |
 
@@ -91,8 +91,8 @@ The account-device counters measure **successful logins**, not unique visitors
 or unique devices. Reports and interface labels must describe login agent
 distribution instead of request or visitor counts.
 
-The `/visitors` route remains as a compatibility alias for `/analytics`. A
-future unique-session metric must use a separate table
+The `/analytics` route reports authenticated application usage. A future
+unique-session metric must use a separate table
 or aggregation key; it must not reinterpret historical request counters as
 visitors.
 

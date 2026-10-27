@@ -47,8 +47,7 @@ LesliAudit::Engine.routes.draw do
     #   Trends by date
     #   Most active users
     #   Most active controllers
-    get "analytics", to: "visitors#index", as: :analytics
-    resources :visitors, only: [:index]
+    resources :analytics, only: [:index]
 
     get "public-analytics", to: "public_analytics#index", as: :public_analytics
 

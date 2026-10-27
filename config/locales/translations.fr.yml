@@ -1,2 +1,19 @@
 ---
-:fr: {}
+fr:
+  lesli_audit:
+    analytics:
+      navigation: "Analytique"
+      title: "Analytique"
+      overview: "Vue d'ensemble de l'utilisation authentifiée"
+      controllers: "Contrôleurs"
+      requests: "Requêtes"
+      browsers: "Navigateurs"
+      operating_systems: "Systèmes d'exploitation"
+      devices: "Appareils"
+      logins: "Connexions"
+      login_breakdown: "Répartition des connexions réussies"
+      logins_by_browser: "Connexions réussies par navigateur"
+      logins_by_operating_system: "Connexions réussies par système d'exploitation"
+      logins_by_device: "Connexions réussies par appareil"
+      top_controllers: "Principaux contrôleurs"
+      requests_by_controller: "Requêtes par contrôleur"

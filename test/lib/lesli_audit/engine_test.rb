@@ -10,9 +10,15 @@ module LesliAudit
         test "defines the supported interface routes" do
             route_names = LesliAudit::Engine.routes.routes.filter_map(&:name)
 
-            %w[users analytics visitors public_analytics logs log requests].each do |route_name|
+            %w[users analytics public_analytics logs log requests].each do |route_name|
                 assert_includes route_names, route_name
             end
+
+            refute_includes route_names, "visitors"
+            assert_equal "/audit/analytics", LesliAudit::Engine.routes.url_helpers.analytics_path
+
+            analytics_route = LesliAudit::Engine.routes.routes.find { |route| route.name == "analytics" }
+            assert_equal "lesli_audit/analytics", analytics_route.defaults[:controller]
         end
 
         test "core models expose the associations backed by LesliAudit" do
