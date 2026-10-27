@@ -27,15 +27,18 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 module LesliAudit
     class UsersController < ApplicationController
-
         # GET /users
         def index
-            @users = UserService.new(current_user, query).users
-            @working_hours = UserService.new(current_user, query).working_hours
+            dashboard = UserService.new(current_user, query).dashboard
+
+            @summary = dashboard.fetch(:summary)
+            @attention = dashboard.fetch(:attention)
+            @registrations = dashboard.fetch(:registrations)
+            @working_hours = dashboard.fetch(:working_hours)
         end
     end
 end

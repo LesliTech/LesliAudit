@@ -1,6 +1,29 @@
 ---
 pt:
   lesli_audit:
+    users:
+      navigation: "Usuários"
+      title: "Usuários"
+      subtitle: "Registros, estado e horários de atividade observados da conta"
+      overview: "Visão geral dos usuários"
+      registered: "Usuários registrados"
+      enabled: "Usuários habilitados"
+      active_last_30_days: "Ativos nos últimos 30 dias"
+      deactivated: "Usuários desativados"
+      deleted: "Usuários excluídos"
+      attention: "Usuários que precisam de atenção"
+      unconfirmed: "Usuários não confirmados"
+      never_signed_in: "Nunca acessaram"
+      failed_sign_ins: "Usuários com acessos malsucedidos"
+      locked: "Usuários bloqueados"
+      registrations: "Registros nos últimos 12 meses"
+      working_hours: "Horários de atividade observados"
+      working_hours_caption: "As 20 atividades mais recentes, com a primeira e a última atividade retida por usuário e dia nos últimos 30 dias"
+      user: "Usuário"
+      first_activity: "Primeira atividade"
+      last_activity: "Última atividade"
+      date: "Data"
+      no_activity: "Nenhuma atividade retida de usuário foi encontrada"
     analytics:
       navigation: "Análises"
       title: "Análises"

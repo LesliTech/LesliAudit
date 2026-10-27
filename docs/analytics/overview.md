@@ -53,7 +53,7 @@ With the engine mounted at `/audit`, the current interface exposes:
 | Route | Data source | Scope |
 | --- | --- | --- |
 | `/audit/analytics` | Authenticated request and successful-login agent aggregates | Current tenant |
-| `/audit/users` | Core users and retained `UserJournal` rows | Current tenant |
+| `/audit/users` | Core user status, registrations, and retained-journal working hours | Current tenant; access controlled by LesliShield role privileges |
 | `/audit/requests` | `UserRequest` aggregates | Current tenant for owners and administrators; current user for other authorized roles |
 
 ### Requests access and query behavior
@@ -72,6 +72,10 @@ columns, page numbers are normalized, and page size is capped at 100 records.
 Device and browser figures count successful logins by normalized agent
 category. They are not unique people or physical devices. Device capture is
 invoked explicitly by the authentication flow and never by `log_requests`.
+
+The Users report deliberately excludes these account traffic and login-agent
+distributions. See [Users](/engines/audit/users/overview) for its person-centered
+scope and retained-journal working-hours semantics.
 
 ## Production Cache
 

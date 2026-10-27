@@ -8,8 +8,8 @@ New labels should follow the standard engine, bucket, and label structure:
 en:
   lesli_audit:
     users:
-      title: "User activity"
-      empty: "No activity has been recorded"
+      title: "Users"
+      no_activity: "No retained user activity was found"
     shared:
       requests: "Requests"
 ```
@@ -20,7 +20,9 @@ Use the complete key from Ruby or ERB:
 <%= I18n.t("lesli_audit.users.title") %>
 ```
 
-The shipped locale files are currently empty, so adding a key also requires replacing the corresponding hard-coded interface text. Add the same key to every supported locale and preserve interpolation variables between languages.
+The shipped locale files contain the current interface vocabulary. Add every
+new key to each supported locale, replace the corresponding hard-coded text,
+and preserve interpolation variables between languages.
 
 When LesliBabel is installed, synchronize the local files with:
 

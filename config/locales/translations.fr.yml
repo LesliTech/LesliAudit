@@ -1,6 +1,29 @@
 ---
 fr:
   lesli_audit:
+    users:
+      navigation: "Utilisateurs"
+      title: "Utilisateurs"
+      subtitle: "Inscriptions, état et horaires d'activité observés du compte"
+      overview: "Vue d'ensemble des utilisateurs"
+      registered: "Utilisateurs inscrits"
+      enabled: "Utilisateurs activés"
+      active_last_30_days: "Actifs au cours des 30 derniers jours"
+      deactivated: "Utilisateurs désactivés"
+      deleted: "Utilisateurs supprimés"
+      attention: "Utilisateurs nécessitant une attention"
+      unconfirmed: "Utilisateurs non confirmés"
+      never_signed_in: "Jamais connectés"
+      failed_sign_ins: "Utilisateurs avec des connexions échouées"
+      locked: "Utilisateurs verrouillés"
+      registrations: "Inscriptions au cours des 12 derniers mois"
+      working_hours: "Horaires d'activité observés"
+      working_hours_caption: "Les 20 activités les plus récentes, avec la première et la dernière activité conservée par utilisateur et par jour au cours des 30 derniers jours"
+      user: "Utilisateur"
+      first_activity: "Première activité"
+      last_activity: "Dernière activité"
+      date: "Date"
+      no_activity: "Aucune activité utilisateur conservée n'a été trouvée"
     analytics:
       navigation: "Analytique"
       title: "Analytique"

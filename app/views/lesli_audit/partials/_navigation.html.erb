@@ -32,7 +32,7 @@ Building a better future, one line of code at a time.
 =end
 %>
 
-<%= navigation_item(lesli_audit.users_path, 'Users', 'ri-team-line'); %>
+<%= navigation_item(lesli_audit.users_path, I18n.t("lesli_audit.users.navigation", default: "Users"), 'ri-team-line'); %>
 <%= navigation_item(lesli_audit.analytics_path, I18n.t("lesli_audit.analytics.navigation", default: "Analytics"), 'ri-line-chart-fill'); %>
 <%= navigation_item(lesli_audit.public_analytics_path, I18n.t("lesli_audit.public_analytics.navigation", default: "Public analytics"), 'ri-global-line'); %>
 <%= navigation_item(lesli_audit.requests_path, I18n.t("lesli_audit.requests.navigation", default: "Requests"), 'ri-arrow-left-right-fill'); %>

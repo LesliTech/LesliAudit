@@ -1,6 +1,29 @@
 ---
 en:
   lesli_audit:
+    users:
+      navigation: "Users"
+      title: "Users"
+      subtitle: "Account registrations, status, and observed working hours"
+      overview: "User overview"
+      registered: "Registered users"
+      enabled: "Enabled users"
+      active_last_30_days: "Active in the last 30 days"
+      deactivated: "Deactivated users"
+      deleted: "Deleted users"
+      attention: "Users needing attention"
+      unconfirmed: "Unconfirmed users"
+      never_signed_in: "Never signed in"
+      failed_sign_ins: "Users with failed sign-ins"
+      locked: "Locked users"
+      registrations: "Registrations during the last 12 months"
+      working_hours: "Observed working hours"
+      working_hours_caption: "20 most recent first and last retained activities per user and day during the last 30 days"
+      user: "User"
+      first_activity: "First activity"
+      last_activity: "Last activity"
+      date: "Date"
+      no_activity: "No retained user activity was found"
     analytics:
       navigation: "Analytics"
       title: "Analytics"
