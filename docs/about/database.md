@@ -29,7 +29,11 @@ The similarly named tables do not contain interchangeable data:
 | `VisitorRollup` / `lesli_audit_visitor_rollups` | One provider snapshot per tenant, provider key, and date | Public page views and visits attributed to a host resource | No |
 | `VisitorBreakdown` / `lesli_audit_visitor_breakdowns` | One value within a rollup dimension | Country, device, browser, operating-system, and referrer distributions | No |
 
-### User requests versus user journals
+### Account requests, user requests, and user journals
+
+`AccountRequest` is an **account-level aggregate counter**. It groups matching
+requests by tenant, date, controller, and action. It supports the Analytics
+dashboard but cannot identify which user produced a request.
 
 `UserRequest` is an **aggregate counter**. Repeated matching requests increase
 `request_count`; the row is intended for totals and grouped reports. It does
@@ -44,6 +48,8 @@ operational history and working-hours reports.
 
 In short:
 
+- query `account_requests` to answer **how many matching requests reached an
+  endpoint across the account**;
 - query `user_requests` to answer **how many matching requests** a user made;
 - query retained `user_journals` to answer **when individual requests** were
   captured;
@@ -53,6 +59,11 @@ In short:
 Neither request table replaces `UserLog`. A controller request can finish
 without representing a business change, while one business operation may also
 emit multiple outcome events.
+
+The `/audit/requests` report always queries `UserRequest` through the current
+Audit account. Owners and administrators can review all users in that account;
+other roles granted access to the report remain limited to their own rows.
+Authorization changes the scope within the tenant, never the tenant boundary.
 
 The accounts table uses `create_table_lesli_shared_account_10(:lesli_audit)` and adds a unique index over `account_id`, so each core account has exactly one audit account. Request and device tables use a dedicated `date` column for their aggregation bucket and normal Rails timestamps for record lifecycle metadata.
 

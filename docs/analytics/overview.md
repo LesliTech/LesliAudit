@@ -23,13 +23,17 @@ account.
 Device capture is intentionally separate. The authentication flow calls
 `log_devices` only after a successful login.
 
-## UserRequest and UserJournal Are Different
+## Request Records Are Different
 
 | Record | Meaning | Typical question |
 | --- | --- | --- |
+| `AccountRequest` | Grouped counter by account, date, controller, and action | How much authenticated traffic reached each application endpoint? |
 | `UserRequest` | Grouped counter by user, optional session, date, controller, and action | How many matching requests did this user make? |
 | `UserJournal` | One normalized record for an individual captured request | When did this user's individual requests occur? |
 | `UserLog` | Explicit append-only business or security event | Which auditable operation did this user perform? |
+
+`AccountRequest` powers account-level Analytics totals and trends. It does not
+identify the users responsible for those requests.
 
 `UserRequest#request_count` increases when matching requests are captured.
 It is compact reporting data and does not retain every request timestamp.
@@ -50,7 +54,20 @@ With the engine mounted at `/audit`, the current interface exposes:
 | --- | --- | --- |
 | `/audit/analytics` | Authenticated request and successful-login agent aggregates | Current tenant |
 | `/audit/users` | Core users and retained `UserJournal` rows | Current tenant |
-| `/audit/requests` | `UserRequest` aggregates | Current user |
+| `/audit/requests` | `UserRequest` aggregates | Current tenant for owners and administrators; current user for other authorized roles |
+
+### Requests access and query behavior
+
+LesliShield permissions determine whether a user may open `/audit/requests`.
+Once access is granted, the built-in `owner` and `admin` roles receive the
+account-wide reporting scope. Other authorized roles receive only records
+belonging to the current user. The neutral **Requests** name reflects both
+possible scopes.
+
+Every scope starts from `current_user.account.audit.user_requests`; changing a
+filter, sort column, page, or role can never include another account. Search
+matches user email, controller, or action. Sorting is restricted to the visible
+columns, page numbers are normalized, and page size is capped at 100 records.
 
 Device and browser figures count successful logins by normalized agent
 category. They are not unique people or physical devices. Device capture is

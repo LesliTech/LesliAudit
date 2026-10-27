@@ -6,5 +6,6 @@
 
 @source "../../app/views/lesli_audit/users/index.html.erb";
 @source "../../app/views/lesli_audit/analytics/index.html.erb";
+@source "../../app/views/lesli_audit/requests/index.html.erb";
 @source "../../app/views/lesli_audit/logs/show.html.erb";
 @source "../../app/views/lesli_audit/public_analytics/**/*.html.erb";

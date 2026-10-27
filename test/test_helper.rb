@@ -44,6 +44,16 @@ module LesliAuditTestData
         )
     end
 
+    def same_account_core_user
+        @same_account_core_user ||= find_or_create_core_user(
+            account: core_account,
+            first_name: "Account",
+            last_name: "Colleague",
+            email: "colleague@example.com",
+            uid: "colleague@example.com"
+        )
+    end
+
     def audit_account
         LesliAudit::Account.find_or_create_by!(account: core_account) do |account|
             account.name = core_account.name
@@ -66,14 +76,14 @@ module LesliAuditTestData
     def find_or_create_core_account(name:, email:)
         Lesli::Account.find_by(email:) || begin
             timestamp = Time.current
-            Lesli::Account.insert_all!([{
+            Lesli::Account.insert_all!([ {
                 status: "active",
                 name:,
                 email:,
                 region: "america",
                 created_at: timestamp,
                 updated_at: timestamp
-            }])
+            } ])
             Lesli::Account.find_by!(email:)
         end
     end
@@ -81,7 +91,7 @@ module LesliAuditTestData
     def find_or_create_core_user(account:, first_name:, last_name:, email:, uid:)
         Lesli::User.find_by(email:) || begin
             timestamp = Time.current
-            Lesli::User.insert_all!([{
+            Lesli::User.insert_all!([ {
                 account_id: account.id,
                 first_name:,
                 last_name:,
@@ -92,11 +102,10 @@ module LesliAuditTestData
                 sign_in_count: 0,
                 created_at: timestamp,
                 updated_at: timestamp
-            }])
+            } ])
             Lesli::User.find_by!(email:)
         end
     end
 end
 
 ActiveSupport::TestCase.include(LesliAuditTestData)
-
