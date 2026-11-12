@@ -4,15 +4,26 @@ This page defines the data contract for LesliAudit. It separates operational
 analytics from durable activity auditing so each workload can use appropriate
 reliability, retention, and storage rules.
 
-## Data Domains
+## Visible Domains
 
-LesliAudit owns three related but distinct domains:
+The authenticated interface exposes five reports with deliberately narrow
+responsibilities:
 
-| Domain | Purpose | Examples | Write behavior |
+| Report | Question answered | Main records | Audit evidence? |
 | --- | --- | --- | --- |
-| Analytics | Measure how authenticated users use the application without reconstructing individual business actions | Requests by controller, daily user activity, successful-login agent distribution | Synchronous aggregate counters and optional journals |
-| Traffic | Import provider-owned traffic totals for resources that may be served outside Rails | Profile page views, visits, country and device distributions | Idempotent replacement of daily aggregate snapshots |
-| Audit | Preserve explicit business and security events | Record created, permission changed, session revoked, account initialized | Durable, append-only, and written synchronously with the audited operation |
+| Users | Who belongs to this account and when was their retained activity observed? | Core users and reduced `UserJournal` working hours | No |
+| Analytics | How are authenticated users using the application in aggregate? | `AccountRequest`, `AccountDevice`, and aggregate journal data | No |
+| Traffic | How often were mapped resources requested through Cloudflare? | `TrafficRollup` and `TrafficBreakdown` | No |
+| Requests | Which authenticated application endpoints were requested, subject to the viewer's role scope? | `UserRequest` | No |
+| Logs | Which explicit business or security operations were emitted? | `UserLog` and `AccountLog` | Yes |
+
+These five reports use three storage and reliability policies:
+
+| Policy domain | Visible reports | Write behavior |
+| --- | --- | --- |
+| Authenticated usage analytics | Users, Analytics, and Requests | Synchronous aggregate counters and optional journals |
+| Provider traffic | Traffic | Idempotent replacement of daily aggregate snapshots |
+| Activity audit | Logs | Durable, append-only, and written synchronously with the audited operation |
 
 Request analytics must not be presented as an audit trail. Activity audit must
 not be populated automatically from every controller request; the business
@@ -23,7 +34,10 @@ timing but are not permanent audit evidence.
 
 Traffic is not captured by the authenticated controller
 callback. A CDN or browser telemetry provider observes the traffic, and the
-host imports aggregate snapshots through `LesliAudit::TrafficRollupImporter`.
+host imports aggregate snapshots through `LesliAudit::TrafficSnapshotImporter`.
+Traffic is reporting data supplied by an external provider. It is eventually
+consistent, may be sampled or adjusted, and is never evidence that a business
+operation succeeded.
 
 ## Navigation and Authorization
 
@@ -52,7 +66,7 @@ Request capture can produce two different representations:
 category, not a count of distinct physical devices or people. It is written
 only when the authentication flow explicitly calls `log_devices`.
 
-`TrafficRollup` maps a provider key such as `/ldonis` directly to an opaque
+`TrafficRollup` maps a hostname and path such as `example.com/ldonis` to an opaque
 host-owned resource identity and stores one daily total. `TrafficBreakdown`
 stores optional country, device, browser, operating-system, or referrer
 distributions. Imports replace the complete snapshot for a day; they never
@@ -231,12 +245,12 @@ A core account's normal soft deletion keeps its audit history. A deliberate
 hard deletion cascades through database foreign keys to the Audit account and
 its data, without requiring the core model to own engine lifecycle callbacks.
 
-Traffic providers are host integrations. The engine does not embed a
-Cloudflare account, API token, scheduler, or network client. A host adapter
-queries its provider and passes a complete daily snapshot to
-`LesliAudit::TrafficRollupImporter`. Provider credentials must remain in the
-host's encrypted credentials or secret manager and must never be passed to a
-public page.
+LesliAudit includes the standard Cloudflare Traffic adapter. Its client queries
+Cloudflare, its converter builds normalized snapshots, and the importer writes
+those snapshots to the engine tables. The host supplies deployment-specific
+configuration and scheduling. Provider credentials remain in encrypted
+credentials or the deployment secret manager and are never passed to a public
+page.
 
 Until the first production deployment, schema hardening may be consolidated in
 the existing `v1.0` migrations so a fresh installation starts from the target

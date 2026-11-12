@@ -3,7 +3,39 @@
         t("lesli_audit.traffic.title", default: "Traffic")
     )) %>
 
-    <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-label="Traffic filters">
+    <section class="mb-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+        aria-label="<%= t("lesli_audit.traffic.synchronization", default: "Traffic synchronization") %>">
+        <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                <%= t("lesli_audit.traffic.source", default: "Source") %>
+            </p>
+            <p class="mt-1 text-base font-semibold text-slate-900"><%= @synchronization[:source] %></p>
+        </div>
+        <div class="sm:text-right">
+            <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                <%= t("lesli_audit.traffic.last_sync", default: "Last synchronization") %>
+            </p>
+            <p class="mt-1 text-sm text-slate-700">
+                <% if @synchronization[:last_synced_at] %>
+                    <%= l(@synchronization[:last_synced_at], format: :long) %>
+                <% else %>
+                    <%= t("lesli_audit.traffic.never_synced", default: "Not synchronized yet") %>
+                <% end %>
+            </p>
+        </div>
+    </section>
+
+    <% if @synchronization[:stale] %>
+        <div class="mb-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900" role="alert">
+            <span class="ri-alert-line mt-0.5 text-lg" aria-hidden="true"></span>
+            <p class="text-sm">
+                <%= t("lesli_audit.traffic.stale_warning", default: "Traffic data may be outdated because the last synchronization is older than expected.") %>
+            </p>
+        </div>
+    <% end %>
+
+    <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+        aria-label="<%= t("lesli_audit.traffic.filters", default: "Traffic filters") %>">
         <%= form_with url: lesli_audit.traffic_index_path, method: :get, local: true,
             class: "grid grid-cols-1 items-end gap-4 md:grid-cols-4" do |form| %>
             <div>
@@ -53,7 +85,7 @@
             [t("lesli_audit.traffic.page_views", default: "Page views"), @summary[:page_views]],
             [t("lesli_audit.traffic.visits", default: "Visits"), @summary[:visits]],
             [t("lesli_audit.traffic.resources", default: "Resources"), @summary[:resources]],
-            [t("lesli_audit.traffic.sources", default: "Sources"), @summary[:sources]]
+            [t("lesli_audit.traffic.tracked_paths", default: "Tracked paths"), @summary[:tracked_paths]]
         ].each do |label, value| %>
             <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 class="text-sm font-medium text-slate-500"><%= label %></h2>
@@ -64,11 +96,21 @@
         <% end %>
     </section>
 
-    <% if @traffic.any? %>
+    <% if @trend.any? %>
         <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <%= render(LesliView::Charts::Line.new(
-                database_to_dataset: @traffic,
-                title: t("lesli_audit.traffic.page_views", default: "Page views")
+                title: t("lesli_audit.traffic.trend", default: "Traffic trend"),
+                datasets: [{
+                    label: t("lesli_audit.traffic.page_views", default: "Page views"),
+                    data: @trend.map { |record| { x: record[:date], y: record[:page_views] } }
+                }, {
+                    label: t("lesli_audit.traffic.visits", default: "Visits"),
+                    data: @trend.map { |record| { x: record[:date], y: record[:visits] } },
+                    backgroundColor: "rgba(124, 58, 237, 0.08)",
+                    borderColor: "rgb(124, 58, 237)",
+                    pointBackgroundColor: "rgb(124, 58, 237)",
+                    fill: false
+                }]
             )) %>
         </section>
     <% else %>
@@ -98,11 +140,17 @@
     <section class="mt-6 grid grid-cols-1 gap-6 pb-8 xl:grid-cols-2" aria-label="Traffic rankings">
         <%= render(LesliView::Elements::Table.new(
             columns: [{
+                label: t("lesli_audit.traffic.hostname", default: "Hostname"),
+                field: "hostname"
+            }, {
                 label: t("lesli_audit.traffic.path", default: "Path"),
                 field: "path"
             }, {
                 label: t("lesli_audit.traffic.provider", default: "Provider"),
                 field: "provider"
+            }, {
+                label: t("lesli_audit.traffic.page_views", default: "Page views"),
+                field: "page_views"
             }, {
                 label: t("lesli_audit.traffic.visits", default: "Visits"),
                 field: "visits"

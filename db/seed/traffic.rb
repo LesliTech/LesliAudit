@@ -11,52 +11,52 @@ audit_account = core_account.audit || LesliAudit::Account.create!(
 resources = [ {
     resource_type: "Profile",
     resource_id: 1_001,
-    provider_key: "/demo/sofia",
+    path: "/demo/sofia",
     baseline: 92
 }, {
     resource_type: "Profile",
     resource_id: 1_002,
-    provider_key: "/demo/mateo",
+    path: "/demo/mateo",
     baseline: 78
 }, {
     resource_type: "Profile",
     resource_id: 1_003,
-    provider_key: "/demo/valentina",
+    path: "/demo/valentina",
     baseline: 72
 }, {
     resource_type: "Profile",
     resource_id: 1_004,
-    provider_key: "/demo/santiago",
+    path: "/demo/santiago",
     baseline: 68
 }, {
     resource_type: "Business",
     resource_id: 2_001,
-    provider_key: "/demo/cafe",
+    path: "/demo/cafe",
     baseline: 64
 }, {
     resource_type: "Business",
     resource_id: 2_002,
-    provider_key: "/demo/studio",
+    path: "/demo/studio",
     baseline: 56
 }, {
     resource_type: "Business",
     resource_id: 2_003,
-    provider_key: "/demo/bakery",
+    path: "/demo/bakery",
     baseline: 52
 }, {
     resource_type: "Event",
     resource_id: 3_001,
-    provider_key: "/demo/festival",
+    path: "/demo/festival",
     baseline: 38
 }, {
     resource_type: "Event",
     resource_id: 3_002,
-    provider_key: "/demo/conference",
+    path: "/demo/conference",
     baseline: 44
 }, {
     resource_type: "Event",
     resource_id: 3_003,
-    provider_key: "/demo/workshop",
+    path: "/demo/workshop",
     baseline: 34
 } ].freeze
 
@@ -109,16 +109,20 @@ resources.each_with_index do |resource, resource_index|
             }
         end
 
-        LesliAudit::TrafficRollupImporter.call(
-            account: audit_account,
-            provider: "cloudflare",
-            provider_key: resource[:provider_key],
+        snapshot = LesliAudit::CloudflareTrafficSnapshot.new(
+            hostname: "demo.lesli.dev",
+            path: resource[:path],
             resource_type: resource[:resource_type],
             resource_id: resource[:resource_id],
             date:,
             page_views:,
             visits:,
+            snapshot_at: date.in_time_zone.end_of_day,
             breakdowns:
+        )
+        LesliAudit::TrafficSnapshotImporter.call(
+            account: audit_account,
+            snapshot:
         )
     end
 end

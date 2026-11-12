@@ -1,0 +1,26 @@
+{
+  "data": {
+    "viewer": {
+      "zones": [
+        {
+          "settings": {
+            "httpRequestsAdaptiveGroups": {
+              "enabled": true,
+              "availableFields": [
+                "count",
+                "sum_visits",
+                "clientRequestPath",
+                "clientCountryName",
+                "clientDeviceType",
+                "clientRefererHost"
+              ],
+              "maxPageSize": 2,
+              "maxDuration": 86400,
+              "notOlderThan": 2678400
+            }
+          }
+        }
+      ]
+    }
+  }
+}

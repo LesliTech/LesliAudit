@@ -26,8 +26,30 @@ end
 | `enable_journals` | Boolean | `true` | Records individual requests as user journal history while analytics is enabled |
 | `enable_analytics` | Boolean | `true` | Master switch for request counters, journals, and successful-login device aggregates |
 | `analytics_retention_days` | Positive integer or `nil` | `400` | Retention period for authenticated request counters, journals, and successful-login device aggregates |
-| `traffic_retention_days` | Positive integer or `nil` | `400` | Retention period for provider-imported traffic rollups and their breakdowns |
+| `traffic_retention_days` | Positive integer or `nil` | `400` | Retention period for provider traffic snapshots and Cloudflare synchronization history |
 | `audit_retention_days` | Positive integer or `nil` | `nil` | Retention period for append-only activity events |
+
+Cloudflare Traffic configuration lives under `config.audit[:cloudflare]`:
+
+```ruby
+config.audit[:cloudflare] = {
+  enabled: true,
+  zone_id: ENV["CLOUDFLARE_ANALYTICS_ZONE_ID"],
+  hostnames: [ "www.example.com" ],
+  account_ids: [ 1 ],
+  page_size: 1_000,
+  max_pages: 100,
+  backfill_days: 30,
+  reimport_days: 3,
+  resource_resolver: ->(account:, hostname:, path:) {
+    # Return { resource_type: "Profile", resource_id: 27 } or nil.
+  }
+}
+```
+
+Store the token in `cloudflare.analytics.token` in Rails credentials or in the
+`CLOUDFLARE_ANALYTICS_TOKEN` environment variable. The resolver belongs to the
+host because only the host knows which application record owns a URL path.
 
 `nil` disables automatic cleanup for that data class. Invalid retention values
 raise `ArgumentError` when cleanup runs. Keep `audit_retention_days` unset until
@@ -55,7 +77,7 @@ The three retention settings follow the report concepts directly:
 
 - `analytics_retention_days` applies to Analytics and Requests data, including
   both retained and transient journals;
-- `traffic_retention_days` applies only to Traffic provider snapshots;
+- `traffic_retention_days` applies to Traffic snapshots and Cloudflare synchronization history;
 - `audit_retention_days` applies only to the append-only events shown in Logs.
 
 ## Retention Cleanup Job

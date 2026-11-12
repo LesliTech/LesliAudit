@@ -6,5 +6,5 @@
 ) %>
 <%= navigation_for_folder("engines", "audit", "users", order: ["overview"]) %>
 <%= navigation_for_folder("engines", "audit", "analytics", order: ["overview"]) %>
-<%= navigation_for_folder("engines", "audit", "traffic", order: ["overview"]) %>
+<%= navigation_for_folder("engines", "audit", "traffic", order: ["overview", "cloudflare"]) %>
 <%= navigation_for_folder("engines", "audit", "events", order: ["overview", "emitting"]) %>

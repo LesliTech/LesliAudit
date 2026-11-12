@@ -1,15 +1,16 @@
 module LesliAudit
     class TrafficController < ApplicationController
         def index
-            service = TrafficService.new(current_user, traffic_query)
+            dashboard = TrafficService.new(current_user, traffic_query).dashboard
 
-            @summary = service.summary
-            @traffic = service.traffic
-            @paths = service.paths
-            @resources = service.resources
-            @countries = service.breakdown(:country)
-            @devices = service.breakdown(:device)
-            @referrers = service.breakdown(:referrer)
+            @summary = dashboard.fetch(:summary)
+            @trend = dashboard.fetch(:trend)
+            @paths = dashboard.fetch(:paths)
+            @resources = dashboard.fetch(:resources)
+            @countries = dashboard.fetch(:countries)
+            @devices = dashboard.fetch(:devices)
+            @referrers = dashboard.fetch(:referrers)
+            @synchronization = dashboard.fetch(:synchronization)
         end
 
         private

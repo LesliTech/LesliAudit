@@ -22,7 +22,7 @@ module LesliAudit
                 LesliAudit::TrafficRollup.distinct.order(:resource_type).pluck(:resource_type)
             assert_equal [ "country", "device", "referrer" ],
                 LesliAudit::TrafficBreakdown.distinct.order(:dimension).pluck(:dimension)
-            assert_equal 10, LesliAudit::TrafficRollup.distinct.count(:provider_key)
+            assert_equal 10, LesliAudit::TrafficRollup.distinct.count(:path)
         end
     end
 end

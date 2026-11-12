@@ -1,6 +1,20 @@
 module LesliAudit
     class TrafficService < Lesli::ApplicationLesliService
         LIMIT = 10
+        STALE_AFTER = 36.hours
+
+        def dashboard
+            {
+                summary: summary,
+                trend: trend,
+                paths: paths,
+                resources: resources,
+                countries: breakdown(:country),
+                devices: breakdown(:device),
+                referrers: breakdown(:referrer),
+                synchronization: synchronization
+            }
+        end
 
         def summary
             page_views, visits = rollups.pick(
@@ -12,11 +26,11 @@ module LesliAudit
                 page_views: page_views.to_i,
                 visits: visits.to_i,
                 resources: rollups.group(:resource_type, :resource_id).count.length,
-                sources: rollups.group(:provider, :provider_key).count.length
+                tracked_paths: rollups.group(:provider, :hostname, :path).count.length
             }
         end
 
-        def traffic
+        def trend
             rollups
                 .group(:date)
                 .order(:date)
@@ -27,9 +41,9 @@ module LesliAudit
                 )
                 .map do |date, page_views, visits|
                     {
-                        "xaxiskey" => date,
-                        "yaxiskey" => page_views.to_i,
-                        "visits" => visits.to_i
+                        date:,
+                        page_views: page_views.to_i,
+                        visits: visits.to_i
                     }
                 end
         end
@@ -55,21 +69,25 @@ module LesliAudit
         end
 
         def paths
-            # Keep the provider in the group so equal keys from different
-            # analytics providers are never combined into one path.
+            # Hostname and provider remain part of the group so equal paths
+            # from different sites or providers are never combined.
             rollups
-                .group(:provider, :provider_key)
+                .group(:provider, :hostname, :path)
                 .order(Arel.sql("SUM(visits) DESC"))
                 .limit(LIMIT)
                 .pluck(
                     :provider,
-                    :provider_key,
+                    :hostname,
+                    :path,
+                    Arel.sql("SUM(page_views)"),
                     Arel.sql("SUM(visits)")
                 )
-                .map do |provider, path, visits|
+                .map do |provider, hostname, path, page_views, visits|
                     {
-                        "provider" => provider,
+                        "provider" => provider.to_s.titleize,
+                        "hostname" => hostname,
                         "path" => path,
+                        "page_views" => page_views.to_i,
                         "visits" => visits.to_i
                     }
                 end
@@ -79,8 +97,14 @@ module LesliAudit
             dimension = dimension.to_s
             return [] unless account && TrafficBreakdown::DIMENSIONS.include?(dimension)
 
-            records = account.traffic_breakdowns
+            relation = account.traffic_breakdowns
                 .where(traffic_rollup_id: rollups.select(:id), dimension:)
+
+            total_page_views, total_visits = relation.pick(
+                Arel.sql("COALESCE(SUM(page_views), 0)"),
+                Arel.sql("COALESCE(SUM(visits), 0)")
+            )
+            records = relation
                 .group(:value)
                 .order(Arel.sql("SUM(page_views) DESC"))
                 .limit(LIMIT)
@@ -90,16 +114,30 @@ module LesliAudit
                     Arel.sql("SUM(visits)")
                 )
 
-            total = records.sum { |_value, page_views, _visits| page_views.to_i }
-            records.map do |value, page_views, visits|
+            rows = records.map do |value, page_views, visits|
                 page_views = page_views.to_i
                 {
                     value:,
                     page_views:,
                     visits: visits.to_i,
-                    percentage: total.zero? ? 0 : ((page_views.to_f / total) * 100).round
+                    percentage: percentage(page_views, total_page_views)
                 }
             end
+
+            append_other(rows, total_page_views.to_i, total_visits.to_i)
+        end
+
+        # Synchronization is intentionally based on every rollup in the account,
+        # not the selected report filters. Filters must not make fresh data look old.
+        def synchronization(current_time: Time.current)
+            status = synchronization_status
+            last_synced_at = status[:last_synced_at]
+
+            {
+                source: status[:source].to_s.titleize.presence || "Cloudflare",
+                last_synced_at:,
+                stale: last_synced_at.present? && last_synced_at < STALE_AFTER.ago(current_time)
+            }
         end
 
         private
@@ -108,9 +146,26 @@ module LesliAudit
             @account ||= current_user&.account&.audit
         end
 
+        def account_rollups
+            account ? account.traffic_rollups : TrafficRollup.none
+        end
+
+        def synchronization_status
+            if account
+                status = CloudflareTrafficSync.latest_status_for(account)
+                return status if status[:last_synced_at]
+            end
+
+            provider, last_synced_at = account_rollups
+                .order(snapshot_at: :desc)
+                .pick(:provider, :snapshot_at)
+
+            { source: provider || CloudflareTrafficSync::SOURCE, last_synced_at: }
+        end
+
         def rollups
             @rollups ||= begin
-                relation = account ? account.traffic_rollups : TrafficRollup.none
+                relation = account_rollups
                 relation = apply_time_filter(relation)
                 relation = relation.where(resource_type: query[:resource_type].to_s.strip) if query[:resource_type].present?
                 relation = relation.where(resource_id: resource_id_filter) if resource_id_filter
@@ -136,6 +191,26 @@ module LesliAudit
             end
 
             start_date ? relation.where(date: start_date..) : relation
+        end
+
+        def percentage(count, total)
+            return 0.0 if total.to_i.zero?
+
+            ((count.to_f / total) * 100).round(1)
+        end
+
+        def append_other(rows, total_page_views, total_visits)
+            other_page_views = total_page_views - rows.sum { |row| row[:page_views] }
+            other_visits = total_visits - rows.sum { |row| row[:visits] }
+            return rows unless other_page_views.positive? || other_visits.positive?
+
+            rows << {
+                value: "other",
+                page_views: other_page_views,
+                visits: other_visits,
+                percentage: percentage(other_page_views, total_page_views),
+                other: true
+            }
         end
     end
 end

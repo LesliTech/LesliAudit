@@ -6,7 +6,8 @@
             columns: [
                 { label: title, align: :left },
                 { label: t("lesli_audit.traffic.page_views", default: "Page views"), align: :center },
-                { label: t("lesli_audit.traffic.visits", default: "Visits"), align: :center }
+                { label: t("lesli_audit.traffic.visits", default: "Visits"), align: :center },
+                { label: t("lesli_audit.traffic.percentage", default: "Percentage"), align: :center }
             ],
             class_name: "!min-w-0",
             compact: true,
@@ -18,9 +19,11 @@
                         <div class="relative isolate overflow-hidden px-3 py-2.5">
                             <span
                                 class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
-                                style="width: <%= record[:percentage].to_i.clamp(0, 100) %>%"
+                                style="width: <%= record[:percentage].to_f.clamp(0, 100) %>%"
                                 aria-hidden="true"></span>
-                            <span class="block truncate text-slate-700"><%= record[:value] %></span>
+                            <span class="block truncate text-slate-700">
+                                <%= record[:other] ? t("lesli_audit.traffic.other", default: "Other") : record[:value] %>
+                            </span>
                         </div>
                     <% end %>
                     <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
@@ -28,6 +31,9 @@
                     <% end %>
                     <% row.with_cell(class_name: "tabular-nums text-slate-600", align: :center) do %>
                         <%= number_with_delimiter(record[:visits]) %>
+                    <% end %>
+                    <% row.with_cell(class_name: "tabular-nums text-slate-600", align: :center) do %>
+                        <%= number_to_percentage(record[:percentage], precision: 1, strip_insignificant_zeros: true) %>
                     <% end %>
                 <% end %>
             <% end %>

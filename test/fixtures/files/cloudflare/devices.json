@@ -1,0 +1,20 @@
+{
+  "data": {
+    "viewer": {
+      "zones": [
+        {
+          "groups": [
+            {
+              "count": 71,
+              "sum": { "visits": 49 },
+              "dimensions": {
+                "clientRequestPath": "/demo/cafe",
+                "clientDeviceType": "smartphone"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

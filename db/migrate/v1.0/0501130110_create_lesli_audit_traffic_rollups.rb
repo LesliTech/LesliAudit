@@ -2,13 +2,14 @@ class CreateLesliAuditTrafficRollups < ActiveRecord::Migration[8.1]
     def change
         create_table :lesli_audit_traffic_rollups do |t|
             t.string :provider, null: false
-            t.string :provider_key, null: false
+            t.string :hostname, null: false
+            t.string :path, null: false
             t.string :resource_type, null: false
             t.bigint :resource_id, null: false
             t.date :date, null: false
             t.bigint :page_views, null: false, default: 0
             t.bigint :visits, null: false, default: 0
-            t.datetime :synced_at, null: false
+            t.datetime :snapshot_at, null: false
             t.timestamps null: false
         end
 
@@ -36,9 +37,9 @@ class CreateLesliAuditTrafficRollups < ActiveRecord::Migration[8.1]
         )
         add_index(
             :lesli_audit_traffic_rollups,
-            %i[account_id provider provider_key date],
+            %i[account_id provider hostname path date],
             unique: true,
-            name: "index_lesli_audit_traffic_rollups_on_provider_key_and_date"
+            name: "index_lesli_audit_traffic_rollups_on_provider_path_and_date"
         )
         add_index(
             :lesli_audit_traffic_rollups,

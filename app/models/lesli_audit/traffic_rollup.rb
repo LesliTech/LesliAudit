@@ -13,11 +13,11 @@ module LesliAudit
         validates :provider,
             presence: true,
             format: { with: /\A[a-z][a-z0-9_-]*\z/ }
-        validates :provider_key, :resource_type, :date, :synced_at, presence: true
+        validates :hostname, :path, :resource_type, :date, :snapshot_at, presence: true
         validates :resource_id,
             numericality: { only_integer: true, greater_than: 0 }
-        validates :provider_key,
-            uniqueness: { scope: %i[account_id provider date] }
+        validates :path,
+            uniqueness: { scope: %i[account_id provider hostname date] }
         validates :page_views, :visits,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
@@ -25,7 +25,8 @@ module LesliAudit
 
         def normalize_identifiers
             self.provider = provider.to_s.strip.downcase.presence
-            self.provider_key = provider_key.to_s.strip.presence
+            self.hostname = hostname.to_s.strip.downcase.presence
+            self.path = path.to_s.strip.presence
             self.resource_type = resource_type.to_s.strip.presence
         end
     end

@@ -2,46 +2,57 @@ require "test_helper"
 
 module LesliAudit
     class TrafficTest < ActiveSupport::TestCase
-        test "rollup maps a provider key directly to an engine-independent resource" do
+        test "rollup maps a hostname and path to an engine-independent resource" do
             rollup = audit_account.traffic_rollups.create!(
                 provider: " Cloudflare ",
-                provider_key: " /ldonis ",
+                hostname: " EXAMPLE.COM ",
+                path: " /ldonis ",
                 resource_type: " Profile ",
                 resource_id: 27,
                 date: Date.new(2026, 10, 26),
                 page_views: 184,
                 visits: 126,
-                synced_at: Time.current
+                snapshot_at: Time.current
             )
 
             assert_equal "cloudflare", rollup.provider
-            assert_equal "/ldonis", rollup.provider_key
+            assert_equal "example.com", rollup.hostname
+            assert_equal "/ldonis", rollup.path
             assert_equal "Profile", rollup.resource_type
             assert_equal 27, rollup.resource_id
         end
 
-        test "a provider key has one snapshot per account and day" do
+        test "a provider path has one snapshot per account and day" do
             attributes = {
                 provider: "cloudflare",
-                provider_key: "/ldonis",
+                hostname: "example.com",
+                path: "/ldonis",
                 resource_type: "Profile",
                 resource_id: 27,
                 date: Date.new(2026, 10, 26),
                 page_views: 10,
                 visits: 7,
-                synced_at: Time.current
+                snapshot_at: Time.current
             }
             audit_account.traffic_rollups.create!(attributes)
 
             duplicate = audit_account.traffic_rollups.new(attributes)
 
             assert_not duplicate.valid?
-            assert_includes duplicate.errors[:provider_key], "has already been taken"
+            assert_includes duplicate.errors[:path], "has already been taken"
         end
 
-        test "the resource index can preserve multiple historical provider keys" do
-            old_path = create_rollup(provider_key: "/ldonis", date: Date.new(2026, 10, 25))
-            new_path = create_rollup(provider_key: "/luisdonis", date: Date.new(2026, 10, 26))
+        test "the same path can be tracked on different hostnames" do
+            create_rollup
+            second_host = create_rollup(hostname: "store.example.com")
+
+            assert_predicate second_host, :persisted?
+            assert_equal 2, audit_account.traffic_rollups.where(path: "/ldonis").count
+        end
+
+        test "the resource index can preserve multiple historical paths" do
+            old_path = create_rollup(path: "/ldonis", date: Date.new(2026, 10, 25))
+            new_path = create_rollup(path: "/luisdonis", date: Date.new(2026, 10, 26))
 
             history = audit_account.traffic_rollups.where(
                 resource_type: "Profile",
@@ -84,16 +95,17 @@ module LesliAudit
 
         private
 
-        def create_rollup(provider_key: "/ldonis", date: Date.new(2026, 10, 26))
+        def create_rollup(hostname: "example.com", path: "/ldonis", date: Date.new(2026, 10, 26))
             audit_account.traffic_rollups.create!(
                 provider: "cloudflare",
-                provider_key:,
+                hostname:,
+                path:,
                 resource_type: "Profile",
                 resource_id: 27,
                 date:,
                 page_views: 2,
                 visits: 1,
-                synced_at: Time.current
+                snapshot_at: Time.current
             )
         end
     end

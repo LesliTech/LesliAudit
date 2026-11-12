@@ -80,6 +80,11 @@ module LesliAudit
                 column: :date,
                 cutoff: date_cutoff(:traffic_retention_days)
             )
+            deleted[LesliAudit::CloudflareTrafficSync.table_name] = delete_with_cutoff(
+                LesliAudit::CloudflareTrafficSync.all,
+                :period_end,
+                date_cutoff(:traffic_retention_days)
+            )
             cleanup_group(
                 deleted,
                 ACTIVITY_MODELS,

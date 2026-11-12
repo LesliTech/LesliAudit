@@ -24,13 +24,14 @@ module LesliAudit
             )
             rollup_old = audit_account.traffic_rollups.create!(
                 provider: "cloudflare",
-                provider_key: "/retention-test",
+                hostname: "example.com",
+                path: "/retention-test",
                 resource_type: "Profile",
                 resource_id: 27,
                 date: TODAY - 31,
                 page_views: 10,
                 visits: 7,
-                synced_at: NOW
+                snapshot_at: NOW
             )
             rollup_old.traffic_breakdowns.create!(
                 account: audit_account,
@@ -41,14 +42,17 @@ module LesliAudit
             )
             rollup_cutoff = audit_account.traffic_rollups.create!(
                 provider: "cloudflare",
-                provider_key: "/retention-test",
+                hostname: "example.com",
+                path: "/retention-test",
                 resource_type: "Profile",
                 resource_id: 27,
                 date: TODAY - 30,
                 page_views: 5,
                 visits: 4,
-                synced_at: NOW
+                snapshot_at: NOW
             )
+            sync_old = create_sync(TODAY - 31)
+            sync_cutoff = create_sync(TODAY - 30)
             log_old = audit_account.user_logs.create!(
                 user: core_user,
                 operation: "old_event",
@@ -84,6 +88,7 @@ module LesliAudit
                 assert_equal 2, deleted[LesliAudit::UserJournal.table_name]
                 assert_equal 1, deleted[LesliAudit::AccountRequest.table_name]
                 assert_equal 1, deleted[LesliAudit::TrafficRollup.table_name]
+                assert_equal 1, deleted[LesliAudit::CloudflareTrafficSync.table_name]
                 assert_equal 1, deleted[LesliAudit::AccountLog.table_name]
                 assert_equal 1, deleted[LesliAudit::UserLog.table_name]
             end
@@ -95,6 +100,8 @@ module LesliAudit
             assert LesliAudit::AccountRequest.exists?(request_cutoff.id)
             assert_not LesliAudit::TrafficRollup.exists?(rollup_old.id)
             assert LesliAudit::TrafficRollup.exists?(rollup_cutoff.id)
+            assert_not LesliAudit::CloudflareTrafficSync.exists?(sync_old.id)
+            assert LesliAudit::CloudflareTrafficSync.exists?(sync_cutoff.id)
             assert_equal 0, LesliAudit::TrafficBreakdown.where(traffic_rollup_id: rollup_old.id).count
             assert_not LesliAudit::UserLog.exists?(log_old.id)
             assert LesliAudit::UserLog.exists?(log_cutoff.id)
@@ -162,6 +169,14 @@ module LesliAudit
                 date: date,
                 retain: retain,
                 user: (core_user if retain)
+            )
+        end
+
+        def create_sync(date)
+            audit_account.cloudflare_traffic_syncs.create!(
+                zone_id: "zone-#{date}",
+                period_start: date,
+                period_end: date
             )
         end
     end

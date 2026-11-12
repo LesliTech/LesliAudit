@@ -39,5 +39,9 @@ module LesliAudit
         has_many :traffic_breakdowns,
             inverse_of: :account,
             dependent: :delete_all
+
+        has_many :cloudflare_traffic_syncs,
+            inverse_of: :account,
+            dependent: :delete_all
     end
 end

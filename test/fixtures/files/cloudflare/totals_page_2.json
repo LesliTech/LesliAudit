@@ -1,0 +1,17 @@
+{
+  "data": {
+    "viewer": {
+      "zones": [
+        {
+          "groups": [
+            {
+              "count": 45,
+              "sum": { "visits": 31 },
+              "dimensions": { "clientRequestPath": "/pricing" }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "data": {
+    "viewer": {
+      "zones": [
+        {
+          "groups": [
+            {
+              "count": 120,
+              "sum": { "visits": 80 },
+              "dimensions": { "clientRequestPath": "/demo/cafe" }
+            },
+            {
+              "count": 90,
+              "sum": { "visits": 65 },
+              "dimensions": { "clientRequestPath": "/demo/tea" }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

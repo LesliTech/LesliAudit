@@ -8,6 +8,7 @@ LesliTesting.engine("LesliAudit", {
 
 require_relative "dummy/config/environment"
 require "rails/test_help"
+require_relative "support/cloudflare_traffic_test_data"
 
 module LesliAuditTestData
     def core_account
@@ -109,3 +110,4 @@ module LesliAuditTestData
 end
 
 ActiveSupport::TestCase.include(LesliAuditTestData)
+ActiveSupport::TestCase.include(CloudflareTrafficTestData)

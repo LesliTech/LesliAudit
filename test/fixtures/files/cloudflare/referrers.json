@@ -1,0 +1,20 @@
+{
+  "data": {
+    "viewer": {
+      "zones": [
+        {
+          "groups": [
+            {
+              "count": 33,
+              "sum": { "visits": 21 },
+              "dimensions": {
+                "clientRequestPath": "/demo/cafe",
+                "clientRefererHost": "example.org"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
