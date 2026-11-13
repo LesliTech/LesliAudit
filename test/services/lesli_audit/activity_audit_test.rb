@@ -16,7 +16,8 @@ module LesliAudit
                     operation: "ticket_closed",
                     description: "Ticket closed successfully",
                     session_id: 123,
-                    subject: core_account
+                    subject: core_account,
+                    details: { permissions_added: [{ controller: "tickets", action: "show" }] }
                 )
 
                 assert_equal audit_account, event.account
@@ -30,6 +31,13 @@ module LesliAudit
                 assert_equal core_user.uid, event.actor_uid
                 assert_equal "Lesli::Account", event.subject_type
                 assert_equal core_account.id, event.subject_id
+                assert_equal(
+                    { "permissions_added" => [{ "controller" => "tickets", "action" => "show" }] },
+                    event.reload.details
+                )
+                assert_raises(ActiveRecord::ReadOnlyRecord) do
+                    event.update!(details: {})
+                end
             end
         end
 
@@ -38,12 +46,14 @@ module LesliAudit
                 event = LesliAudit::ActivityAudit.record_account!(
                     account: core_account,
                     actor: core_user,
-                    operation: :account_initialized
+                    operation: :account_initialized,
+                    details: { name: core_account.name }
                 )
 
                 assert_equal "account_initialized", event.operation
                 assert_equal core_user.uid, event.actor_uid
                 assert_equal audit_account, event.account
+                assert_equal({ "name" => core_account.name }, event.reload.details)
             end
         end
 
@@ -69,6 +79,22 @@ module LesliAudit
 
                 assert_raises(ArgumentError) do
                     LesliAudit::ActivityAudit.record_user!(user: core_user)
+                end
+            end
+        end
+
+        test "rejects unstructured details and raw request parameters" do
+            with_audit_config(enable_logs: true) do
+                ["unstructured", ActionController::Parameters.new(password: "secret")].each do |details|
+                    assert_no_difference -> { UserLog.count } do
+                        assert_raises(ArgumentError) do
+                            ActivityAudit.record_user!(
+                                user: core_user,
+                                operation: "invalid_details",
+                                details: details
+                            )
+                        end
+                    end
                 end
             end
         end

@@ -17,7 +17,8 @@ current_user.log(
   operation: "ticket_closed",
   description: "Ticket closed successfully",
   session_id: session[:user_session_id],
-  subject: ticket
+  subject: ticket,
+  details: { status: ["open", "closed"] }
 )
 ```
 
@@ -32,9 +33,16 @@ The service stores only this allowlisted metadata:
 | `description` | Human-readable explanation without secrets |
 | `session_id` | Optional opaque session reference |
 | `subject` | Optional record whose type and ID are snapshotted |
+| `details` | Explicit domain data stored as a JSON object; defaults to `{}` |
 
 The user's `uid` is copied into `actor_uid`. This snapshot remains available if
 the user is later hard-deleted and the nullable user reference is cleared.
+
+`details` must be a Hash constructed by the emitting service. Use it for
+before/after values, stable resource identifiers, permission differences, or
+counts needed to explain the operation. Both user and account event tables
+support it through `ActivityAudit`. The event detail view shows this JSON
+without interpreting its keys, keeping LesliAudit independent of each domain.
 
 Controllers inheriting from `Lesli::ApplicationLesliController` can use its
 convenience method, which supplies engine, source, action, session, and user:
@@ -103,8 +111,9 @@ names for lifecycle outcomes such as `session_creation_attempted`,
 
 Never place credentials, tokens, cookies, authorization headers, request
 parameters, raw user-agent strings, or unrestricted serialized payloads in the
-description. If richer structured event metadata becomes necessary, extend the
-allowlist and schema explicitly instead of embedding JSON in a text field.
+description or details. Construct a small domain-specific Hash for `details`
+instead of passing `params`, a complete model's attributes, or JSON encoded
+inside the description. Events, including their details, remain append-only.
 
 Requests and journals must never be promoted into activity events after the
 fact. Their presence proves that Rails observed a request, not that the intended

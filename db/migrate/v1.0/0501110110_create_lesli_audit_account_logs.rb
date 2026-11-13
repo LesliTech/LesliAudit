@@ -41,10 +41,11 @@ class CreateLesliAuditAccountLogs < ActiveRecord::Migration[8.1]
             t.string :subject_type
             t.bigint :subject_id
 
-            t.string :operation, null: false
             t.text :description
+            t.string :operation, null: false
             t.string :session_id
             t.string :actor_uid
+            t.json :details, null:false, default: {}
 
             t.timestamps null: false
         end

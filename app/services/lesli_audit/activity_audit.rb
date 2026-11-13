@@ -62,7 +62,8 @@ module LesliAudit
             operation: nil,
             description: nil,
             session_id: nil,
-            subject: nil
+            subject: nil,
+            details: {}
         )
             @audit_account = resolve_audit_account(account)
             @actor = actor
@@ -73,8 +74,10 @@ module LesliAudit
             @description = description
             @session_id = session_id.presence
             @subject = subject
+            @details = details
 
             raise ArgumentError, "operation is required" if @operation.blank?
+            raise ArgumentError, "details must be a Hash" unless @details.is_a?(Hash)
         end
 
         def record_account!
@@ -100,8 +103,8 @@ module LesliAudit
             raise MissingAccount, "LesliAudit account is required"
         end
 
-        # Keep event metadata deliberately small. Request parameters and other
-        # unfiltered payloads are not accepted by this API.
+        # Callers build details explicitly from domain data. Never pass request
+        # parameters, credentials, or unfiltered model attributes as details.
         def event_attributes
             {
                 engine: @engine,
@@ -112,7 +115,8 @@ module LesliAudit
                 session_id: @session_id,
                 actor_uid: actor_uid,
                 subject_type: subject&.class&.name,
-                subject_id: subject&.id
+                subject_id: subject&.id,
+                details: @details
             }
         end
 

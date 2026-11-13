@@ -51,6 +51,7 @@ history.
 | `actor_uid` | String | Immutable actor identity snapshot retained when `user_id` is nullified. |
 | `subject_type` | String | Optional opaque subject type. LesliAudit does not constantize it. |
 | `subject_id` | Big integer | Optional opaque subject identifier. |
+| `details` | JSON | Explicit domain evidence; a required object defaulting to `{}`. |
 
 ### `lesli_audit_account_devices`
 

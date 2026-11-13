@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 501130310) do
+ActiveRecord::Schema[8.1].define(version: 501140110) do
   create_table "lesli_accounts", force: :cascade do |t|
     t.string "status", null: false
     t.string "name"
@@ -52,6 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 501130310) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "account_id", null: false
+    t.json "details", default: {}, null: false
     t.index ["account_id", "created_at"], name: "index_lesli_audit_account_logs_on_account_and_created_at"
     t.index ["created_at"], name: "index_lesli_audit_account_logs_on_created_at"
   end
@@ -171,6 +172,7 @@ ActiveRecord::Schema[8.1].define(version: 501130310) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "account_id", null: false
+    t.json "details", default: {}, null: false
     t.index ["account_id", "created_at"], name: "index_lesli_audit_user_logs_on_account_and_created_at"
     t.index ["created_at"], name: "index_lesli_audit_user_logs_on_created_at"
     t.index ["user_id", "created_at"], name: "index_lesli_audit_user_logs_on_user_and_created_at"
