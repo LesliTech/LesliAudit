@@ -44,12 +44,12 @@
                     class: "mb-1.5 block text-sm font-medium text-slate-700" %>
                 <%= form.select :bytime,
                     options_for_select([
-                        [t("lesli_audit.traffic.periods.day", default: "Today"), "day"],
-                        [t("lesli_audit.traffic.periods.week", default: "Last 7 days"), "week"],
-                        [t("lesli_audit.traffic.periods.month", default: "Last 30 days"), "month"],
-                        [t("lesli_audit.traffic.periods.sixmonth", default: "Last 6 months"), "sixmonth"],
-                        [t("lesli_audit.traffic.periods.year", default: "Last year"), "year"],
-                        [t("lesli_audit.traffic.periods.all", default: "All time"), "all"]
+                        [t("lesli_audit.traffic.periods_day", default: "Today"), "day"],
+                        [t("lesli_audit.traffic.periods_week", default: "Last 7 days"), "week"],
+                        [t("lesli_audit.traffic.periods_month", default: "Last 30 days"), "month"],
+                        [t("lesli_audit.traffic.periods_sixmonth", default: "Last 6 months"), "sixmonth"],
+                        [t("lesli_audit.traffic.periods_year", default: "Last year"), "year"],
+                        [t("lesli_audit.traffic.periods_all", default: "All time"), "all"]
                     ], params[:bytime].presence || "month"),
                     {},
                     class: "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800" %>

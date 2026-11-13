@@ -12,17 +12,17 @@
             <%= label_tag :kind, t("lesli_audit.logs.event_type", default: "Event type"), class: "sr-only" %>
             <%= select_tag :kind, options_for_select(
                 @available_log_kinds.map do |kind|
-                    [t("lesli_audit.logs.kinds.#{kind}", default: kind.humanize), kind]
+                    [t("lesli_audit.logs.kinds_#{kind}", default: kind.humanize), kind]
                 end,
                 @log_kind
             ), class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
 
             <%= label_tag :orderBy, t("lesli_audit.logs.sort_by", default: "Sort by"), class: "sr-only" %>
             <%= select_tag :orderBy, options_for_select([
-                [t("lesli_audit.logs.fields.created_at", default: "Date"), "created_at"],
-                [t("lesli_audit.logs.fields.operation", default: "Operation"), "operation"],
-                [t("lesli_audit.logs.fields.source", default: "Source"), "source"],
-                [t("lesli_audit.logs.fields.actor_uid", default: "Actor"), "actor_uid"]
+                [t("lesli_audit.logs.fields_created_at", default: "Date"), "created_at"],
+                [t("lesli_audit.logs.fields_operation", default: "Operation"), "operation"],
+                [t("lesli_audit.logs.fields_source", default: "Source"), "source"],
+                [t("lesli_audit.logs.fields_actor_uid", default: "Actor"), "actor_uid"]
             ], params[:orderBy].presence || "created_at"),
                 class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
 
@@ -42,25 +42,25 @@
     <%= render(LesliView::Elements::Table.new(
         columns: [
             {
-                label: t("lesli_audit.logs.fields.operation", default: "Operation"),
+                label: t("lesli_audit.logs.fields_operation", default: "Operation"),
                 field: "operation"
             }, {
-                label: t("lesli_audit.logs.fields.actor_uid", default: "Actor"),
+                label: t("lesli_audit.logs.fields_actor_uid", default: "Actor"),
                 field: "actor_uid"
             }, {
-                label: t("lesli_audit.logs.fields.source", default: "Source"),
+                label: t("lesli_audit.logs.fields_source", default: "Source"),
                 field: "source"
             }, {
-                label: t("lesli_audit.logs.fields.description", default: "Description"),
+                label: t("lesli_audit.logs.fields_description", default: "Description"),
                 field: "description"
             }, {
-                label: t("lesli_audit.logs.fields.created_at", default: "Date"),
+                label: t("lesli_audit.logs.fields_created_at", default: "Date"),
                 field: "created_at"
             }
         ],
         records: @logs[:records],
         link: ->(log) { lesli_audit.log_path(log, kind: @log_kind) },
-        caption: t("lesli_audit.logs.captions.#{@log_kind}", default: "Audit events"),
+        caption: t("lesli_audit.logs.captions_#{@log_kind}", default: "Audit events"),
         empty: t("lesli_audit.logs.empty", default: "No audit events found")
     )) %>
 

@@ -10,11 +10,11 @@
         <% toolbar.with_filters do %>
             <%= label_tag :orderBy, t("lesli_audit.requests.sort_by", default: "Sort by"), class: "sr-only" %>
             <%= select_tag :orderBy, options_for_select([
-                [t("lesli_audit.requests.columns.date", default: "Date"), "date"],
-                [t("lesli_audit.requests.columns.count", default: "Count"), "count"],
-                [t("lesli_audit.requests.columns.user", default: "User"), "user"],
-                [t("lesli_audit.requests.columns.controller", default: "Controller"), "controller"],
-                [t("lesli_audit.requests.columns.action", default: "Action"), "action"]
+                [t("lesli_audit.requests.columns_date", default: "Date"), "date"],
+                [t("lesli_audit.requests.columns_count", default: "Count"), "count"],
+                [t("lesli_audit.requests.columns_user", default: "User"), "user"],
+                [t("lesli_audit.requests.columns_controller", default: "Controller"), "controller"],
+                [t("lesli_audit.requests.columns_action", default: "Action"), "action"]
             ], params[:orderBy].presence || "date"),
                 class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
 
@@ -34,20 +34,20 @@
     <%= render(LesliView::Elements::Table.new(
         columns: [
             {
-                label: t("lesli_audit.requests.columns.user", default: "User"),
+                label: t("lesli_audit.requests.columns_user", default: "User"),
                 field: "user_email"
             }, {
-                label: t("lesli_audit.requests.columns.controller", default: "Controller"),
+                label: t("lesli_audit.requests.columns_controller", default: "Controller"),
                 field: "request_controller"
             }, {
-                label: t("lesli_audit.requests.columns.action", default: "Action"),
+                label: t("lesli_audit.requests.columns_action", default: "Action"),
                 field: "request_action"
             }, {
-                label: t("lesli_audit.requests.columns.count", default: "Count"),
+                label: t("lesli_audit.requests.columns_count", default: "Count"),
                 field: "request_count",
                 align: :center
             }, {
-                label: t("lesli_audit.requests.columns.date", default: "Date"),
+                label: t("lesli_audit.requests.columns_date", default: "Date"),
                 field: "date"
             }
         ],

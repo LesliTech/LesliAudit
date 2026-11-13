@@ -1,7 +1,7 @@
 <%= render(LesliView::Layout::Container.new("audit-log")) do %>
     <%= render(LesliView::Components::Header.new(
         t("lesli_audit.logs.show_title", default: "Audit event"),
-        t("lesli_audit.logs.kinds.#{@log_kind}", default: @log_kind.humanize),
+        t("lesli_audit.logs.kinds_#{@log_kind}", default: @log_kind.humanize),
         back: lesli_audit.logs_path(kind: @log_kind)
     )) %>
 
@@ -22,10 +22,21 @@
         <% fields.each do |field| %>
             <div>
                 <dt class="text-sm font-medium text-slate-500">
-                    <%= t("lesli_audit.logs.fields.#{field}", default: field.to_s.humanize) %>
+                    <%= t("lesli_audit.logs.fields_#{field}", default: field.to_s.humanize) %>
                 </dt>
                 <dd class="mt-1 break-words text-sm text-slate-900">
                     <%= @log.public_send(field).presence || t("lesli_audit.logs.not_available", default: "Not available") %>
+                </dd>
+            </div>
+        <% end %>
+
+        <% if @log.details.present? %>
+            <div class="sm:col-span-2">
+                <dt class="text-sm font-medium text-slate-500">
+                    <%= t("lesli_audit.logs.fields_details") %>
+                </dt>
+                <dd class="mt-1 text-sm text-slate-900">
+                    <pre class="whitespace-pre-wrap break-words"><%= JSON.pretty_generate(@log.details) %></pre>
                 </dd>
             </div>
         <% end %>
