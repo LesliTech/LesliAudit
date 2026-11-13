@@ -17,6 +17,10 @@ en:
       requests_by_controller: "Requests by controller"
       title: "Analytics"
       top_controllers: "Top controllers"
+    dashboards: {}
+    items/attachments: {}
+    items/discussions: {}
+    items/tasks: {}
     logs:
       ascending: "Ascending"
       captions_account: "Account audit events"
@@ -70,6 +74,7 @@ en:
       search_placeholder: "Search by user, controller, or action"
       sort_by: "Sort by"
       title: "Requests"
+    shared: {}
     traffic:
       apply: "Apply filters"
       countries: "Countries"

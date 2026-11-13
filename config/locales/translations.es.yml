@@ -17,6 +17,10 @@ es:
       requests_by_controller: "Solicitudes por controlador"
       title: "Analítica"
       top_controllers: "Controladores principales"
+    dashboards: {}
+    items/attachments: {}
+    items/discussions: {}
+    items/tasks: {}
     logs:
       ascending: "Ascendente"
       captions_account: "Eventos de auditoría de la cuenta"
@@ -70,6 +74,7 @@ es:
       search_placeholder: "Buscar por usuario, controlador o acción"
       sort_by: "Ordenar por"
       title: "Solicitudes"
+    shared: {}
     traffic:
       apply: "Aplicar filtros"
       countries: "Países"
