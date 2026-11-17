@@ -1,7 +1,8 @@
 /* Tailwind utilities used by LesliAudit views. */
 @layer theme, utilities;
 
-@import "tailwindcss/theme.css" layer(theme);
+/* Theme values are loaded once by LesliAssets. */
+@reference "tailwindcss/theme.css";
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "../../app/views/lesli_audit/users/index.html.erb";
