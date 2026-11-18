@@ -2,7 +2,8 @@
 @layer theme, utilities;
 
 /* Theme values are loaded once by LesliAssets. */
-@reference "tailwindcss/theme.css";
+@import "tailwindcss/theme.css" theme(reference);
+@reference "../../../../gems/LesliAssets/source/tailwind/settings/theme.css";
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "../../app/views/lesli_audit/users/index.html.erb";
@@ -10,3 +11,7 @@
 @source "../../app/views/lesli_audit/requests/index.html.erb";
 @source "../../app/views/lesli_audit/logs/**/*.html.erb";
 @source "../../app/views/lesli_audit/traffic/**/*.html.erb";
+
+
+@source "../../app/views/lesli_audit";
+@source "../../app/helpers";

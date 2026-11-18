@@ -18,13 +18,13 @@
         created_at
     ] %>
 
-    <dl class="grid grid-cols-1 gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2">
+    <dl class="grid grid-cols-1 gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:grid-cols-2">
         <% fields.each do |field| %>
             <div>
-                <dt class="text-sm font-medium text-slate-500">
+                <dt class="text-sm font-medium text-neutral-500">
                     <%= t("lesli_audit.logs.fields_#{field}", default: field.to_s.humanize) %>
                 </dt>
-                <dd class="mt-1 break-words text-sm text-slate-900">
+                <dd class="mt-1 break-words text-sm text-neutral-900">
                     <%= @log.public_send(field).presence || t("lesli_audit.logs.not_available", default: "Not available") %>
                 </dd>
             </div>
@@ -32,10 +32,10 @@
 
         <% if @log.details.present? %>
             <div class="sm:col-span-2">
-                <dt class="text-sm font-medium text-slate-500">
+                <dt class="text-sm font-medium text-neutral-500">
                     <%= t("lesli_audit.logs.fields_details") %>
                 </dt>
-                <dd class="mt-1 text-sm text-slate-900">
+                <dd class="mt-1 text-sm text-neutral-900">
                     <pre class="whitespace-pre-wrap break-words"><%= JSON.pretty_generate(@log.details) %></pre>
                 </dd>
             </div>

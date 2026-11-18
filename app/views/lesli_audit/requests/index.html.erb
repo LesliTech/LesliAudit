@@ -16,18 +16,18 @@
                 [t("lesli_audit.requests.columns_controller", default: "Controller"), "controller"],
                 [t("lesli_audit.requests.columns_action", default: "Action"), "action"]
             ], params[:orderBy].presence || "date"),
-                class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+                class: "rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-700" %>
 
             <%= label_tag :order, t("lesli_audit.requests.direction", default: "Direction"), class: "sr-only" %>
             <%= select_tag :order, options_for_select([
                 [t("lesli_audit.requests.descending", default: "Descending"), "desc"],
                 [t("lesli_audit.requests.ascending", default: "Ascending"), "asc"]
             ], params[:order].presence || "desc"),
-                class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+                class: "rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-700" %>
 
             <%= label_tag :perPage, t("lesli_audit.requests.per_page", default: "Results per page"), class: "sr-only" %>
             <%= select_tag :perPage, options_for_select([12, 25, 50, 100], params[:perPage].presence || 12),
-                class: "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" %>
+                class: "rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-700" %>
         <% end %>
     <% end %>
 
@@ -63,11 +63,11 @@
                 <% if pagination[:page] > 1 %>
                     <%= link_to t("lesli_audit.requests.previous", default: "Previous"),
                         lesli_audit.requests_path(request.query_parameters.merge(page: pagination[:page] - 1)),
-                        class: "text-sm font-medium text-sky-700 hover:text-sky-900" %>
+                        class: "text-sm font-medium text-primary-strong hover:text-primary-strong" %>
                 <% end %>
             </div>
 
-            <p class="text-sm text-slate-600">
+            <p class="text-sm text-neutral-600">
                 <%= t("lesli_audit.requests.page", default: "Page %{page} of %{pages}",
                     page: pagination[:page], pages: pagination[:pages]) %>
             </p>
@@ -76,7 +76,7 @@
                 <% if pagination[:page] < pagination[:pages] %>
                     <%= link_to t("lesli_audit.requests.next", default: "Next"),
                         lesli_audit.requests_path(request.query_parameters.merge(page: pagination[:page] + 1)),
-                        class: "text-sm font-medium text-sky-700 hover:text-sky-900" %>
+                        class: "text-sm font-medium text-primary-strong hover:text-primary-strong" %>
                 <% end %>
             </div>
         </nav>

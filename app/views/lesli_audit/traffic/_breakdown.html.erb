@@ -1,5 +1,5 @@
-<article class="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <h2 class="mb-4 text-base font-semibold text-slate-900"><%= title %></h2>
+<article class="min-w-0 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+    <h2 class="mb-4 text-base font-semibold text-neutral-900"><%= title %></h2>
 
     <% if records.any? %>
         <%= render(LesliView::Elements::Table.new(
@@ -18,28 +18,28 @@
                     <% row.with_cell(class_name: "!p-0") do %>
                         <div class="relative isolate overflow-hidden px-3 py-2.5">
                             <span
-                                class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                class="absolute inset-y-0 left-0 -z-10 bg-neutral-100"
                                 style="width: <%= record[:percentage].to_f.clamp(0, 100) %>%"
                                 aria-hidden="true"></span>
-                            <span class="block truncate text-slate-700">
+                            <span class="block truncate text-neutral-700">
                                 <%= record[:other] ? t("lesli_audit.traffic.other", default: "Other") : record[:value] %>
                             </span>
                         </div>
                     <% end %>
-                    <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
+                    <% row.with_cell(class_name: "font-semibold tabular-nums text-neutral-900", align: :center) do %>
                         <%= number_with_delimiter(record[:page_views]) %>
                     <% end %>
-                    <% row.with_cell(class_name: "tabular-nums text-slate-600", align: :center) do %>
+                    <% row.with_cell(class_name: "tabular-nums text-neutral-600", align: :center) do %>
                         <%= number_with_delimiter(record[:visits]) %>
                     <% end %>
-                    <% row.with_cell(class_name: "tabular-nums text-slate-600", align: :center) do %>
+                    <% row.with_cell(class_name: "tabular-nums text-neutral-600", align: :center) do %>
                         <%= number_to_percentage(record[:percentage], precision: 1, strip_insignificant_zeros: true) %>
                     <% end %>
                 <% end %>
             <% end %>
         <% end %>
     <% else %>
-        <p class="text-sm text-slate-500">
+        <p class="text-sm text-neutral-500">
             <%= t("lesli_audit.traffic.no_breakdown", default: "No breakdown data is available for this period.") %>
         </p>
     <% end %>

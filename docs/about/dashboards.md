@@ -1,6 +1,6 @@
 # Dashboards
 
-LesliAudit registers a `calendar` component with LesliDashboard:
+LesliAudit registers a `leslicalendar` component with LesliDashboard:
 
 ```ruby
 module LesliAudit

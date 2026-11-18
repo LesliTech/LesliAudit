@@ -3,19 +3,19 @@
         t("lesli_audit.traffic.title", default: "Traffic")
     )) %>
 
-    <section class="mb-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+    <section class="mb-6 flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
         aria-label="<%= t("lesli_audit.traffic.synchronization", default: "Traffic synchronization") %>">
         <div>
-            <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
                 <%= t("lesli_audit.traffic.source", default: "Source") %>
             </p>
-            <p class="mt-1 text-base font-semibold text-slate-900"><%= @synchronization[:source] %></p>
+            <p class="mt-1 text-base font-semibold text-neutral-900"><%= @synchronization[:source] %></p>
         </div>
         <div class="sm:text-right">
-            <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <p class="text-xs font-medium uppercase tracking-wide text-neutral-500">
                 <%= t("lesli_audit.traffic.last_sync", default: "Last synchronization") %>
             </p>
-            <p class="mt-1 text-sm text-slate-700">
+            <p class="mt-1 text-sm text-neutral-700">
                 <% if @synchronization[:last_synced_at] %>
                     <%= l(@synchronization[:last_synced_at], format: :long) %>
                 <% else %>
@@ -26,7 +26,7 @@
     </section>
 
     <% if @synchronization[:stale] %>
-        <div class="mb-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900" role="alert">
+        <div class="mb-6 flex items-start gap-3 rounded-xl border border-warning-300 bg-warning-50 p-4 text-warning-900" role="alert">
             <span class="ri-alert-line mt-0.5 text-lg" aria-hidden="true"></span>
             <p class="text-sm">
                 <%= t("lesli_audit.traffic.stale_warning", default: "Traffic data may be outdated because the last synchronization is older than expected.") %>
@@ -34,14 +34,14 @@
         </div>
     <% end %>
 
-    <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+    <section class="mb-6 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm"
         aria-label="<%= t("lesli_audit.traffic.filters", default: "Traffic filters") %>">
         <%= form_with url: lesli_audit.traffic_index_path, method: :get, local: true,
             class: "grid grid-cols-1 items-end gap-4 md:grid-cols-4" do |form| %>
             <div>
                 <%= form.label :bytime,
                     t("lesli_audit.traffic.period", default: "Period"),
-                    class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+                    class: "mb-1.5 block text-sm font-medium text-neutral-700" %>
                 <%= form.select :bytime,
                     options_for_select([
                         [t("lesli_audit.traffic.periods_day", default: "Today"), "day"],
@@ -52,31 +52,31 @@
                         [t("lesli_audit.traffic.periods_all", default: "All time"), "all"]
                     ], params[:bytime].presence || "month"),
                     {},
-                    class: "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800" %>
+                    class: "w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-800" %>
             </div>
 
             <div>
                 <%= form.label :resource_type,
                     t("lesli_audit.traffic.resource_type", default: "Resource type"),
-                    class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+                    class: "mb-1.5 block text-sm font-medium text-neutral-700" %>
                 <%= form.text_field :resource_type,
                     value: params[:resource_type],
                     placeholder: "Profile",
-                    class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800" %>
+                    class: "w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-800" %>
             </div>
 
             <div>
                 <%= form.label :resource_id,
                     t("lesli_audit.traffic.resource_id", default: "Resource ID"),
-                    class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+                    class: "mb-1.5 block text-sm font-medium text-neutral-700" %>
                 <%= form.number_field :resource_id,
                     value: params[:resource_id],
                     min: 1,
-                    class: "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800" %>
+                    class: "w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-800" %>
             </div>
 
             <%= form.submit t("lesli_audit.traffic.apply", default: "Apply filters"),
-                class: "inline-flex cursor-pointer justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
+                class: "inline-flex cursor-pointer justify-center rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-700" %>
         <% end %>
     </section>
 
@@ -87,9 +87,9 @@
             [t("lesli_audit.traffic.resources", default: "Resources"), @summary[:resources]],
             [t("lesli_audit.traffic.tracked_paths", default: "Tracked paths"), @summary[:tracked_paths]]
         ].each do |label, value| %>
-            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="text-sm font-medium text-slate-500"><%= label %></h2>
-                <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+            <article class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <h2 class="text-sm font-medium text-neutral-500"><%= label %></h2>
+                <p class="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 tabular-nums">
                     <%= number_with_delimiter(value) %>
                 </p>
             </article>
@@ -97,7 +97,7 @@
     </section>
 
     <% if @trend.any? %>
-        <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section class="mt-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
             <%= render(LesliView::Charts::Line.new(
                 title: t("lesli_audit.traffic.trend", default: "Traffic trend"),
                 datasets: [{
@@ -114,12 +114,12 @@
             )) %>
         </section>
     <% else %>
-        <section class="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-            <span class="ri-line-chart-line text-3xl text-slate-400" aria-hidden="true"></span>
-            <h2 class="mt-3 text-base font-semibold text-slate-900">
+        <section class="mt-6 rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 px-6 py-12 text-center">
+            <span class="ri-line-chart-line text-3xl text-neutral-400" aria-hidden="true"></span>
+            <h2 class="mt-3 text-base font-semibold text-neutral-900">
                 <%= t("lesli_audit.traffic.empty_title", default: "No traffic yet") %>
             </h2>
-            <p class="mx-auto mt-1 max-w-xl text-sm text-slate-500">
+            <p class="mx-auto mt-1 max-w-xl text-sm text-neutral-500">
                 <%= t("lesli_audit.traffic.empty_description", default: "Import the first provider snapshot to start showing resource traffic.") %>
             </p>
         </section>

@@ -12,35 +12,35 @@ top_days = request_trend.last(3)
     <section
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5"
         aria-label="<%= t("lesli_audit.analytics.overview", default: "Authenticated usage overview") %>">
-        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-sm font-medium text-slate-500">
+        <article class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-medium text-neutral-500">
                 <%= t("lesli_audit.analytics.controllers", default: "Controllers") %>
             </h2>
-            <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+            <p class="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 tabular-nums">
                 <%= @summary[:controllers] %>
             </p>
         </article>
 
-        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="text-sm font-medium text-slate-500">
+        <article class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-medium text-neutral-500">
                 <%= t("lesli_audit.analytics.requests", default: "Requests") %>
             </h2>
-            <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+            <p class="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 tabular-nums">
                 <%= @summary[:requests] %>
             </p>
         </article>
 
         <% top_days.each do |day| %>
-            <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="text-sm font-medium text-slate-500"><%= day["xaxiskey"] %></h2>
-                <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-900 tabular-nums">
+            <article class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <h2 class="text-sm font-medium text-neutral-500"><%= day["xaxiskey"] %></h2>
+                <p class="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 tabular-nums">
                     <%= day["yaxiskey"] %>
                 </p>
             </article>
         <% end %>
     </section>
 
-    <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section class="mt-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
         <%= render(LesliView::Charts::Line.new(
             database_to_dataset: request_trend,
             title: t("lesli_audit.analytics.requests", default: "Requests")
@@ -66,18 +66,18 @@ top_days = request_trend.last(3)
                         <% row.with_cell(class_name: "!p-0") do %>
                             <div class="relative isolate overflow-hidden px-3 py-2.5">
                                 <span
-                                    class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                    class="absolute inset-y-0 left-0 -z-10 bg-neutral-100"
                                     style="width: <%= percentage %>%"
                                     aria-hidden="true"></span>
-                                <span class="flex items-center gap-2 text-slate-700">
-                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
+                                <span class="flex items-center gap-2 text-neutral-700">
+                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-neutral-500">
                                         <span class="ri-<%= browser[:icon] %> text-lg leading-none" aria-hidden="true"></span>
                                     </span>
                                     <span class="truncate"><%= browser[:browser] %></span>
                                 </span>
                             </div>
                         <% end %>
-                        <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
+                        <% row.with_cell(class_name: "font-semibold tabular-nums text-neutral-900", align: :center) do %>
                             <%= browser[:count] %>
                         <% end %>
                     <% end %>
@@ -101,18 +101,18 @@ top_days = request_trend.last(3)
                         <% row.with_cell(class_name: "!p-0") do %>
                             <div class="relative isolate overflow-hidden px-3 py-2.5">
                                 <span
-                                    class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                    class="absolute inset-y-0 left-0 -z-10 bg-neutral-100"
                                     style="width: <%= percentage %>%"
                                     aria-hidden="true"></span>
-                                <span class="flex items-center gap-2 text-slate-700">
-                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
+                                <span class="flex items-center gap-2 text-neutral-700">
+                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-neutral-500">
                                         <span class="ri-<%= operating_system[:icon].downcase %> text-lg leading-none" aria-hidden="true"></span>
                                     </span>
                                     <span class="truncate"><%= operating_system[:operating_system] %></span>
                                 </span>
                             </div>
                         <% end %>
-                        <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
+                        <% row.with_cell(class_name: "font-semibold tabular-nums text-neutral-900", align: :center) do %>
                             <%= operating_system[:count] %>
                         <% end %>
                     <% end %>
@@ -136,18 +136,18 @@ top_days = request_trend.last(3)
                         <% row.with_cell(class_name: "!p-0") do %>
                             <div class="relative isolate overflow-hidden px-3 py-2.5">
                                 <span
-                                    class="absolute inset-y-0 left-0 -z-10 bg-slate-100"
+                                    class="absolute inset-y-0 left-0 -z-10 bg-neutral-100"
                                     style="width: <%= percentage %>%"
                                     aria-hidden="true"></span>
-                                <span class="flex items-center gap-2 text-slate-700">
-                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-500">
+                                <span class="flex items-center gap-2 text-neutral-700">
+                                    <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center text-neutral-500">
                                         <span class="ri-<%= device[:icon] %> text-lg leading-none" aria-hidden="true"></span>
                                     </span>
                                     <span class="truncate"><%= device[:device] %></span>
                                 </span>
                             </div>
                         <% end %>
-                        <% row.with_cell(class_name: "font-semibold tabular-nums text-slate-900", align: :center) do %>
+                        <% row.with_cell(class_name: "font-semibold tabular-nums text-neutral-900", align: :center) do %>
                             <%= device[:count] %>
                         <% end %>
                     <% end %>
